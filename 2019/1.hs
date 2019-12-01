@@ -1,4 +1,4 @@
-fuel x = (x `div` 3) - 2
+fuel x = x `div` 3 - 2
 
 main = do
     ns <- map read . lines <$> readFile "input1"
