@@ -1,19 +1,19 @@
-{-# LANGUAGE ScopedTypeVariables #-}
 import Control.Monad
-import Data.List
+import Control.Monad.ST
 import Data.Array.MArray
-import Data.Array.IO
-import Data.IORef
-import System.Exit
+import Data.Array.ST
+import Data.List
+import Data.STRef
 
+split :: Char -> String -> [String]
 split d = words . map (\c -> if c == d then ' ' else c)
 
-runProgram :: [Integer] -> Integer -> Integer -> IO Integer
-runProgram program noun verb = do
+run :: [Integer] -> Integer -> Integer -> Integer
+run program noun verb = runST $ do
     let n = genericLength program
-    mem :: IOArray Integer Integer <- newListArray (0, n - 1) program
-    pc <- newIORef 0
-    let next = (readArray mem =<< readIORef pc) <* modifyIORef' pc (+1)
+    mem <- newListArray (0, pred n) program :: ST s (STArray s Integer Integer)
+    pc <- newSTRef 0
+    let next = readArray mem =<< readSTRef pc <* modifySTRef' pc (+1)
         binop (.) = do
             a <- readArray mem =<< next
             b <- readArray mem =<< next
@@ -31,12 +31,12 @@ runProgram program noun verb = do
     loop
     readArray mem 0
 
+main :: IO ()
 main = do
     program <- map read . split ',' <$> readFile "input2"
-    print =<< runProgram program 12 2
-    let try noun verb = do
-            r <- runProgram program noun verb
-            when (r == 19690720) $ do
-                print (100 * noun + verb)
-                exitSuccess
-    sequence_ [try noun verb | noun <- [0..99], verb <- [0..99]]
+    print $ run program 12 2
+    print $ head [ 100 * noun + verb
+                 | noun <- [0..99]
+                 , verb <- [0..99]
+                 , run program noun verb == 19690720
+                 ]
