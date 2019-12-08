@@ -3,7 +3,6 @@
 module Intcode (runIntcode) where
 
 import Control.Monad
-import Control.Monad.State
 import Data.Array.MArray
 import Data.Array.IO
 import Data.List
