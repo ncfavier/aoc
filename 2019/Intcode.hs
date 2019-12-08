@@ -3,36 +3,35 @@
 module Intcode (runIntcode) where
 
 import Control.Monad
-import Control.Monad.ST
 import Control.Monad.State
 import Data.Array.MArray
-import Data.Array.ST
+import Data.Array.IO
 import Data.List
-import Data.STRef
+import Data.IORef
 import Data.Tuple
 import Data.Bool
 
 (.:) = (.) . (.)
 
-runIntcode :: [Integer] -> [Integer] -> [Integer]
-runIntcode program inputs = runST $ do
+runIntcode :: [Integer] -> [Integer] -> IO [Integer]
+runIntcode program inputs = do
     let n = genericLength program
-    mem <- newListArray (0, pred n) program :: ST s (STArray s Integer Integer)
-    pc <- newSTRef 0
-    ins <- newSTRef inputs
-    outs <- newSTRef []
-    modes <- newSTRef 0
+    mem <- newListArray (0, pred n) program :: IO (IOArray Integer Integer)
+    pc <- newIORef 0
+    ins <- newIORef inputs
+    outs <- newIORef []
+    modes <- newIORef 0
     let readMem r    = readArray mem r
         writeMem w a = writeArray mem w a
-        readPC       = readSTRef pc
-        incPC        = modifySTRef' pc (+1)
-        jump j       = writeSTRef pc j
-        getInput     = head <$> readSTRef ins <* modifySTRef' ins tail
-        putOutput v  = modifySTRef' outs (v:)
+        readPC       = readIORef pc
+        incPC        = modifyIORef' pc (+1)
+        jump j       = writeIORef pc j
+        getInput     = head <$> readIORef ins <* modifyIORef' ins tail
+        putOutput v  = modifyIORef' outs (v:)
         next = readMem =<< readPC <* incPC
         nextMode = do
-            (modes', mode) <- (`divMod` 10) <$> readSTRef modes
-            writeSTRef modes modes'
+            (modes', mode) <- (`divMod` 10) <$> readIORef modes
+            writeIORef modes modes'
             return mode
         operand = do
             n <- next
@@ -52,7 +51,7 @@ runIntcode program inputs = runST $ do
         loop = do
             ins <- next
             let (ms, op) = ins `divMod` 100
-            writeSTRef modes ms
+            writeIORef modes ms
             case op of
                 1 -> binary (+)
                 2 -> binary (*)
@@ -67,8 +66,4 @@ runIntcode program inputs = runST $ do
                 99 -> return ()
             unless (op == 99) loop
     loop
-    readSTRef outs
-
--- runNounVerb :: [Integer] -> Integer -> Integer -> Integer
--- runNounVerb program noun verb = head . fst $ runIntcode program' []
---     where program' = head program:[noun, verb] ++ drop 3 program
+    readIORef outs
