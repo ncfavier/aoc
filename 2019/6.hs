@@ -8,7 +8,7 @@ main = do
     print $ f 0 "COM"
     let parent = M.fromList [(b, a) | (a, b) <- edges]
         pathToRoot n | Just p <- parent M.!? n = n:pathToRoot p
-                     | otherwise                = []
+                     | otherwise               = []
         you = reverse $ pathToRoot "YOU"
         san = reverse $ pathToRoot "SAN"
         l = length $ takeWhile (uncurry (==)) $ zip you san
