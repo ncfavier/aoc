@@ -2,7 +2,7 @@ import Control.Arrow
 import qualified Data.Map as M
 
 main = do
-    edges <- map (takeWhile (/= ')') &&& tail . dropWhile (/= ')')) . lines <$> readFile "input6"
+    edges <- map ((id *** tail) . break (== ')')) . lines <$> readFile "input6"
     let orbits = M.fromListWith (++) [(a, [b]) | (a, b) <- edges]
         f n o = n + sum (map (f (n + 1)) (M.findWithDefault [] o orbits))
     print $ f 0 "COM"
