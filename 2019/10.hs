@@ -9,11 +9,12 @@ angle (x, y) = -atan2 (fromIntegral x) (fromIntegral y)
 
 manhattan (x, y) = abs x + abs y
 
-insertAsteroid [x] xs = insertBy (comparing manhattan) x xs
+insertAsteroid [x] = insertBy (comparing manhattan) x
 
-nthAsteroid n asteroids = if n <= length rotation then M.elemAt (n - 1) rotation else nthAsteroid (n - length rotation) rest
-    where
-        (rotation, rest) = (M.map head &&& M.filter (not . null) . M.map tail) asteroids
+nthAsteroid n asteroids | n <= r    = M.elemAt (n - 1) rotation
+                        | otherwise = nthAsteroid (n - r) rest
+    where (rotation, rest) = (M.map head &&& M.filter (not . null) . M.map tail) asteroids
+          r = length rotation
 
 main = do
     asteroids <- parseAsteroids <$> readFile "input10"
