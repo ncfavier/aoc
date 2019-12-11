@@ -26,8 +26,8 @@ forward Right = (succ *** id)
 getColour :: Position -> Hull -> Integer
 getColour p h = maybe 0 id $ M.lookup p h
 
-runRobot :: Integer -> [Integer] -> IO Hull
-runRobot c program = mdo
+runRobot :: [Integer] -> Integer -> IO Hull
+runRobot program c = mdo
     hull <- newIORef (M.singleton (0, 0) c)
     let draw p d [] = return []
         draw p d (c:w:xs) = do
@@ -46,7 +46,7 @@ extend (lx, ly, ux, uy) (x, y) = (min lx x, min ly y, max ux x, max uy y)
 
 main = do
     program <- parseProgram <$> readFile "input11"
-    print . length =<< runRobot 0 program
-    hull <- runRobot 1 program
+    print . length =<< runRobot program 0
+    hull <- runRobot program 1
     let (lx, ly, ux, uy) = foldl extend (0, 0, 0, 0) (M.keys hull)
     putStr $ unlines [[" █" !! fromIntegral (getColour (x, y) hull) | x <- [lx..ux]] | y <- [ly..uy]]
