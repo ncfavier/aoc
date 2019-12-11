@@ -24,7 +24,7 @@ render = zipWith f
 
 draw [] = return ()
 draw image = do
-    putStrLn $ map (" #?" !!) row
+    putStrLn $ map (" █?" !!) row
     draw rest
     where (row, rest) = splitAt width image
 
