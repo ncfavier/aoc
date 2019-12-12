@@ -3,6 +3,7 @@
 
 import Data.List
 import Data.Void
+import Data.Function
 import Text.Megaparsec
 import Text.Megaparsec.Char
 import Text.Megaparsec.Char.Lexer
@@ -13,7 +14,11 @@ type V3 a = (a, a, a)
 
 (x, y, z) `add` (x', y', z') = (x + x', y + y', z + z')
 
-data Moon = Moon { position :: (V3 Integer), velocity :: (V3 Integer) } deriving Show
+data Moon = Moon { position :: (V3 Integer), velocity :: (V3 Integer) } deriving (Eq, Show)
+
+px (Moon (x, _, _) (vx, _, _)) = (x, vx)
+py (Moon (_, y, _) (_, vy, _)) = (y, vy)
+pz (Moon (_, _, z) (_, _, vz)) = (z, vz)
 
 number = signed (return ()) decimal
 parseLines p = many (p <* eol)
@@ -40,3 +45,4 @@ step = map applyVelocity . applyGravity
 main = do
     Just moons <- parseMaybe moons <$> readFile "input12"
     print $ totalEnergy $ iterate step moons !! 1000
+    print $ foldl1 lcm [findIndices (((==) `on` map p) moons) (iterate step moons) !! 1 | p <- [px, py, pz]]
