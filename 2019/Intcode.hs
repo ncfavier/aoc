@@ -9,6 +9,7 @@ import Data.List
 import Data.IORef
 import Data.Tuple
 import Data.Bool
+import System.IO.Unsafe
 
 data Operand = Absolute Integer | Immediate Integer | Relative Integer
 
@@ -79,7 +80,7 @@ runIntcode program inputs = do
                     loop (tail inputs)
                 4 -> do
                     a <- readOperand
-                    (a:) <$> loop inputs
+                    (a:) <$> unsafeInterleaveIO (loop inputs)
                 5 -> conditionalJump (/= 0) >> loop inputs
                 6 -> conditionalJump (== 0) >> loop inputs
                 7 -> test (<) >> loop inputs
@@ -89,4 +90,5 @@ runIntcode program inputs = do
                     moveBase a
                     loop inputs
                 99 -> return []
+                _ -> fail $ "unknown opcode " ++ show op
     loop inputs

@@ -21,5 +21,5 @@ main = do
     let detects (x, y) = M.fromListWith insertAsteroid [(angle (x' - x, y' - y), [(x' - x, y' - y)]) | (x', y') <- asteroids, (x', y') /= (x, y)]
     let ((x, y), best) = maximumBy (comparing (length . snd)) (map (id &&& detects) asteroids)
     print $ length best
-    let (_, (x', y')) = nthAsteroid 200 best
-    print $ (x + x') * 100 + y + y'
+    -- let (_, (x', y')) = nthAsteroid 200 best
+    -- print $ (x + x') * 100 + y + y'
