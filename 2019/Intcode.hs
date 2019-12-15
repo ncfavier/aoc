@@ -1,6 +1,6 @@
 {-# LANGUAGE NoMonomorphismRestriction #-}
 {-# LANGUAGE FlexibleContexts #-}
-module Intcode (parseProgram, runIntcode) where
+module Intcode (parseProgram, runIntcode, (<:)) where
 
 import Control.Monad
 import Data.Array.MArray
@@ -15,6 +15,9 @@ data Operand = Absolute Integer | Immediate Integer | Relative Integer
 
 (.:) :: (a -> b) -> (c -> d -> a) -> (c -> d -> b)
 (.:) = (.) . (.)
+
+(<:) :: a -> IO [a] -> IO [a]
+x <: m = (x:) <$> unsafeInterleaveIO m
 
 split :: Char -> String -> [String]
 split d = words . map (\c -> if c == d then ' ' else c)
@@ -83,7 +86,7 @@ runIntcode program inputs = do
                         _ -> return []
                 4 -> do
                     a <- readOperand
-                    (a:) <$> unsafeInterleaveIO (loop inputs)
+                    a <: loop inputs
                 5 -> conditionalJump (/= 0) >> loop inputs
                 6 -> conditionalJump (== 0) >> loop inputs
                 7 -> test (<) >> loop inputs

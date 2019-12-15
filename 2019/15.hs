@@ -6,7 +6,6 @@ import Control.Monad
 import Control.Exception
 import Data.Map (Map)
 import qualified Data.Map as M
-import System.IO.Unsafe
 
 import Intcode
 
@@ -44,7 +43,7 @@ runDroid :: [Integer] -> IO [Integer]
 runDroid = explore initialState where
     explore s@State {..} inputs = do
         case shortestPath position (`M.notMember` space) space of
-            Right path -> (head path:) <$> unsafeInterleaveIO (listen s { route = path } inputs)
+            Right path -> head path <: listen s { route = path } inputs
             Left _ -> do
                 let (oxygen, _) = M.findMin (M.filter (== 2) space)
                     Right pathToOxygen = shortestPath (0, 0) (== oxygen) space
@@ -60,7 +59,7 @@ runDroid = explore initialState where
             space' = M.insert target i space
             s' = s { position = pos', space = space', route = rs }
         case rs of
-            r':_ -> (r':) <$> unsafeInterleaveIO (listen s' is)
+            r':_ -> r' <: listen s' is
             _    -> explore s' is
 
 main = mdo

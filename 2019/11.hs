@@ -5,7 +5,6 @@ import Control.Arrow
 import Control.Exception
 import qualified Data.Map as M
 import Data.IORef
-import System.IO.Unsafe
 
 import Intcode
 
@@ -39,7 +38,7 @@ runRobot program c = mdo
                 p' = forward d' p
                 c' = getColour p' h'
             writeIORef hull h'
-            (c':) <$> unsafeInterleaveIO (draw p' d' xs)
+            c' <: draw p' d' xs
     output <- runIntcode program (c:input)
     input <- draw (0, 0) Up output
     evaluate (length output)
