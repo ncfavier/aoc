@@ -76,8 +76,11 @@ runIntcode program inputs = do
                 2 -> binary (*) >> loop inputs
                 3 -> do
                     a <- writeOperand
-                    writeMem a (head inputs)
-                    loop (tail inputs)
+                    case inputs of
+                        i:is -> do
+                            writeMem a i
+                            loop is
+                        _ -> return []
                 4 -> do
                     a <- readOperand
                     (a:) <$> unsafeInterleaveIO (loop inputs)

@@ -24,7 +24,7 @@ forward Left  = (pred *** id)
 forward Right = (succ *** id)
 
 getColour :: Position -> Hull -> Integer
-getColour p h = maybe 0 id $ M.lookup p h
+getColour = M.findWithDefault 0
 
 runRobot :: [Integer] -> Integer -> IO Hull
 runRobot program c = mdo
