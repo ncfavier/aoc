@@ -2,8 +2,10 @@
 
 import Prelude hiding (Either(..))
 import Control.Arrow
+import Control.Exception
 import qualified Data.Map as M
 import Data.IORef
+import System.IO.Unsafe
 
 import Intcode
 
@@ -37,9 +39,10 @@ runRobot program c = mdo
                 p' = forward d' p
                 c' = getColour p' h'
             writeIORef hull h'
-            (c':) <$> draw p' d' xs
+            (c':) <$> unsafeInterleaveIO (draw p' d' xs)
     output <- runIntcode program (c:input)
     input <- draw (0, 0) Up output
+    evaluate (length output)
     readIORef hull
 
 extend (lx, ly, ux, uy) (x, y) = (min lx x, min ly y, max ux x, max uy y)
