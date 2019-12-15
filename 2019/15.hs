@@ -28,7 +28,7 @@ shortestPath :: Position -> (Position -> Bool) -> Map Position Integer -> Either
 shortestPath s t space = go (M.singleton s []) [s] 0 where
     go _ [] depth = Left (depth - 1)
     go seen ps depth
-        | p:_ <- [p | p <- ps, t p] = Right $ reverse (seen M.! p)
+        | p:_ <- filter t ps = Right $ reverse (seen M.! p)
         | otherwise =
             let ns = [ (n, d:seen M.! p)
                      | p <- ps
