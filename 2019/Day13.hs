@@ -1,4 +1,5 @@
 {-# LANGUAGE RecursiveDo #-}
+module Day13 where
 
 import Data.Map (Map)
 import qualified Data.Map as M
@@ -30,7 +31,7 @@ finalScore = go 0 where
 
 main :: IO ()
 main = mdo
-    program <- parseProgram <$> readFile "input13"
+    program <- parseProgram <$> getContents
     print . numberOfBlocks =<< runIntcode program []
     output <- runIntcode (2:tail program) (moves output)
     print $ finalScore output

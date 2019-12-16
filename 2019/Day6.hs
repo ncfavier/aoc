@@ -1,8 +1,10 @@
+module Day6 where
+
 import Control.Arrow
 import qualified Data.Map as M
 
 main = do
-    edges <- map ((id *** tail) . break (== ')')) . lines <$> readFile "input6"
+    edges <- map ((id *** tail) . break (== ')')) . lines <$> getContents
     let orbits = M.fromListWith (++) [(a, [b]) | (a, b) <- edges]
         f n o = n + sum (map (f (n + 1)) (M.findWithDefault [] o orbits))
     print $ f 0 "COM"

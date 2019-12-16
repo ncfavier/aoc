@@ -1,4 +1,5 @@
 {-# LANGUAGE RecursiveDo #-}
+module Day11 where
 
 import Prelude hiding (Either(..))
 import Control.Arrow
@@ -47,7 +48,7 @@ runRobot program c = mdo
 extend (lx, ly, ux, uy) (x, y) = (min lx x, min ly y, max ux x, max uy y)
 
 main = do
-    program <- parseProgram <$> readFile "input11"
+    program <- parseProgram <$> getContents
     print . length =<< runRobot program 0
     hull <- runRobot program 1
     let (lx, ly, ux, uy) = foldl extend (0, 0, 0, 0) (M.keys hull)

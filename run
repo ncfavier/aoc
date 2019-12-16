@@ -1,0 +1,25 @@
+#!/bin/bash
+
+day=${1:-$(date +%e)}
+day=${day#0}
+year=${2:-$(date +%Y)}
+
+input=inputs/$year/$day
+mkdir -p "$(dirname "$input")"
+
+bin=bin/$year/$day
+mkdir -p "$(dirname "$bin")"
+
+if [[ ! -e $input ]]; then
+    echo "Downloading input"
+    curl -fsSL -o "$input" -b "session=$(< .session)" "https://adventofcode.com/$year/day/$day/input"
+fi
+
+ghc -O2 -dynamic -i"$year" -outputdir build -o "$bin" -main-is "Day$day" "$year/Day$day.hs" && {
+    echo "Running $bin"
+    if [[ -t 0 ]]; then
+        ./"$bin" < "$input"
+    else
+        ./"$bin"
+    fi
+}

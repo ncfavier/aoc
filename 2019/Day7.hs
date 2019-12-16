@@ -1,4 +1,6 @@
 {-# LANGUAGE RecursiveDo #-}
+module Day7 where
+
 import Data.List
 
 import Intcode
@@ -14,6 +16,6 @@ runLoop program [a, b, c, d, e] = mdo
 
 main :: IO ()
 main = do
-    program <- parseProgram <$> readFile "input7"
+    program <- parseProgram <$> getContents
     print . maximum =<< mapM (runLoop program) (permutations [0..4])
     print . maximum =<< mapM (runLoop program) (permutations [5..9])

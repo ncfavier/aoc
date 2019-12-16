@@ -1,3 +1,5 @@
+module Day3 where
+
 import Control.Arrow
 import qualified Data.Map as M
 
@@ -25,7 +27,7 @@ path o ((d, n):xs) = p ++ path (last p) xs
 
 main :: IO ()
 main = do
-    [w1, w2] <- map readDirections . lines <$> readFile "input3"
+    [w1, w2] <- map readDirections . lines <$> getContents
     let [s1, s2] = map (M.fromListWith min . path ((0, 0), 0)) [w1, w2]
         i = M.intersectionWith (+) s1 s2
     print $ minimum $ map norm $ M.keys i

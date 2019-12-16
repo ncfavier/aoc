@@ -1,3 +1,5 @@
+module Day8 where
+
 import Data.List
 import Data.Char
 
@@ -29,7 +31,7 @@ draw image = do
     where (row, rest) = splitAt width image
 
 main = do
-    layers <- splitLayers . map charToInt . dropWhileEnd isSpace <$> readFile "input8"
+    layers <- splitLayers . map charToInt . dropWhileEnd isSpace <$> getContents
     let (_, n1, n2) = minimumBy (\(a, _, _) (b, _, _) -> a `compare` b) (map count layers)
     print (n1 * n2)
     let image = foldr1 render layers

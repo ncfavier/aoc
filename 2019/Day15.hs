@@ -1,5 +1,6 @@
 {-# LANGUAGE RecursiveDo #-}
 {-# LANGUAGE RecordWildCards #-}
+module Day15 where
 
 import Control.Arrow
 import Control.Monad
@@ -63,7 +64,7 @@ runDroid = explore initialState where
             _    -> explore s' is
 
 main = mdo
-    program <- parseProgram <$> readFile "input15"
+    program <- parseProgram <$> getContents
     input <- runDroid output
     output <- runIntcode program input
-    evaluate (length output) -- force things to happen
+    evaluate (length output)

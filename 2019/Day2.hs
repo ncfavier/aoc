@@ -1,3 +1,5 @@
+module Day2 where
+
 import Control.Monad
 import Control.Monad.ST
 import Data.Array.MArray
@@ -33,7 +35,7 @@ run program noun verb = runST $ do
 
 main :: IO ()
 main = do
-    program <- map read . split ',' <$> readFile "input2"
+    program <- map read . split ',' <$> getContents
     print $ run program 12 2
     print $ head [ 100 * noun + verb
                  | noun <- [0..99]

@@ -1,5 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeFamilies #-}
+module Day14 where
 
 import Data.Void
 import qualified Data.Map as M
@@ -18,7 +19,7 @@ recipes = parseLines $ (,) <$> (ingredient `sepBy` ", ") <* " => " <*> ingredien
 
 main :: IO ()
 main = do
-    Just rs <- parseMaybe recipes <$> readFile "input14"
+    Just rs <- parseMaybe recipes <$> getContents
     let recipes = M.fromList [(r, M.insert r (-n) $ M.fromList [(i, n) | (n, i) <- is]) | (is, (n, r)) <- rs]
         reduce g | Just (r, n) <- r' = let recipe = recipes M.! r
                                            f = n `div` (recipe M.! r)
