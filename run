@@ -10,12 +10,15 @@ mkdir -p "$(dirname "$input")"
 bin=bin/$year/$day
 mkdir -p "$(dirname "$bin")"
 
+build=build/$year
+mkdir -p "$build"
+
 if [[ ! -e $input ]]; then
     echo "Downloading input"
     curl -fsSL -o "$input" -b "session=$(< .session)" "https://adventofcode.com/$year/day/$day/input"
 fi
 
-ghc -O2 -dynamic -i"src/$year" -outputdir build -o "$bin" -main-is "Day$day" "src/$year/Day$day.hs" && {
+ghc -O2 -dynamic -i"src/$year" -outputdir "$build" -o "$bin" -main-is "Day$day" "src/$year/Day$day.hs" && {
     echo "Running $bin"
     if [[ -t 0 ]]; then
         ./"$bin" < "$input"

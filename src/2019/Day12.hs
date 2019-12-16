@@ -32,11 +32,11 @@ totalEnergy = sum . map moonEnergy
 
 pickOne xs = [(x, l ++ r) | (l, x:r) <- zip (inits xs) (tails xs)]
 
-pull x {->-} x' | x < x'    = 1
-                | x > x'    = -1
-                | otherwise = 0
+x `pullsOn` x' | x > x'    = 1
+               | x < x'    = -1
+               | otherwise = 0
 
-applyGravity ms = [ Moon (x, y, z) (foldl add v [(pull x x', pull y y', pull z z') | Moon (x', y', z') _ <- ms])
+applyGravity ms = [ Moon (x, y, z) (foldl add v [(x' `pullsOn` x, y' `pullsOn` y, z' `pullsOn` z) | Moon (x', y', z') _ <- ms])
                   | (Moon (x, y, z) v, ms) <- pickOne ms]
 
 applyVelocity (Moon (x, y, z) (vx, vy, vz)) = Moon (x + vx, y + vy, z + vz) (vx, vy, vz)
