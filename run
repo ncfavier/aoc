@@ -18,7 +18,7 @@ if [[ ! -e $input ]]; then
     curl -fsSL -o "$input" -b "session=$(< .session)" "https://adventofcode.com/$year/day/$day/input"
 fi
 
-ghc -O2 -dynamic -i"src/$year" -outputdir "$build" -o "$bin" -main-is "Day$day" "src/$year/Day$day.hs" && {
+ghc -O2 -dynamic -i"src/$year" -outputdir "$build" -o "$bin" -main-is "Day$day" "src/$year/$day.hs" && {
     echo "Running $bin"
     if [[ -t 0 ]]; then
         ./"$bin" < "$input"
