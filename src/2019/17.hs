@@ -62,7 +62,7 @@ main = do
     let path p d | canGo d         = 'F':path (p `add` d) d
                  | canGo (left d)  = 'L':path p           (left d)
                  | canGo (right d) = 'R':path p           (right d)
-                 | otherwise = []
+                 | otherwise       = []
                  where canGo d = tile (p `add` d) == '#'
         (start, d)   = head [ (p, directions !! d)
                             | (p, c) <- M.toList grid
