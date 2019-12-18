@@ -29,8 +29,9 @@ groupMoves p = go (group p) where
     go ([d]:f@('F':_):p) = (d:',':show (length f)):go p
     go [] = []
 
-maxLength :: Int
+maxLength, nFunctions :: Int
 maxLength = 20
+nFunctions = 3
 
 shortEnough :: String -> Bool
 shortEnough p = length p <= maxLength
@@ -43,7 +44,7 @@ compress = go [] [] where
     go fs acc p = do (f, ins) <- fs
                      Just rest <- return $ stripPrefix ins p
                      go fs (f:acc) rest
-              <|> do guard $ length fs < 3
+              <|> do guard $ length fs < nFunctions
                      (ins, rest) <- takeWhile (shortEnough . intercalate "," . fst) $ tail $ zip (inits p) (tails p)
                      let f = [chr (ord 'A' + length fs)]
                      go ((f, ins):fs) (f:acc) rest
