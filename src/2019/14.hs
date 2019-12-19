@@ -1,16 +1,10 @@
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE TypeFamilies #-}
 module Day14 where
 
-import Data.Void
+import Data.Map (Map)
 import qualified Data.Map as M
-import Text.Megaparsec
-import Text.Megaparsec.Char
-import Text.Megaparsec.Char.Lexer
 
-type Parser = Parsec Void String
-
-parseLines p = many (p <* eol)
+import AOC
 
 ingredient = (,) <$> decimal <* " " <*> many letterChar
 

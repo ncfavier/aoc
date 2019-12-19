@@ -1,31 +1,25 @@
-{-# LANGUAGE RecursiveDo #-}
 {-# LANGUAGE RecordWildCards #-}
 module Day15 where
 
-import Control.Arrow
-import Control.Monad
-import Control.Exception
 import Data.Map (Map)
 import qualified Data.Map as M
 
+import AOC
 import Intcode
 
-type Position = (Integer, Integer)
-
-move :: Integer -> Position -> Position
+move :: Integer -> Coords -> Coords
 move 1 = (id *** pred)
 move 2 = (id *** succ)
 move 3 = (pred *** id)
 move 4 = (succ *** id)
 
-data State = State { position :: Position
-                   , space    :: Map Position Integer
-                   , route    :: [Integer]
-                   }
+data DroidState = DroidState { position :: Coords
+                             , space    :: Map Coords Integer
+                             }
 
-initialState = State (0, 0) (M.singleton (0, 0) 1) []
+initialState = DroidState (0, 0) (M.singleton (0, 0) 1)
 
-shortestPath :: Position -> (Position -> Bool) -> Map Position Integer -> Either Integer [Integer]
+shortestPath :: Coords -> (Coords -> Bool) -> Map Coords Integer -> Either Integer [Integer]
 shortestPath s t space = go (M.singleton s []) [s] 0 where
     go _ [] depth = Left (depth - 1)
     go seen ps depth
@@ -40,31 +34,27 @@ shortestPath s t space = go (M.singleton s []) [s] 0 where
                      ]
             in go (M.union seen (M.fromList ns)) [p | (p, _) <- ns] (depth + 1)
 
-runDroid :: [Integer] -> IO [Integer]
-runDroid = explore initialState where
-    explore s@State {..} inputs = do
+runDroid :: [Integer] -> (Int, Integer)
+runDroid program = explore initialState (runIntcode program) where
+    explore s@DroidState {..} e = do
         case shortestPath position (`M.notMember` space) space of
-            Right path -> head path <: listen s { route = path } inputs
-            Left _ -> do
+            Right path -> go path s e
+            Left _ ->
                 let (oxygen, _) = M.findMin (M.filter (== 2) space)
                     Right pathToOxygen = shortestPath (0, 0) (== oxygen) space
                     Left maxDepth = shortestPath oxygen (const False) space
-                print (length pathToOxygen)
-                print maxDepth
-                return []
-    listen s@State {..} inputs = do
-        let i:is = inputs
-            r:rs = route
-            target = move r position
-            pos' = if i == 0 then position else target
-            space' = M.insert target i space
-            s' = s { position = pos', space = space', route = rs }
-        case rs of
-            r':_ -> r' <: listen s' is
-            _    -> explore s' is
+                in (length pathToOxygen, maxDepth)
+    go [] s e = explore s e
+    go (p:ps) DroidState {..} (Input f) = go ps (DroidState position' space') e
+        where Output o e = f p
+              target = move p position
+              position' | o == 0    = position
+                        | otherwise = target
+              space' = M.insert target o space
 
-main = mdo
+main :: IO ()
+main = do
     program <- parseProgram <$> getContents
-    input <- runDroid output
-    output <- runIntcode program input
-    evaluate (length output)
+    let (distanceToOxygen, maxDepth) = runDroid program
+    print distanceToOxygen
+    print maxDepth

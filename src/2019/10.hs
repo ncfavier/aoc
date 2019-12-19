@@ -1,11 +1,10 @@
 module Day10 where
 
-import Control.Arrow
-import Data.List
-import Data.Ord
 import qualified Data.Map as M
 
-parseAsteroids s = [(x, y) | (y, (x, '#')) <- sequenceA =<< zip [0..] (zip [0..] <$> lines s)]
+import AOC
+
+parseAsteroids g = [p | (p, '#') <- flatten (lines g)]
 
 angle (x, y) = -atan2 (fromIntegral x) (fromIntegral y)
 

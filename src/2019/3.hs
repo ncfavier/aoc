@@ -1,13 +1,12 @@
 module Day3 where
 
-import Control.Arrow
+import Data.Map (Map)
 import qualified Data.Map as M
 
-split :: Char -> String -> [String]
-split d = words . map (\c -> if c == d then ' ' else c)
+import AOC
 
 readDirections :: String -> [((Int, Int), Int)]
-readDirections = map (\(c:n) -> (direction c, read n)) . split ','
+readDirections = map (\(c:n) -> (direction c, read n)) . splitOn ","
 
 (+:) :: Num a => (a, a) -> (a, a) -> (a, a)
 (a1, b1) +: (a2, b2) = (a1 + a2, b1 + b2)

@@ -1,28 +1,16 @@
 module Day17 where
 
-import Control.Monad
-import Control.Applicative
-import Data.Char
-import Data.List
 import Data.Map (Map)
 import qualified Data.Map as M
 
+import AOC
 import Intcode
-
-type Coords = (Integer, Integer)
-
-add :: Coords -> Coords -> Coords
-add (x1, y1) (x2, y2) = (x1 + x2, y1 + y2)
 
 directions :: [Coords]
 directions = [(-1, 0), (0, -1), (1, 0), (0, 1)]
 
 neighbours :: Coords -> [Coords]
 neighbours p = map (add p) directions
-
-left, right :: Coords -> Coords
-left  (x, y) = (y, -x)
-right (x, y) = (-y, x)
 
 groupMoves :: String -> [String]
 groupMoves p = go (group p) where
@@ -52,21 +40,20 @@ compress = go [] [] where
 main :: IO ()
 main = do
     program <- parseProgram <$> getContents
-    output  <- map (chr . fromIntegral) <$> runIntcode program []
-    let grid   = M.fromList [((x, y), c) | (y, row) <- zip [0..] (lines output), (x, c) <- zip [0..] row]
+    let output = map (chr . fromIntegral) $ intcodeToList program []
+        grid   = M.fromList [((x, y), c) | (y, row) <- zip [0..] (lines output), (x, c) <- zip [0..] row]
         tile p = M.findWithDefault '.' p grid
     print $ sum [ x * y
                 | (p@(x, y), '#') <- M.toList grid
                 , all (\p -> tile p == '#') (neighbours p)
                 ]
-    let path p d | canGo d         = 'F':path (p `add` d) d
-                 | canGo (left d)  = 'L':path p           (left d)
-                 | canGo (right d) = 'R':path p           (right d)
-                 | otherwise       = []
+    let path p d | canGo d       = 'F':path (p `add` d) d
+                 | canGo (ccw d) = 'L':path p           (ccw d)
+                 | canGo (cw d)  = 'R':path p           (cw d)
+                 | otherwise     = []
                  where canGo d = tile (p `add` d) == '#'
         (start, d)   = head [ (p, directions !! d)
                             | (p, c) <- M.toList grid
                             , Just d <- [c `elemIndex` "<^>v"] ]
         (main, fs):_ = compress $ groupMoves $ path start d
-    output' <- runIntcode (2:tail program) $ map (toInteger . ord) $ unlines (main:fs ++ ["n"])
-    print (last output')
+    print $ last $ intcodeToList (2:tail program) $ map (toInteger . ord) $ unlines (main:fs ++ ["n"])

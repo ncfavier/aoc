@@ -1,55 +1,32 @@
-{-# LANGUAGE RecursiveDo #-}
 module Day11 where
 
-import Prelude hiding (Either(..))
-import Control.Arrow
-import Control.Exception
+import Data.Map (Map)
 import qualified Data.Map as M
-import Data.IORef
 
+import AOC
 import Intcode
 
-data Direction = Up | Right | Down | Left
-               deriving Enum
+type Hull = Map Coords Integer
 
-type Position = (Integer, Integer)
-
-type Hull = M.Map Position Integer
-
-turn :: Direction -> Integer -> Direction
-turn d w = toEnum ((if w == 0 then pred else succ) (fromEnum d) `mod` 4)
-
-forward :: Direction -> Position -> Position
-forward Up    = (id *** pred)
-forward Down  = (id *** succ)
-forward Left  = (pred *** id)
-forward Right = (succ *** id)
-
-getColour :: Position -> Hull -> Integer
+getColour :: Coords -> Hull -> Integer
 getColour = M.findWithDefault 0
 
-runRobot :: [Integer] -> Integer -> IO Hull
-runRobot program c = mdo
-    hull <- newIORef (M.singleton (0, 0) c)
-    let draw p d [] = return []
-        draw p d (c:w:xs) = do
-            h <- readIORef hull
+runRobot :: [Integer] -> Integer -> Hull
+runRobot program c = go (M.singleton p0 c) p0 (0, -1) (runIntcode program) where
+    p0 = (0, 0)
+    go h p d (Halt _) = h
+    go h p d (Input f) = case f (getColour p h) of
+        Output c (Output w e) ->
             let h' = M.insert p c h
-                d' = turn d w
-                p' = forward d' p
-                c' = getColour p' h'
-            writeIORef hull h'
-            c' <: draw p' d' xs
-    output <- runIntcode program (c:input)
-    input <- draw (0, 0) Up output
-    evaluate (length output)
-    readIORef hull
+                d' = (if w == 0 then ccw else cw) d
+                p' = add d' p
+            in go h' p' d' e
 
 extend (lx, ly, ux, uy) (x, y) = (min lx x, min ly y, max ux x, max uy y)
 
 main = do
     program <- parseProgram <$> getContents
-    print . length =<< runRobot program 0
-    hull <- runRobot program 1
-    let (lx, ly, ux, uy) = foldl extend (0, 0, 0, 0) (M.keys hull)
+    print . length $ runRobot program 0
+    let hull = runRobot program 1
+        (lx, ly, ux, uy) = foldl extend (0, 0, 0, 0) (M.keys hull)
     putStr $ unlines [[" █" !! fromIntegral (getColour (x, y) hull) | x <- [lx..ux]] | y <- [ly..uy]]

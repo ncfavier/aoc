@@ -1,7 +1,6 @@
 module Day4 where
 
-import Control.Monad
-import Data.List
+import AOC
 
 main = do
     [l] <- lines <$> getContents

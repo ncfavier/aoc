@@ -1,8 +1,9 @@
 module Day16 where
 
-import Data.Char
 import Data.Vector.Unboxed (Vector)
 import qualified Data.Vector.Unboxed as V
+
+import AOC
 
 pattern :: Int -> [Int]
 pattern i = tail $ cycle $ [0, 1, 0, -1] >>= replicate (i + 1)

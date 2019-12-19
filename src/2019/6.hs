@@ -1,7 +1,8 @@
 module Day6 where
 
-import Control.Arrow
 import qualified Data.Map as M
+
+import AOC
 
 main = do
     edges <- map ((id *** tail) . break (== ')')) . lines <$> getContents

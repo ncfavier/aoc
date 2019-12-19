@@ -1,100 +1,115 @@
-{-# LANGUAGE NoMonomorphismRestriction #-}
+{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE NamedFieldPuns #-}
+{-# LANGUAGE BlockArguments #-}
 {-# LANGUAGE FlexibleContexts #-}
-module Intcode (parseProgram, runIntcode, (<:)) where
+module Intcode where
 
-import Control.Monad
-import Data.Array.MArray
-import Data.Array.IO
-import Data.List
-import Data.IORef
-import Data.Tuple
+import Control.Monad.State
 import Data.Bool
-import System.IO.Unsafe
+import Data.List.Split
+import Data.Vector (Vector)
+import qualified Data.Vector as V
+import Data.Map (Map)
+import qualified Data.Map as M
 
-data Operand = Absolute Integer | Immediate Integer | Relative Integer
+data Memory = Memory { readOnly :: Vector Integer
+                     , overlay  :: Map Integer Integer
+                     }
 
-(.:) :: (a -> b) -> (c -> d -> a) -> (c -> d -> b)
-(.:) = (.) . (.)
+data Machine = Machine { mem   :: Memory
+                       , pc    :: Integer
+                       , base  :: Integer
+                       , modes :: Integer
+                       }
 
-(<:) :: a -> IO [a] -> IO [a]
-x <: m = (x:) <$> unsafeInterleaveIO m
+data Effect = Input (Integer -> Effect)
+            | Output Integer Effect
+            | Halt Memory
 
-split :: Char -> String -> [String]
-split d = words . map (\c -> if c == d then ' ' else c)
+newMemory program = Memory (V.fromList program) M.empty
+
+infixl 8 !
+Memory{..} ! i | Just v <- M.lookup i overlay = v
+               | Just v <- readOnly V.!? fromIntegral i = v
+               | otherwise = 0
+set i v mem = mem { overlay = M.insert i v (overlay mem) }
+
+newMachine program = Machine (newMemory program) 0 0 0
 
 parseProgram :: String -> [Integer]
-parseProgram = map read . split ','
+parseProgram = map read . splitOn ","
 
-runIntcode :: [Integer] -> [Integer] -> IO [Integer]
-runIntcode program inputs = do
-    mem <- newListArray (0, 32767) (program ++ repeat 0) :: IO (IOArray Integer Integer)
-    pc <- newIORef 0
-    modes <- newIORef 0
-    base <- newIORef 0
-    let readMem r    = readArray mem r
-        writeMem w a = writeArray mem w a
-        readPC       = readIORef pc
-        incPC        = modifyIORef' pc (+ 1)
-        jump j       = writeIORef pc j
-        moveBase o   = modifyIORef' base (+ o)
-        next = readMem =<< readPC <* incPC
-        nextMode = do
-            (modes', mode) <- (`divMod` 10) <$> readIORef modes
-            writeIORef modes modes'
-            return mode
-        operand = do
-            n <- next
-            mode <- nextMode
-            return $ case mode of
-                0 -> Absolute n
-                1 -> Immediate n
-                2 -> Relative n
-        readOperand = do
-            o <- operand
-            case o of
-                Absolute n -> readMem n
-                Immediate n -> return n
-                Relative n -> readMem . (+ n) =<< readIORef base
-        writeOperand = do
-            o <- operand
-            case o of
-                Absolute n -> return n
-                Relative n -> (+ n) <$> readIORef base
-        binary (?) = do
-            a <- readOperand
-            b <- readOperand
-            r <- writeOperand
-            writeMem r (a ? b)
-        test (?) = binary (bool 0 1 .: (?))
-        conditionalJump p = do
-            c <- readOperand
-            j <- readOperand
-            when (p c) (jump j)
-        loop inputs = do
-            ins <- next
-            let (ms, op) = ins `divMod` 100
-            writeIORef modes ms
-            case op of
-                1 -> binary (+) >> loop inputs
-                2 -> binary (*) >> loop inputs
-                3 -> do
-                    a <- writeOperand
-                    case inputs of
-                        i:is -> do
-                            writeMem a i
-                            loop is
-                        _ -> return []
-                4 -> do
-                    a <- readOperand
-                    a <: loop inputs
-                5 -> conditionalJump (/= 0) >> loop inputs
-                6 -> conditionalJump (== 0) >> loop inputs
-                7 -> test (<) >> loop inputs
-                8 -> test (==) >> loop inputs
-                9 -> do
-                    a <- readOperand
-                    moveBase a
-                    loop inputs
-                99 -> return []
-                _ -> fail $ "unknown opcode " ++ show op
-    loop inputs
+incPc = state \m -> (pc m, m { pc = succ (pc m) })
+nextMode = state \m -> let (modes', mode) = modes m `divMod` 10
+                       in (mode, m { modes = modes' })
+
+nextOp = do
+    pc <- incPc
+    mem <- gets mem
+    return $ mem ! pc
+
+nextArg = do
+    pc <- incPc
+    mode <- nextMode
+    base <- gets base
+    mem <- gets mem
+    return case mode of
+        0 -> mem ! pc
+        1 -> pc
+        2 -> base + mem ! pc
+
+readArg = do
+    arg <- nextArg
+    mem <- gets mem
+    return (mem ! arg)
+
+write v = do
+    arg <- nextArg
+    modify \m -> m { mem = set arg v (mem m) }
+
+binary (?) = do
+    a <- readArg
+    b <- readArg
+    write (a ? b)
+
+conditionalJump p = do
+    v <- readArg
+    a <- readArg
+    when (p v) (jump a)
+
+jump pc = modify \m -> m { pc }
+
+test (?) = binary \a b -> bool 0 1 (a ? b)
+
+moveBase o = modify \m -> m { base = base m + o }
+
+runIntcode :: [Integer] -> Effect
+runIntcode program = evalState loop (newMachine program) where
+    loop = do
+        op' <- nextOp
+        let (modes, op) = op' `divMod` 100
+        modify \m -> m { modes }
+        case op of
+            1 -> binary (+) >> loop
+            2 -> binary (*) >> loop
+            3 -> do
+                m <- get
+                return $ Input \v -> evalState (write v >> loop) m
+            4 -> do
+                v <- readArg
+                m <- get
+                return $ Output v $ evalState loop m
+            5 -> conditionalJump (/= 0) >> loop
+            6 -> conditionalJump (== 0) >> loop
+            7 -> test (<) >> loop
+            8 -> test (==) >> loop
+            9 -> readArg >>= moveBase >> loop
+            99 -> do
+                mem <- gets mem
+                return $ Halt mem
+
+intcodeToList program = go (runIntcode program) where
+    go (Halt _) _ = []
+    go (Output v e) inp = v:go e inp
+    go (Input f) (i:is) = go (f i) is
+    go (Input _) _ = error "no input"

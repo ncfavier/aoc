@@ -1,21 +1,21 @@
-{-# LANGUAGE RecursiveDo #-}
 module Day7 where
 
 import Data.List
 
 import Intcode
 
-runLoop :: [Integer] -> [Integer] -> IO Integer
-runLoop program [a, b, c, d, e] = mdo
-    outA <- runIntcode program (a:0:outE)
-    outB <- runIntcode program (b:outA)
-    outC <- runIntcode program (c:outB)
-    outD <- runIntcode program (d:outC)
-    outE <- runIntcode program (e:outD)
-    return $ last outE
+runLoop :: [Integer] -> [Integer] -> Integer
+runLoop program [a, b, c, d, e] =
+    let run  = intcodeToList program
+        outA = run (a:0:outE)
+        outB = run (b:outA)
+        outC = run (c:outB)
+        outD = run (d:outC)
+        outE = run (e:outD)
+    in last outE
 
 main :: IO ()
 main = do
     program <- parseProgram <$> getContents
-    print . maximum =<< mapM (runLoop program) (permutations [0..4])
-    print . maximum =<< mapM (runLoop program) (permutations [5..9])
+    print $ maximum $ runLoop program <$> permutations [0..4]
+    print $ maximum $ runLoop program <$> permutations [5..9]
