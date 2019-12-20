@@ -3,7 +3,7 @@ module Day20 where
 import Data.Map (Map)
 import qualified Data.Map as M
 
-import AOC hiding (left, right)
+import AOC
 
 left, right, up, down :: Coords -> Coords
 left  = (pred *** id)

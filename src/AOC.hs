@@ -16,7 +16,7 @@ module AOC ( module AOC
 
 import Control.Applicative hiding (some, many)
 import Control.Monad
-import Control.Arrow
+import Control.Arrow hiding (left, right)
 import Data.Ord
 import Data.Char
 import Data.List
