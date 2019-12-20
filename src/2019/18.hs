@@ -31,8 +31,8 @@ main = do
                 _ -> []
     print $ head [d | ((_, ks), d) <- bfs next (center, S.empty), length ks == nKeys]
     let grid' = M.union (M.fromList $ (center, '#'):[(n, '#') | n <- neighbours center]) grid
-    let start4 = [left (up center), left (down center), right (down center), right (up center)]
-    let next4 (l, ps, ks) = do
+        start4 = [left (up center), left (down center), right (down center), right (up center)]
+        next4 (l, ps, ks) = do
             (p, ps') <- case l of
                 Just p -> return (p, ps)
                 Nothing -> [(p, delete p ps) | p <- ps]
