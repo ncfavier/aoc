@@ -27,6 +27,11 @@ import Text.Megaparsec hiding (count)
 import Text.Megaparsec.Char
 import Text.Megaparsec.Char.Lexer hiding (space)
 
+import Data.Set (Set)
+import qualified Data.Set as S
+import Data.Sequence (Seq(..))
+import qualified Data.Sequence as Seq
+
 type Parser = Parsec Void String
 
 parseLines p = many (p <* eol)
@@ -40,7 +45,15 @@ ccw, cw :: Coords -> Coords
 ccw (x, y) = (y, -x)
 cw  (x, y) = (-y, x)
 
-flatten rows = [ ((x, y), c)
+flatten :: [[a]] -> [((Integer, Integer), a)]
+flatten rows = [ ((x, y), a)
                | (y, row) <- zip [0..] rows
-               , (x, c)   <- zip [0..] row
+               , (x, a)   <- zip [0..] row
                ]
+
+bfs :: Ord a => (a -> [a]) -> a -> [(a, Integer)]
+bfs next start = go S.empty (Seq.singleton (start, 0)) where
+    go seen Empty = []
+    go seen ((n, d) :<| ps)
+        | n `S.member` seen = go seen ps
+        | otherwise         = (n, d):go (S.insert n seen) (ps <> Seq.fromList [(n', d + 1) | n' <- next n])

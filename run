@@ -1,5 +1,13 @@
 #!/bin/bash
 
+time=0
+
+while getopts :t o; do case $o in
+    t) time=1;;
+esac done
+
+shift "$(( OPTIND - 1 ))"
+
 day=${1:-$(date +%e)}
 day=${day#0}
 year=${2:-$(date +%Y)}
@@ -18,11 +26,19 @@ if [[ ! -e $input ]]; then
     curl -fsSL -o "$input" -b "session=$(< .session)" "https://adventofcode.com/$year/day/$day/input"
 fi
 
-ghc -O2 -dynamic -isrc -i"src/$year" -outputdir "$build" -o "$bin" -main-is "Day$day" "src/$year/$day.hs" && {
-    echo "Running $bin"
+run() {
     if [[ -t 0 ]]; then
         ./"$bin" < "$input"
     else
         ./"$bin"
     fi
 }
+
+if ghc -O2 -dynamic -isrc -i"src/$year" -outputdir "$build" -o "$bin" -main-is "Day$day" "src/$year/$day.hs"; then
+    echo "Running $bin"
+    if (( time )); then
+        time run
+    else
+        run
+    fi
+fi
