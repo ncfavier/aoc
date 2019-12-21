@@ -31,6 +31,7 @@ import Data.Set (Set)
 import qualified Data.Set as S
 import Data.Sequence (Seq(..))
 import qualified Data.Sequence as Seq
+import Data.PriorityQueue.FingerTree as PQ
 
 type Parser = Parsec Void String
 
@@ -51,9 +52,30 @@ flatten rows = [ ((x, y), a)
                , (x, a)   <- zip [0..] row
                ]
 
+pickOne :: [a] -> [(a, [a])]
+pickOne l = [(y, xs ++ ys) | (xs, y:ys) <- zip (inits l) (tails l)]
+
 bfs :: Ord a => (a -> [a]) -> a -> [(a, Integer)]
-bfs next start = go S.empty (Seq.singleton (start, 0)) where
+bfs = bfsOn id
+
+bfsOn :: Ord b => (a -> b) -> (a -> [a]) -> a -> [(a, Integer)]
+bfsOn rep next start = go S.empty (Seq.singleton (start, 0)) where
     go seen Empty = []
     go seen ((n, d) :<| ps)
-        | n `S.member` seen = go seen ps
-        | otherwise         = (n, d):go (S.insert n seen) (ps <> Seq.fromList [(n', d + 1) | n' <- next n])
+        | r `S.member` seen = go seen ps
+        | otherwise         = (n, d):go (S.insert r seen) (ps <> Seq.fromList [(n', d + 1) | n' <- next n])
+        where r = rep n
+
+dijkstra :: Ord a => (a -> [(a, Integer)]) -> a -> [(a, Integer)]
+dijkstra = dijkstraOn id
+
+dijkstraOn :: Ord b => (a -> b) -> (a -> [(a, Integer)]) -> a -> [(a, Integer)]
+dijkstraOn rep next start = go S.empty (PQ.singleton 0 start) where
+    go seen q
+        | Just ((d, n), q') <- minViewWithKey q =
+            let r = rep n in
+            if r `S.member` seen then
+                go seen q'
+            else
+                (n, d):go (S.insert r seen) (PQ.union q' (PQ.fromList [(d + c, n') | (n', c) <- next n]))
+        | otherwise = []

@@ -1,5 +1,7 @@
 module Day18 where
 
+import Data.Array.IArray as A
+import Data.Array.Unboxed
 import Data.Set (Set)
 import qualified Data.Set as S
 import Data.Map (Map)
@@ -16,31 +18,39 @@ down  = (id *** succ)
 neighbours :: Coords -> [Coords]
 neighbours p = [d p | d <- [left, right, up, down]]
 
-main = do
-    grid <- M.fromList . flatten . lines <$> getContents
-    let m ! p = M.findWithDefault '.' p m
-        nKeys = length $ M.filter isLower grid
-        center = head [p | (p, '@') <- M.assocs grid]
-        next (p, ks) = do
+diagonal :: Coords -> [Coords]
+diagonal p = [d p | d <- [left . up, left . down, right . up, right . down]]
+
+shortestPath :: UArray Coords Char -> Integer
+shortestPath grid = head [d | ((ps, ks), d) <- dijkstra bigStep (start, S.empty)
+                            , length ks == length keys]
+    where
+        keys = [(p, c) | (p, c) <- A.assocs grid, isLower c]
+        start = sort [p | (p, '@') <- A.assocs grid]
+        smallStep (p, ks) = do
             n <- neighbours p
             case grid ! n of
-                '.' -> return (n, ks)
-                '@' -> return (n, ks)
-                k | isLower k -> return (n, S.insert k ks)
-                d | isUpper d, toLower d `S.member` ks -> return (n, ks)
-                _ -> []
-    print $ head [d | ((_, ks), d) <- bfs next (center, S.empty), length ks == nKeys]
-    let grid4 = M.union (M.fromList $ [(n, '#') | n <- center:neighbours center]) grid
-        start4 = [left (up center), left (down center), right (down center), right (up center)]
-        next4 (l, ps, ks) = do
-            (p, ps') <- case l of
-                Just p -> return (p, ps)
-                Nothing -> [(p, delete p ps) | p <- ps]
-            n <- neighbours p
-            case grid4 ! n of
-                '.' -> return (Just n, ps', ks)
-                '@' -> return (Just n, ps', ks)
-                k | isLower k -> return (Nothing, n:ps', S.insert k ks)
-                d | isUpper d, toLower d `S.member` ks -> return (Just n, ps', ks)
-                _ -> []
-    print $ head [d | ((_, _, ks), d) <- bfs next4 (Nothing, start4, S.empty), length ks == nKeys]
+                '#' -> []
+                d | isUpper d -> return (n, S.insert (toLower d) ks)
+                _ -> return (n, ks)
+        distancesToKeys = M.fromList [(p, dists p) | p <- start ++ map fst keys]
+            where dists start = [ (k, p, d, ds)
+                                | ((p, ds), d) <- bfsOn fst smallStep (start, S.empty)
+                                , let k = grid ! p
+                                , isLower k ]
+        bigStep (ps, ks) = [ ((insert p' ps', S.insert k ks), d)
+                           | (p, ps') <- pickOne ps
+                           , (k, p', d, ds) <- distancesToKeys M.! p
+                           , k `S.notMember` ks
+                           , ds `S.isSubsetOf` ks ]
+
+main :: IO ()
+main = do
+    input <- lines <$> getContents
+    let (width, height) = (genericLength (head input), genericLength input)
+        center = (width `div` 2, height `div` 2)
+        grid = array ((0, 0), (width - 1, height - 1)) (flatten input)
+    print (shortestPath grid)
+    let grid' = grid // [(p, '#') | p <- center:neighbours center]
+                     // [(p, '@') | p <- diagonal center]
+    print (shortestPath grid')
