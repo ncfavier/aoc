@@ -6,6 +6,7 @@ import qualified Data.Map as M
 
 import AOC
 
+ingredient :: Parser (Integer, String)
 ingredient = (,) <$> decimal <* " " <*> many letterChar
 
 recipes :: Parser [([(Integer, String)], (Integer, String))]

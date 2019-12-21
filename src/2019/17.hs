@@ -40,7 +40,7 @@ compress = go [] [] where
 main :: IO ()
 main = do
     program <- parseProgram <$> getContents
-    let output = map (chr . fromIntegral) $ intcodeToList program []
+    let output = integersToAscii $ intcodeToList program []
         grid   = M.fromList [((x, y), c) | (y, row) <- zip [0..] (lines output), (x, c) <- zip [0..] row]
         tile p = M.findWithDefault '.' p grid
     print $ sum [ x * y
@@ -56,4 +56,4 @@ main = do
                             | (p, c) <- M.toList grid
                             , Just d <- [c `elemIndex` "<^>v"] ]
         (main, fs):_ = compress $ groupMoves $ path start d
-    print $ last $ intcodeToList (2:tail program) $ map (toInteger . ord) $ unlines (main:fs ++ ["n"])
+    print . last . intcodeToList (2:tail program) . asciiToIntegers $ unlines (main:fs ++ ["n"])

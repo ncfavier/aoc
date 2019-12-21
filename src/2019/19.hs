@@ -2,6 +2,7 @@ module Day19 where
 
 import Intcode
 
+main :: IO ()
 main = do
     program <- parseProgram <$> getContents
     let beam x y | x < 0 || y < 0 = False

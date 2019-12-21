@@ -14,6 +14,7 @@ down  = (id *** succ)
 neighbours :: Coords -> [Coords]
 neighbours p = [d p | d <- [left, right, up, down]]
 
+main :: IO ()
 main = do
     input <- lines <$> getContents
     let (width, height) = (genericLength (head input), genericLength input)

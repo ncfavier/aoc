@@ -3,6 +3,7 @@ module Day21 where
 import AOC
 import Intcode
 
+main :: IO ()
 main = do
     program <- parseProgram <$> getContents
     let springWalk = unlines -- (¬A ∨ ¬B ∨ ¬C) ∧ D
@@ -14,7 +15,7 @@ main = do
             , "AND D J"
             , "WALK"
             ]
-    print . last $ intcodeToList program (map (fromIntegral . ord) springWalk)
+    print . last $ intcodeToList program (asciiToIntegers springWalk)
     let springRun = unlines -- (¬A ∨ ¬B ∨ ¬C) ∧ D ∧ (E ∨ H)
             [ "NOT A J"
             , "NOT B T"
@@ -28,4 +29,4 @@ main = do
             , "AND T J"
             , "RUN"
             ]
-    print . last $ intcodeToList program (map (fromIntegral . ord) springRun)
+    print . last $ intcodeToList program (asciiToIntegers springRun)

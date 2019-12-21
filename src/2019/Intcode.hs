@@ -5,6 +5,7 @@
 module Intcode where
 
 import Control.Monad.State
+import Data.Char
 import Data.Bool
 import Data.List.Split
 import Data.Vector (Vector)
@@ -113,3 +114,9 @@ intcodeToList program = go (runIntcode program) where
     go (Output v e) inp = v:go e inp
     go (Input f) (i:is) = go (f i) is
     go (Input _) _ = error "no input"
+
+asciiToIntegers :: String -> [Integer]
+asciiToIntegers = map (fromIntegral . ord)
+
+integersToAscii :: [Integer] -> String
+integersToAscii = map (chr . fromIntegral)
