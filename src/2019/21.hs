@@ -1,6 +1,5 @@
 module Day21 where
 
-import AOC
 import Intcode
 
 main :: IO ()
