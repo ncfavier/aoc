@@ -5,7 +5,7 @@ import Intcode
 
 main = do
     program <- parseProgram <$> getContents
-    let springWalk = unlines -- (!A || !B || !C) && D
+    let springWalk = unlines -- (¬A ∨ ¬B ∨ ¬C) ∧ D
             [ "NOT A J"
             , "NOT B T"
             , "OR T J"
@@ -15,7 +15,7 @@ main = do
             , "WALK"
             ]
     print . last $ intcodeToList program (map (fromIntegral . ord) springWalk)
-    let springRun = unlines -- (!A || !B || !C) && D && (E || H)
+    let springRun = unlines -- (¬A ∨ ¬B ∨ ¬C) ∧ D ∧ (E ∨ H)
             [ "NOT A J"
             , "NOT B T"
             , "OR T J"
