@@ -47,11 +47,11 @@ instance Num a => Semigroup (Linear a) where
 instance Num a => Monoid (Linear a) where
     mempty = 1 :+ 0
 
--- Evaluate
+-- Evaluate `ax + b = ?`
 ($@) :: Num a => Linear a -> a -> a
 (a :+ b) $@ x = a * x + b
 
--- Solve
+-- Solve `a? + b = y`
 ($?) :: Fractional a => Linear a -> a -> a
 (a :+ b) $? y = (y - b) / a
 
