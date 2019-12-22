@@ -37,6 +37,9 @@ type Parser = Parsec Void String
 
 parseLines p = many (p <* eol)
 
+number :: Integral a => Parser a
+number = signed (return ()) decimal
+
 type Coords = (Integer, Integer)
 
 add :: Coords -> Coords -> Coords
