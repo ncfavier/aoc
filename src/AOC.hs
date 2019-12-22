@@ -35,6 +35,7 @@ import Data.PriorityQueue.FingerTree as PQ
 
 type Parser = Parsec Void String
 
+parseLines :: Parser a -> Parser [a]
 parseLines p = many (p <* eol)
 
 number :: Integral a => Parser a
