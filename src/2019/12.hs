@@ -2,14 +2,7 @@
 {-# LANGUAGE TypeFamilies #-}
 module Day12 where
 
-import Data.List
-import Data.Void
-import Data.Function
-import Text.Megaparsec
-import Text.Megaparsec.Char
-import Text.Megaparsec.Char.Lexer
-
-type Parser = Parsec Void String
+import AOC hiding (add)
 
 type V3 a = (a, a, a)
 
@@ -21,16 +14,11 @@ px (Moon (x, _, _) (vx, _, _)) = (x, vx)
 py (Moon (_, y, _) (_, vy, _)) = (y, vy)
 pz (Moon (_, _, z) (_, _, vz)) = (z, vz)
 
-number = signed (return ()) decimal
-parseLines p = many (p <* eol)
-
 moons :: Parser [Moon]
 moons = parseLines $ between "<" ">" $ (\[x, y, z] -> Moon (x, y, z) (0, 0, 0)) <$> (anySingle *> char '=' *> number) `sepBy` ", "
 
 moonEnergy (Moon (x, y, z) (vx, vy, vz)) = (abs x + abs y + abs z) * (abs vx + abs vy + abs vz)
 totalEnergy = sum . map moonEnergy
-
-pickOne xs = [(x, l ++ r) | (l, x:r) <- zip (inits xs) (tails xs)]
 
 x `pullsOn` x' | x > x'    = 1
                | x < x'    = -1
