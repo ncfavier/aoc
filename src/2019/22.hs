@@ -64,8 +64,8 @@ techniqueToLinear (Increment k) = fromInteger k :+ 0
 
 main :: IO ()
 main = do
-    Just shuffle <- parseMaybe (parseLines technique) <$> getContents
-    print $ foldMap (techniqueToLinear @10007) shuffle
-          $@ 2019
-    print $ 101741582076661 `stimes` foldMap (techniqueToLinear @119315717514047) shuffle
-          $? 2020
+    Just techniques <- parseMaybe (parseLines technique) <$> getContents
+    let shuffle :: KnownNat n => Linear (Mod n)
+        shuffle = foldMap techniqueToLinear techniques
+    print $ shuffle @10007 $@ 2019
+    print $ 101741582076661 `stimes` shuffle @119315717514047 $? 2020
