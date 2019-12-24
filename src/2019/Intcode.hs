@@ -109,6 +109,13 @@ runIntcode program = evalState loop (newMachine program) where
                 mem <- gets mem
                 return $ Halt mem
 
+feed :: [Integer] -> Effect -> Effect
+feed [] e = e
+feed (x:xs) (Input f) = feed xs (f x)
+feed xs (Output i e) = Output i (feed xs e)
+feed _ e = e
+
+intcodeToList :: [Integer] -> [Integer] -> [Integer]
 intcodeToList program = go (runIntcode program) where
     go (Halt _) _ = []
     go (Output v e) inp = v:go e inp
