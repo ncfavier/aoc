@@ -12,6 +12,10 @@ day=${1:-$(date +%e)}
 day=${day#0}
 year=${2:-$(date +%Y)}
 
+module=0$day
+module=${module:(-2)}
+module=Day$module
+
 input=inputs/$year/$day
 mkdir -p "$(dirname "$input")"
 
@@ -34,7 +38,7 @@ run() {
     fi
 }
 
-if ghc -O2 -dynamic -isrc -i"src/$year" -outputdir "$build" -o "$bin" -main-is "Day$day" "src/$year/$day.hs"; then
+if ghc -O2 -dynamic -isrc -i"src/$year" -outputdir "$build" -o "$bin" -main-is "$module" "src/$year/$module.hs"; then
     echo "Running $bin"
     if (( time )); then
         time run

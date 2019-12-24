@@ -1,4 +1,4 @@
-module Day9 where
+module Day09 where
 
 import Intcode
 

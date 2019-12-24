@@ -1,4 +1,4 @@
-module Day4 where
+module Day04 where
 
 import AOC
 

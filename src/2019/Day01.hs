@@ -1,4 +1,4 @@
-module Day1 where
+module Day01 where
 
 fuel x = x `div` 3 - 2
 
