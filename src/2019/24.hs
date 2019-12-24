@@ -40,7 +40,7 @@ interactWith neighbours bugs = (keysWhere (== 1) $ n `M.restrictKeys` bugs) `S.u
           keysWhere p = M.keysSet . M.filter p
 
 biodiversityRating :: Set Tile -> Integer
-biodiversityRating = sum . S.map biodiversity
+biodiversityRating = sum . map biodiversity . S.toList
     where biodiversity (_, (x, y)) = 2 ^ (x + y * size)
 
 main :: IO ()
