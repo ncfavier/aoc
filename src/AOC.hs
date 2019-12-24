@@ -43,6 +43,12 @@ number = signed (return ()) decimal
 
 type Coords = (Integer, Integer)
 
+left, right, up, down :: Coords -> Coords
+left  = (pred *** id)
+right = (succ *** id)
+up    = (id *** pred)
+down  = (id *** succ)
+
 add :: Coords -> Coords -> Coords
 add (x1, y1) (x2, y2) = (x1 + x2, y1 + y2)
 
@@ -55,6 +61,11 @@ flatten rows = [ ((x, y), a)
                | (y, row) <- zip [0..] rows
                , (x, a)   <- zip [0..] row
                ]
+
+firstDuplicate :: Ord a => [a] -> a
+firstDuplicate = go S.empty where
+    go seen (x:xs) | x `S.member` seen = x
+                   | otherwise = go (S.insert x seen) xs
 
 pickOne :: [a] -> [(a, [a])]
 pickOne l = [(y, xs ++ ys) | (xs, y:ys) <- zip (inits l) (tails l)]

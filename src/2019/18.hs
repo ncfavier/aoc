@@ -9,12 +9,6 @@ import qualified Data.Map as M
 
 import AOC
 
-left, right, up, down :: Coords -> Coords
-left  = (pred *** id)
-right = (succ *** id)
-up    = (id *** pred)
-down  = (id *** succ)
-
 neighbours :: Coords -> [Coords]
 neighbours p = [d p | d <- [left, right, up, down]]
 
