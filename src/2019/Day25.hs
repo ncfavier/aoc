@@ -5,35 +5,30 @@ import Intcode
 
 script :: String
 script = unlines
-    [ north
-    , north
-    , take "sand"
-    , south
-    , south
-    , south
-    , west
-    , take "wreath"
-    , south
-    , south
-    , take "pointer"
-    , north
-    , north
-    , east
-    , north
-    , west
-    , south
-    , take "planetoid"
-    , north
-    , west
-    , south
-    , west
-    , north
+    [ "north"
+    , "north"
+    , "take sand"
+    , "south"
+    , "south"
+    , "south"
+    , "west"
+    , "take wreath"
+    , "south"
+    , "south"
+    , "take pointer"
+    , "north"
+    , "north"
+    , "east"
+    , "north"
+    , "west"
+    , "south"
+    , "take planetoid"
+    , "north"
+    , "west"
+    , "south"
+    , "west"
+    , "north"
     ]
-    where north  = "north"
-          south  = "south"
-          east   = "east"
-          west   = "west"
-          take o = "take " ++ o
 
 main :: IO ()
 main = do
