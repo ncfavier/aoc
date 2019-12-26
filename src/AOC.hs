@@ -29,6 +29,8 @@ import Text.Megaparsec.Char.Lexer hiding (space)
 
 import Data.Set (Set)
 import qualified Data.Set as S
+import Data.Map (Map)
+import qualified Data.Map as M
 import Data.Sequence (Seq(..))
 import qualified Data.Sequence as Seq
 import Data.PriorityQueue.FingerTree as PQ
@@ -66,10 +68,21 @@ flatten rows = [ ((x, y), a)
                , (x, a)   <- zip [0..] row
                ]
 
+count :: Foldable t => (a -> Bool) -> t a -> Integer
+count p = foldl' (\c e -> if p e then succ c else c) 0
+
+counts :: (Foldable t, Ord a) => t a -> Map a Integer
+counts = foldl' (\m e -> M.insertWith (+) e 1 m) M.empty
+
+findDuplicates :: Ord a => [a] -> [a]
+findDuplicates = go S.empty where
+    go seen (x:xs) | x `S.member` seen = x:xs'
+                   | otherwise = xs'
+                   where xs' = go (S.insert x seen) xs
+    go _ [] = []
+
 firstDuplicate :: Ord a => [a] -> a
-firstDuplicate = go S.empty where
-    go seen (x:xs) | x `S.member` seen = x
-                   | otherwise = go (S.insert x seen) xs
+firstDuplicate = head . findDuplicates
 
 pickOne :: [a] -> [(a, [a])]
 pickOne l = [(y, xs ++ ys) | (xs, y:ys) <- zip (inits l) (tails l)]
