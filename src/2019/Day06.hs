@@ -5,7 +5,7 @@ import qualified Data.Map as M
 import AOC
 
 main = do
-    edges <- map ((id *** tail) . break (== ')')) . lines <$> getContents
+    edges <- map ((id *** tail) . break (== ')')) . lines <$> readInput
     let orbits = M.fromListWith (++) [(a, [b]) | (a, b) <- edges]
         f n o = n + sum (map (f (n + 1)) (M.findWithDefault [] o orbits))
     print $ f 0 "COM"

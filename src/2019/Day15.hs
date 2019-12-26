@@ -54,7 +54,7 @@ runDroid program = explore initialState (runIntcode program) where
 
 main :: IO ()
 main = do
-    program <- parseProgram <$> getContents
+    program <- parseProgram <$> readInput
     let (distanceToOxygen, maxDepth) = runDroid program
     print distanceToOxygen
     print maxDepth

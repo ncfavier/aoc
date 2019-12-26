@@ -20,7 +20,7 @@ phase' = V.scanr1 f
 
 main :: IO ()
 main = do
-    [input] <- lines <$> getContents
+    [input] <- lines <$> readInput
     let offset = read $ take 7 input
         l = map digitToInt input
     putStrLn $ concatMap show $ take 8 $ iterate phase l !! 100

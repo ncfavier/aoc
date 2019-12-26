@@ -1,5 +1,6 @@
 module Day02 where
 
+import AOC
 import Intcode
 
 run program noun verb = mem ! 0
@@ -7,7 +8,7 @@ run program noun verb = mem ! 0
 
 main :: IO ()
 main = do
-    program <- parseProgram <$> getContents
+    program <- parseProgram <$> readInput
     print $ run program 12 2
     print $ head [ 100 * noun + verb
                  | noun <- [0..99]

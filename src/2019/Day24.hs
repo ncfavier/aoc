@@ -45,7 +45,7 @@ biodiversityRating = sum . map biodiversity . S.toList
 
 main :: IO ()
 main = do
-    input <- flatten . lines <$> getContents
+    input <- flatten . lines <$> readInput
     let bugs = S.fromList [(0, p) | (p, '#') <- input]
     print $ firstDuplicate $ biodiversityRating <$> iterate (interactWith neighbours) bugs
     print $ length $ iterate (interactWith recursiveNeighbours) bugs !! 200

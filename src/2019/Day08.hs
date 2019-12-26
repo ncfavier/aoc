@@ -18,7 +18,7 @@ render = zipWith f
         f c _ = c
 
 main = do
-    layers <- chunksOf size . map digitToInt . dropWhileEnd isSpace <$> getContents
+    layers <- chunksOf size . map digitToInt . dropWhileEnd isSpace <$> readInput
     let (_, n1, n2) = minimumBy (\(a, _, _) (b, _, _) -> a `compare` b) (map count layers)
     print (n1 * n2)
     let image = foldr1 render layers

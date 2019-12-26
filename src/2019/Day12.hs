@@ -32,6 +32,6 @@ applyVelocity (Moon (x, y, z) (vx, vy, vz)) = Moon (x + vx, y + vy, z + vz) (vx,
 step = map applyVelocity . applyGravity
 
 main = do
-    Just moons <- parseMaybe moons <$> getContents
+    Just moons <- parseMaybe moons <$> readInput
     print $ totalEnergy $ iterate step moons !! 1000
     print $ foldl1 lcm [findIndices (((==) `on` map p) moons) (iterate step moons) !! 1 | p <- [px, py, pz]]

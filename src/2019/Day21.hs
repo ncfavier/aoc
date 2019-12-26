@@ -1,10 +1,11 @@
 module Day21 where
 
+import AOC
 import Intcode
 
 main :: IO ()
 main = do
-    program <- parseProgram <$> getContents
+    program <- parseProgram <$> readInput
     let springWalk = unlines -- (¬A ∨ ¬B ∨ ¬C) ∧ D
             [ "NOT A J"
             , "NOT B T"

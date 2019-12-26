@@ -32,6 +32,10 @@ import qualified Data.Set as S
 import Data.Sequence (Seq(..))
 import qualified Data.Sequence as Seq
 import Data.PriorityQueue.FingerTree as PQ
+import System.Environment
+
+readInput :: IO String
+readInput = maybe getContents readFile =<< lookupEnv "AOC_INPUT"
 
 type Parser = Parsec Void String
 

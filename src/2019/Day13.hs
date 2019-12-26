@@ -5,6 +5,7 @@ module Day13 where
 import Data.Map (Map)
 import qualified Data.Map as M
 
+import AOC
 import Intcode
 
 data GameState = GameState { score   :: Integer
@@ -32,6 +33,6 @@ finalScore program = go (GameState 0 0 0) (runIntcode program) where
 
 main :: IO ()
 main = do
-    program <- parseProgram <$> getContents
+    program <- parseProgram <$> readInput
     print $ numberOfBlocks program
     print $ finalScore (2:tail program)

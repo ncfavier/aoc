@@ -18,7 +18,7 @@ nthAsteroid n asteroids | n <= r    = M.elemAt (n - 1) rotation
           r = length rotation
 
 main = do
-    asteroids <- parseAsteroids <$> getContents
+    asteroids <- parseAsteroids <$> readInput
     let detects (x, y) = M.fromListWith insertAsteroid [(angle (x' - x, y' - y), [(x' - x, y' - y)]) | (x', y') <- asteroids, (x', y') /= (x, y)]
     let ((x, y), best) = maximumBy (comparing (length . snd)) (map (id &&& detects) asteroids)
     print $ length best

@@ -40,7 +40,7 @@ shortestPath grid = head [d | ((ps, ks), d) <- dijkstra bigStep (start, S.empty)
 
 main :: IO ()
 main = do
-    input <- lines <$> getContents
+    input <- lines <$> readInput
     let (width, height) = (genericLength (head input), genericLength input)
         center = (width `div` 2, height `div` 2)
         grid = array ((0, 0), (width - 1, height - 1)) (flatten input)

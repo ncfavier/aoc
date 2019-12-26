@@ -30,7 +30,7 @@ step Network{..} = (if isIdle then nat' else Nothing, Network computers'' nat')
 
 main :: IO ()
 main = do
-    program <- parseProgram <$> getContents
+    program <- parseProgram <$> readInput
     let Input assignAddress = runIntcode program
         network = Network (M.fromList [(i, assignAddress i) | i <- [0..49]]) Nothing
         nats = [y | Just (x, y) <- unfoldr (Just . step) network]

@@ -14,7 +14,7 @@ recipes = parseLines $ (,) <$> (ingredient `sepBy` ", ") <* " => " <*> ingredien
 
 main :: IO ()
 main = do
-    Just rs <- parseMaybe recipes <$> getContents
+    Just rs <- parseMaybe recipes <$> readInput
     let recipes = M.fromList [(r, M.insert r (-n) $ M.fromList [(i, n) | (n, i) <- is]) | (is, (n, r)) <- rs]
         reduce g | Just (r, n) <- r' = let recipe = recipes M.! r
                                            f = n `div` (recipe M.! r)

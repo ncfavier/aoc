@@ -31,11 +31,7 @@ if [[ ! -e $input ]]; then
 fi
 
 run() {
-    if [[ -t 0 ]]; then
-        ./"$bin" < "$input"
-    else
-        ./"$bin"
-    fi
+    AOC_INPUT=$input "$bin"
 }
 
 if ghc -O2 -dynamic -isrc -i"src/$year" -outputdir "$build" -o "$bin" -main-is "$module" "src/$year/$module.hs"; then

@@ -3,7 +3,7 @@ module Day04 where
 import AOC
 
 main = do
-    [l] <- lines <$> getContents
+    [l] <- lines <$> readInput
     let range = (low, up) where (low, '-':up) = break (== '-') l
     mapM_ print $ do
         (?) <- [(>=), (==)]

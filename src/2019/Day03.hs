@@ -26,7 +26,7 @@ path o ((d, n):xs) = p ++ path (last p) xs
 
 main :: IO ()
 main = do
-    [w1, w2] <- map readDirections . lines <$> getContents
+    [w1, w2] <- map readDirections . lines <$> readInput
     let [s1, s2] = map (M.fromListWith min . path ((0, 0), 0)) [w1, w2]
         i = M.intersectionWith (+) s1 s2
     print $ minimum $ map norm $ M.keys i

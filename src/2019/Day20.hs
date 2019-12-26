@@ -10,7 +10,7 @@ neighbours p = [d p | d <- [left, right, up, down]]
 
 main :: IO ()
 main = do
-    input <- lines <$> getContents
+    input <- lines <$> readInput
     let (width, height) = (genericLength (head input), genericLength input)
         distanceToEdge (x, y) = minimum [x, width - x, y, height - y]
         grid = M.fromList $ flatten input
