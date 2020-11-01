@@ -23,7 +23,7 @@ import Data.List
 import Data.List.Split (splitOn, chunksOf)
 import Data.Void
 import Data.Function
-import Text.Megaparsec hiding (count)
+import Text.Megaparsec hiding (count, count')
 import Text.Megaparsec.Char
 import Text.Megaparsec.Char.Lexer hiding (space)
 

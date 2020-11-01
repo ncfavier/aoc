@@ -5,7 +5,7 @@ import AOC
 (width, height) = (25, 6)
 size = width * height
 
-count = foldl' f (0, 0, 0)
+count' = foldl' f (0, 0, 0)
     where
         f (n0, n1, n2) 0 = (n0 + 1, n1, n2)
         f (n0, n1, n2) 1 = (n0, n1 + 1, n2)
@@ -19,7 +19,7 @@ render = zipWith f
 
 main = do
     layers <- chunksOf size . map digitToInt . dropWhileEnd isSpace <$> readInput
-    let (_, n1, n2) = minimumBy (\(a, _, _) (b, _, _) -> a `compare` b) (map count layers)
+    let (_, n1, n2) = minimumBy (\(a, _, _) (b, _, _) -> a `compare` b) (map count' layers)
     print (n1 * n2)
     let image = foldr1 render layers
     mapM_ putStrLn [map (" █?" !!) row | row <- chunksOf width image]
