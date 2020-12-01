@@ -13,6 +13,8 @@ import qualified Data.Vector as V
 import Data.Map (Map)
 import qualified Data.Map as M
 
+import AOC
+
 data Memory = Memory { readOnly :: Vector Integer
                      , overlay  :: Map Integer Integer
                      }
@@ -29,16 +31,19 @@ data Effect = Input (Integer -> Effect)
 
 newMemory program = Memory (V.fromList program) M.empty
 
-infixl 8 !
-Memory{..} ! i | Just v <- M.lookup i overlay = v
-               | Just v <- readOnly V.!? fromIntegral i = v
-               | otherwise = 0
+infixl 8 !!!
+Memory{..} !!! i | Just v <- M.lookup i overlay = v
+                 | Just v <- readOnly V.!? fromIntegral i = v
+                 | otherwise = 0
 set i v mem = mem { overlay = M.insert i v (overlay mem) }
 
 newMachine program = Machine (newMemory program) 0 0 0
 
 parseProgram :: String -> [Integer]
 parseProgram = map read . splitOn ","
+
+parseInputProgram :: IO [Integer ]
+parseInputProgram = parseProgram <$> readInput
 
 incPc = state \m -> (pc m, m { pc = succ (pc m) })
 nextMode = state \m -> let (modes', mode) = modes m `divMod` 10
@@ -47,7 +52,7 @@ nextMode = state \m -> let (modes', mode) = modes m `divMod` 10
 nextOp = do
     pc <- incPc
     mem <- gets mem
-    return $ mem ! pc
+    return $ mem !!! pc
 
 nextArg = do
     pc <- incPc
@@ -55,20 +60,20 @@ nextArg = do
     base <- gets base
     mem <- gets mem
     return case mode of
-        0 -> mem ! pc
+        0 -> mem !!! pc
         1 -> pc
-        2 -> base + mem ! pc
+        2 -> base + mem !!! pc
 
 readArg = do
     arg <- nextArg
     mem <- gets mem
-    return (mem ! arg)
+    return (mem !!! arg)
 
 write v = do
     arg <- nextArg
     modify \m -> m { mem = set arg v (mem m) }
 
-binary (?) = do
+bin (?) = do
     a <- readArg
     b <- readArg
     write (a ? b)
@@ -80,7 +85,7 @@ conditionalJump p = do
 
 jump pc = modify \m -> m { pc }
 
-test (?) = binary \a b -> bool 0 1 (a ? b)
+test (?) = bin \a b -> bool 0 1 (a ? b)
 
 moveBase o = modify \m -> m { base = base m + o }
 
@@ -91,8 +96,8 @@ runIntcode program = evalState loop (newMachine program) where
         let (modes, op) = op' `divMod` 100
         modify \m -> m { modes }
         case op of
-            1 -> binary (+) >> loop
-            2 -> binary (*) >> loop
+            1 -> bin (+) >> loop
+            2 -> bin (*) >> loop
             3 -> do
                 m <- get
                 return $ Input \v -> evalState (write v >> loop) m

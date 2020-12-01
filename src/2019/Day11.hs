@@ -25,7 +25,7 @@ runRobot program c = go (M.singleton p0 c) p0 (0, -1) (runIntcode program) where
 extend (lx, ly, ux, uy) (x, y) = (min lx x, min ly y, max ux x, max uy y)
 
 main = do
-    program <- parseProgram <$> readInput
+    program <- parseInputProgram
     print . length $ runRobot program 0
     let hull = runRobot program 1
         (lx, ly, ux, uy) = foldl extend (0, 0, 0, 0) (M.keys hull)

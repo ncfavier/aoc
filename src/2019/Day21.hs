@@ -5,7 +5,7 @@ import Intcode
 
 main :: IO ()
 main = do
-    program <- parseProgram <$> readInput
+    program <- parseInputProgram
     let springWalk = unlines -- (¬A ∨ ¬B ∨ ¬C) ∧ D
             [ "NOT A J"
             , "NOT B T"

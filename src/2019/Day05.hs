@@ -5,6 +5,6 @@ import Intcode
 
 main :: IO ()
 main = do
-    program <- parseProgram <$> readInput
+    program <- parseInputProgram
     print $ last $ intcodeToList program [1]
     print $ last $ intcodeToList program [5]

@@ -1,42 +1,105 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-time=0
+# usage: run [-t] [-r] [YEAR] [DAYS...]
+#
+#   -t    time execution
+#   -r    only run the binaries
+#
+#   run                 # run the current day
+#   run YEAR            # run days 1-25 of YEAR
+#   run [YEAR] DAYS...  # run given DAYS of YEAR (defaults to current year)
 
-while getopts :t o; do case $o in
+ghcFlags=(
+    -O2
+    -dynamic # bloody arch linux
+
+    -XBlockArguments
+    -XLambdaCase
+    -XNamedFieldPuns
+    -XRecordWildCards
+    -XOverloadedStrings
+    -XTupleSections
+    -XMultiWayIf
+    -XTypeApplications
+    -XTypeFamilies
+    -XFlexibleContexts
+    -XFlexibleInstances
+    -XMultiParamTypeClasses
+    -XTypeSynonymInstances
+    -XNoMonomorphismRestriction
+    -XBangPatterns
+    -XViewPatterns
+)
+
+log() {
+    echo "$(tput setaf 2)✓$(tput sgr0) $*"
+}
+
+die() {
+    echo "$(tput setaf 1)✗$(tput sgr0) $*" >&2
+    exit 1
+}
+
+session=$(< .session) || die "No session file found"
+export TZ=EST
+
+time=0 raw=0
+
+while getopts :tr o; do case $o in
     t) time=1;;
+    r) raw=1;;
+    ?) die "Invalid argument -$OPTARG";;
 esac done
 
 shift "$(( OPTIND - 1 ))"
 
-day=${1:-$(date +%-d)}
-year=${2:-$(date +%Y)}
+year=
+days=()
 
-printf -v module 'Day%02d' "$day"
-
-input=inputs/$year/$day
-mkdir -p "$(dirname "$input")"
-
-bin=bin/$year/$day
-mkdir -p "$(dirname "$bin")"
-
-build=build/$year
-mkdir -p "$build"
-
-if [[ ! -e $input ]]; then
-    echo "==> Downloading input for day $day, $year"
-    curl -fsSL -o "$input" -b "session=$(< .session)" "https://adventofcode.com/$year/day/$day/input"
+if (( $# )); then
+    for arg do
+        [[ $arg == +([0-9]) ]] || die "Invalid argument \`$arg\`"
+        if (( arg > 100 )); then
+            year=$arg
+        else
+            days+=("$arg")
+        fi
+    done
+    year=${year:-$(date +%Y)}
+    (( ${#days[@]} )) || days=({1..25})
+else
+    year=$(date +%Y)
+    days=("$(date +%-d)")
 fi
 
-run() {
-    AOC_INPUT=$input "$bin"
-}
+runAll() for day in "${days[@]}"; do
+    printf -v module Day%02d "$day"
 
-echo "==> Compiling day $day, $year"
-if ghc -O2 -dynamic -isrc -i"src/$year" -outputdir "$build" -o "$bin" -main-is "$module" "src/$year/$module.hs"; then
-    echo "==> Running day $day, $year"
-    if (( time )); then
+    input=inputs/$year/$day bin=bin/$year/$day build=build/$year
+    (( ! raw )) && mkdir -p "$(dirname "$input")" "$(dirname "$bin")" "$build"
+
+    if (( ! raw )) && [[ ! -e $input ]]; then
+        log "Downloading input for day $day, $year"
+        curl -fsSL -o "$input" -b "session=$(< .session)" "https://adventofcode.com/$year/day/$day/input"
+    fi
+
+    if (( ! raw )); then
+        log "Compiling day $day, $year"
+        ghc "${ghcFlags[@]}" -isrc -i"src/$year" -outputdir "$build" -o "$bin" -main-is "$module" "src/$year/$module.hs"
+    fi
+
+    run() { AOC_INPUT=$input "$bin"; }
+
+    (( ! raw )) && log "Running day $day, $year"
+    if (( time && ${#days[@]} == 1 )); then
         time run
     else
         run
     fi
+done
+
+if (( time && ${#days[@]} > 1 )); then
+    time runAll
+else
+    runAll
 fi

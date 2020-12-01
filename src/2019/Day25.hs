@@ -32,7 +32,7 @@ script = unlines
 
 main :: IO ()
 main = do
-    program <- parseProgram <$> readInput
+    program <- parseInputProgram
     putStrLn $ filter isDigit
              $ last
              $ lines

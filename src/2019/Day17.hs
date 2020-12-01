@@ -39,7 +39,7 @@ compress = go [] [] where
 
 main :: IO ()
 main = do
-    program <- parseProgram <$> readInput
+    program <- parseInputProgram
     let output = integersToAscii $ intcodeToList program []
         grid   = M.fromList [((x, y), c) | (y, row) <- zip [0..] (lines output), (x, c) <- zip [0..] row]
         tile p = M.findWithDefault '.' p grid

@@ -10,11 +10,11 @@ ingredient :: Parser (Integer, String)
 ingredient = (,) <$> decimal <* " " <*> many letterChar
 
 recipes :: Parser [([(Integer, String)], (Integer, String))]
-recipes = parseLines $ (,) <$> (ingredient `sepBy` ", ") <* " => " <*> ingredient
+recipes = linesOf $ (,) <$> (ingredient `sepBy` ", ") <* " => " <*> ingredient
 
 main :: IO ()
 main = do
-    Just rs <- parseMaybe recipes <$> readInput
+    rs <- parseInput recipes
     let recipes = M.fromList [(r, M.insert r (-n) $ M.fromList [(i, n) | (n, i) <- is]) | (is, (n, r)) <- rs]
         reduce g | Just (r, n) <- r' = let recipe = recipes M.! r
                                            f = n `div` (recipe M.! r)

@@ -17,6 +17,6 @@ runLoop program [a, b, c, d, e] =
 
 main :: IO ()
 main = do
-    program <- parseProgram <$> readInput
+    program <- parseInputProgram
     print $ maximum $ runLoop program <$> permutations [0..4]
     print $ maximum $ runLoop program <$> permutations [5..9]

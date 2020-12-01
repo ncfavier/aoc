@@ -39,10 +39,19 @@ import System.Environment
 readInput :: IO String
 readInput = maybe getContents readFile =<< lookupEnv "AOC_INPUT"
 
+parseInput :: Parser a -> IO a
+parseInput p = do
+    s <- readInput
+    let Just r = parseMaybe p s
+    return r
+
+parseInputLines :: Parser a -> IO [a]
+parseInputLines p = parseInput (linesOf p)
+
 type Parser = Parsec Void String
 
-parseLines :: Parser a -> Parser [a]
-parseLines p = many (p <* eol)
+linesOf :: Parser a -> Parser [a]
+linesOf p = many (p <* eol)
 
 number :: Integral a => Parser a
 number = signed (return ()) decimal

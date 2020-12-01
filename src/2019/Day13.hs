@@ -33,6 +33,6 @@ finalScore program = go (GameState 0 0 0) (runIntcode program) where
 
 main :: IO ()
 main = do
-    program <- parseProgram <$> readInput
+    program <- parseInputProgram
     print $ numberOfBlocks program
     print $ finalScore (2:tail program)
