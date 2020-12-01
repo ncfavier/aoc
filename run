@@ -80,7 +80,7 @@ runAll() for day in "${days[@]}"; do
 
     if (( ! raw )) && [[ ! -e $input ]]; then
         log "Downloading input for day $day, $year"
-        curl -fsSL -o "$input" -b "session=$(< .session)" "https://adventofcode.com/$year/day/$day/input"
+        curl -fsSL -o "$input" -b "session=$session" "https://adventofcode.com/$year/day/$day/input"
     fi
 
     if (( ! raw )); then
