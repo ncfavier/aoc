@@ -8,13 +8,10 @@ esac done
 
 shift "$(( OPTIND - 1 ))"
 
-day=${1:-$(date +%e)}
-day=${day#0}
+day=${1:-$(date +%-d)}
 year=${2:-$(date +%Y)}
 
-module=0$day
-module=${module:(-2)}
-module=Day$module
+printf -v module 'Day%02d' "$day"
 
 input=inputs/$year/$day
 mkdir -p "$(dirname "$input")"
@@ -26,7 +23,7 @@ build=build/$year
 mkdir -p "$build"
 
 if [[ ! -e $input ]]; then
-    echo "Downloading input"
+    echo "==> Downloading input for day $day, $year"
     curl -fsSL -o "$input" -b "session=$(< .session)" "https://adventofcode.com/$year/day/$day/input"
 fi
 
@@ -34,8 +31,9 @@ run() {
     AOC_INPUT=$input "$bin"
 }
 
+echo "==> Compiling day $day, $year"
 if ghc -O2 -dynamic -isrc -i"src/$year" -outputdir "$build" -o "$bin" -main-is "$module" "src/$year/$module.hs"; then
-    echo "Running $bin"
+    echo "==> Running day $day, $year"
     if (( time )); then
         time run
     else
