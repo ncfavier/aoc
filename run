@@ -53,7 +53,7 @@ while getopts :tcri: o; do case $o in
     r) runOnly=1;;
     i) forceInput=$2;;
     :) die "Flag -$OPTARG requires an argument";;
-    \?) die "Invalid flag -$OPTARG";;
+    *) die "Invalid flag -$OPTARG";;
 esac done
 
 shift "$(( OPTIND - 1 ))"
