@@ -3,6 +3,6 @@ module Day01 where
 import AOC
 
 main = do
-    Just ns <- parseMaybe (linesOf number) <$> readInput
+    ns <- parseInputLines number
     print $ sum ns
     print $ firstDuplicate $ scanl (+) (0 :: Integer) $ cycle ns
