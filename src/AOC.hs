@@ -4,57 +4,70 @@ module AOC ( module AOC
            , module Control.Monad
            , module Control.Arrow
            , module Data.Ord
+           , module Data.Ix
            , module Data.Char
            , module Data.List
            , module Data.List.Split
-           , module Data.Void
+           , module Data.Foldable
            , module Data.Function
+           , module Data.Traversable
            , module Text.Megaparsec
            , module Text.Megaparsec.Char
            , module Text.Megaparsec.Char.Lexer
            ) where
 
-import Control.Applicative hiding (some, many)
-import Control.Monad
-import Control.Arrow hiding (left, right)
-import Data.Ord
-import Data.Char
-import Data.List
-import Data.List.Split (splitOn, chunksOf)
-import Data.Void
-import Data.Function
-import Text.Megaparsec hiding (count, count')
-import Text.Megaparsec.Char
-import Text.Megaparsec.Char.Lexer hiding (space)
-
-import Data.Set (Set)
-import qualified Data.Set as S
-import Data.Map (Map)
+import           Control.Applicative
+import           Control.Arrow hiding (left, right)
+import           Control.Monad
+import           Data.Char
+import           Data.Foldable
+import           Data.Function
+import           Data.Ix
+import           Data.List
+import           Data.List.Split (splitOn, chunksOf)
+import           Data.Map (Map)
 import qualified Data.Map as M
-import Data.Sequence (Seq(..))
+import           Data.Ord
+import           Data.PriorityQueue.FingerTree as PQ
+import           Data.Sequence (Seq(..))
+import           Data.Set (Set)
+import qualified Data.Set as S
 import qualified Data.Sequence as Seq
-import Data.PriorityQueue.FingerTree as PQ
-import System.Environment
+import           Data.Traversable
+import           Data.Void
+import           System.Environment
+import           System.Exit
+import           Text.Megaparsec hiding (count, count', many, some)
+import           Text.Megaparsec.Char
+import           Text.Megaparsec.Char.Lexer hiding (space)
+
+-- Parsing
 
 readInput :: IO String
 readInput = maybe getContents readFile =<< lookupEnv "AOC_INPUT"
 
-parseInput :: Parser a -> IO a
-parseInput p = do
-    s <- readInput
-    let Just r = parseMaybe p s
-    return r
-
-parseInputLines :: Parser a -> IO [a]
-parseInputLines p = parseInput (linesOf p)
-
 type Parser = Parsec Void String
 
-linesOf :: Parser a -> Parser [a]
-linesOf p = many (p <* eol)
+parseIO :: Parser a -> String -> IO a
+parseIO p s = do
+    case runParser (p <* eof) "" s of
+        Left e -> die (errorBundlePretty e)
+        Right a -> pure a
 
-number :: Integral a => Parser a
+parseInput :: Parser a -> IO a
+parseInput p = parseIO p =<< readInput
+
+parseInputLines :: Parser a -> IO [a]
+parseInputLines p = do
+    s <- readInput
+    let p' = for (lines s) \line ->
+            setInput (line ++ "\n") *> p <* newline <* eof
+    parseIO p' s
+
+number :: Num a => Parser a
 number = signed (return ()) decimal
+
+-- Coordinates
 
 type Coords = (Integer, Integer)
 
@@ -71,16 +84,18 @@ ccw, cw :: Coords -> Coords
 ccw (x, y) = (y, -x)
 cw  (x, y) = (-y, x)
 
+-- List utilities
+
 flatten :: [[a]] -> [((Integer, Integer), a)]
 flatten rows = [ ((x, y), a)
                | (y, row) <- zip [0..] rows
                , (x, a)   <- zip [0..] row
                ]
 
-count :: Foldable t => (a -> Bool) -> t a -> Integer
-count p = foldl' (\c e -> if p e then succ c else c) 0
+count :: (Num n, Foldable t) => (a -> Bool) -> t a -> n
+count p = foldl' (\c e -> if p e then c + 1 else c) 0
 
-counts :: (Foldable t, Ord a) => t a -> Map a Integer
+counts :: (Num n, Foldable t, Ord a) => t a -> Map a n
 counts = foldl' (\m e -> M.insertWith (+) e 1 m) M.empty
 
 findDuplicates :: Ord a => [a] -> [a]
@@ -96,10 +111,12 @@ firstDuplicate = head . findDuplicates
 pickOne :: [a] -> [(a, [a])]
 pickOne l = [(y, xs ++ ys) | (xs, y:ys) <- zip (inits l) (tails l)]
 
-bfs :: Ord a => (a -> [a]) -> a -> [(a, Integer)]
+-- Graph exploration
+
+bfs :: (Num n, Ord a) => (a -> [a]) -> a -> [(a, n)]
 bfs = bfsOn id
 
-bfsOn :: Ord b => (a -> b) -> (a -> [a]) -> a -> [(a, Integer)]
+bfsOn :: (Num n, Ord b) => (a -> b) -> (a -> [a]) -> a -> [(a, n)]
 bfsOn rep next start = go S.empty (Seq.singleton (start, 0)) where
     go seen Empty = []
     go seen ((n, d) :<| ps)
@@ -107,10 +124,10 @@ bfsOn rep next start = go S.empty (Seq.singleton (start, 0)) where
         | otherwise         = (n, d):go (S.insert r seen) (ps <> Seq.fromList [(n', d + 1) | n' <- next n])
         where r = rep n
 
-dijkstra :: Ord a => (a -> [(a, Integer)]) -> a -> [(a, Integer)]
+dijkstra :: (Num n, Ord n, Ord a) => (a -> [(a, n)]) -> a -> [(a, n)]
 dijkstra = dijkstraOn id
 
-dijkstraOn :: Ord b => (a -> b) -> (a -> [(a, Integer)]) -> a -> [(a, Integer)]
+dijkstraOn :: (Num n, Ord n, Ord b) => (a -> b) -> (a -> [(a, n)]) -> a -> [(a, n)]
 dijkstraOn rep next start = go S.empty (PQ.singleton 0 start) where
     go seen q
         | Just ((d, n), q') <- minViewWithKey q =

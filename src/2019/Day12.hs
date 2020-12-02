@@ -14,8 +14,8 @@ px (Moon (x, _, _) (vx, _, _)) = (x, vx)
 py (Moon (_, y, _) (_, vy, _)) = (y, vy)
 pz (Moon (_, _, z) (_, _, vz)) = (z, vz)
 
-moons :: Parser [Moon]
-moons = linesOf $ between "<" ">" $ (\[x, y, z] -> Moon (x, y, z) (0, 0, 0)) <$> (anySingle *> char '=' *> number) `sepBy` ", "
+moon :: Parser Moon
+moon = between "<" ">" $ (\[x, y, z] -> Moon (x, y, z) (0, 0, 0)) <$> (anySingle *> char '=' *> number) `sepBy` ", "
 
 moonEnergy (Moon (x, y, z) (vx, vy, vz)) = (abs x + abs y + abs z) * (abs vx + abs vy + abs vz)
 totalEnergy = sum . map moonEnergy
@@ -32,6 +32,6 @@ applyVelocity (Moon (x, y, z) (vx, vy, vz)) = Moon (x + vx, y + vy, z + vz) (vx,
 step = map applyVelocity . applyGravity
 
 main = do
-    moons <- parseInput moons
+    moons <- parseInputLines moon
     print $ totalEnergy $ iterate step moons !! 1000
     print $ foldl1 lcm [findIndices (((==) `on` map p) moons) (iterate step moons) !! 1 | p <- [px, py, pz]]
