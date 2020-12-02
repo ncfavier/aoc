@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 
-# usage: run [-t] [-r] [YEAR] [DAYS...]
+# usage: run [-t] [-c] [-r] [-i INPUT] [YEAR] [DAYS...]
 #
-#   -t    time execution
-#   -r    only run the binaries
+#   -t          time execution
+#   -c          only compile the source files
+#   -r          only run the binaries
+#   -i INPUT    use INPUT as the standard input
 #
 #   run                 # run the current day
 #   run YEAR            # run days 1-25 of YEAR
@@ -43,12 +45,15 @@ die() {
 session=$(< .session) || die "No session file found"
 export TZ=EST
 
-time=0 raw=0
+time=0 runOnly=0 compileOnly=0 forceInput=
 
-while getopts :tr o; do case $o in
+while getopts :tcri: o; do case $o in
     t) time=1;;
-    r) raw=1;;
-    ?) die "Invalid argument -$OPTARG";;
+    c) compileOnly=1;;
+    r) runOnly=1;;
+    i) forceInput=$2;;
+    :) die "Flag -$OPTARG requires an argument";;
+    \?) die "Invalid flag -$OPTARG";;
 esac done
 
 shift "$(( OPTIND - 1 ))"
@@ -76,25 +81,27 @@ runAll() for day in "${days[@]}"; do
     printf -v module Day%02d "$day"
 
     input=inputs/$year/$day bin=bin/$year/$day build=build/$year
-    (( ! raw )) && mkdir -p "$(dirname "$input")" "$(dirname "$bin")" "$build"
+    (( ! runOnly )) && mkdir -p "$(dirname "$input")" "$(dirname "$bin")" "$build"
 
-    if (( ! raw )) && [[ ! -e $input ]]; then
+    if (( ! runOnly )) && [[ ! -e $input ]]; then
         log "Downloading input for day $day, $year"
         curl -fsSL -o "$input" -b "session=$session" "https://adventofcode.com/$year/day/$day/input"
     fi
 
-    if (( ! raw )); then
+    if (( ! runOnly )); then
         log "Compiling day $day, $year"
-        ghc "${ghcFlags[@]}" -isrc -i"src/$year" -outputdir "$build" -o "$bin" -main-is "$module" "src/$year/$module.hs"
+        ghc "${ghcFlags[@]}" -isrc -i"src/$year" -outputdir "$build" -o "$bin" -main-is "$module" "src/$year/$module.hs" || exit
     fi
 
-    run() { AOC_INPUT=$input "$bin"; }
+    if (( ! compileOnly )); then
+        export AOC_INPUT=${forceInput:-$input}
 
-    (( ! raw )) && log "Running day $day, $year"
-    if (( time && ${#days[@]} == 1 )); then
-        time run
-    else
-        run
+        (( ! runOnly )) && log "Running day $day, $year"
+        if (( time && ${#days[@]} == 1 )); then
+            time "$bin"
+        else
+            "$bin"
+        fi
     fi
 done
 
