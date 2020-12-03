@@ -26,12 +26,12 @@ import           Data.Ix
 import           Data.List
 import           Data.List.Split (splitOn, chunksOf)
 import           Data.Map (Map)
-import qualified Data.Map as M
+import qualified Data.Map as Map
 import           Data.Ord
 import           Data.PriorityQueue.FingerTree as PQ
 import           Data.Sequence (Seq(..))
 import           Data.Set (Set)
-import qualified Data.Set as S
+import qualified Data.Set as Set
 import qualified Data.Sequence as Seq
 import           Data.Traversable
 import           Data.Void
@@ -84,25 +84,32 @@ ccw, cw :: Coords -> Coords
 ccw (x, y) = (y, -x)
 cw  (x, y) = (-y, x)
 
--- List utilities
-
 flatten :: [[a]] -> [((Integer, Integer), a)]
 flatten rows = [ ((x, y), a)
                | (y, row) <- zip [0..] rows
                , (x, a)   <- zip [0..] row
                ]
 
+makeGrid :: Num n => String -> (Map (Integer, Integer) Char, n, n)
+makeGrid s = (grid, width, height) where
+    rows = lines s
+    grid = Map.fromList (flatten rows)
+    width = genericLength (head rows)
+    height = genericLength rows
+
+-- List utilities
+
 count :: (Num n, Foldable t) => (a -> Bool) -> t a -> n
 count p = foldl' (\c e -> if p e then c + 1 else c) 0
 
 counts :: (Num n, Foldable t, Ord a) => t a -> Map a n
-counts = foldl' (\m e -> M.insertWith (+) e 1 m) M.empty
+counts = foldl' (\m e -> Map.insertWith (+) e 1 m) Map.empty
 
 findDuplicates :: Ord a => [a] -> [a]
-findDuplicates = go S.empty where
-    go seen (x:xs) | x `S.member` seen = x:xs'
+findDuplicates = go Set.empty where
+    go seen (x:xs) | x `Set.member` seen = x:xs'
                    | otherwise = xs'
-                   where xs' = go (S.insert x seen) xs
+                   where xs' = go (Set.insert x seen) xs
     go _ [] = []
 
 firstDuplicate :: Ord a => [a] -> a
@@ -117,23 +124,23 @@ bfs :: (Num n, Ord a) => (a -> [a]) -> a -> [(a, n)]
 bfs = bfsOn id
 
 bfsOn :: (Num n, Ord b) => (a -> b) -> (a -> [a]) -> a -> [(a, n)]
-bfsOn rep next start = go S.empty (Seq.singleton (start, 0)) where
+bfsOn rep next start = go Set.empty (Seq.singleton (start, 0)) where
     go seen Empty = []
     go seen ((n, d) :<| ps)
-        | r `S.member` seen = go seen ps
-        | otherwise         = (n, d):go (S.insert r seen) (ps <> Seq.fromList [(n', d + 1) | n' <- next n])
+        | r `Set.member` seen = go seen ps
+        | otherwise         = (n, d):go (Set.insert r seen) (ps <> Seq.fromList [(n', d + 1) | n' <- next n])
         where r = rep n
 
 dijkstra :: (Num n, Ord n, Ord a) => (a -> [(a, n)]) -> a -> [(a, n)]
 dijkstra = dijkstraOn id
 
 dijkstraOn :: (Num n, Ord n, Ord b) => (a -> b) -> (a -> [(a, n)]) -> a -> [(a, n)]
-dijkstraOn rep next start = go S.empty (PQ.singleton 0 start) where
+dijkstraOn rep next start = go Set.empty (PQ.singleton 0 start) where
     go seen q
         | Just ((d, n), q') <- minViewWithKey q =
             let r = rep n in
-            if r `S.member` seen then
+            if r `Set.member` seen then
                 go seen q'
             else
-                (n, d):go (S.insert r seen) (PQ.union q' (PQ.fromList [(d + c, n') | (n', c) <- next n]))
+                (n, d):go (Set.insert r seen) (PQ.union q' (PQ.fromList [(d + c, n') | (n', c) <- next n]))
         | otherwise = []
