@@ -65,7 +65,7 @@ parseInputLines p = do
     parseIO p' s
 
 number :: Num a => Parser a
-number = signed (return ()) decimal
+number = signed (pure ()) decimal
 
 -- Coordinates
 
