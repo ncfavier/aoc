@@ -2,14 +2,13 @@ module Day01 where
 
 import AOC
 
-solve :: Int -> [Int] -> Int
-solve n nums = product . head $ go n nums [] where
-    go 0 _ xs = xs <$ guard (sum xs == 2020)
-    go n nums xs = do
+solve :: [Int] -> Int -> Int
+solve nums n = product . head $ go nums n [] where
+    go _    0 xs = xs <$ guard (sum xs == 2020)
+    go nums n xs = do
         x:tail <- tails nums
-        go (pred n) tail (x:xs)
+        go tail (pred n) (x:xs)
 
 main = do
     nums <- parseInputLines number
-    print (solve 2 nums)
-    print (solve 3 nums)
+    for [2, 3] do solve nums >>> print
