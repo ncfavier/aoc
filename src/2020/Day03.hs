@@ -7,7 +7,7 @@ import AOC
 
 main = do
     (grid, width, height) <- makeGrid <$> readInput
-    let countTrees slope = count (== '#') (go (0, 0)) where
+    let countTrees slope = howMany (== '#') (go (0, 0)) where
             go p@(x, y) | y >= height = []
                         | otherwise   = grid Map.! (x `mod` width, y):go (p `add` slope)
     print $ countTrees (3, 1)

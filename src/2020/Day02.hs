@@ -7,9 +7,9 @@ policiesAndPasswords = (,,,) <$> decimal <* "-" <*> decimal <* space <*> letterC
 
 main = do
     input <- parseInputLines policiesAndPasswords
-    print $ input & count \(from, to, letter, password) ->
-        let c = count (== letter) password in
+    print $ input & howMany \(from, to, letter, password) ->
+        let c = howMany (== letter) password in
         inRange (from, to) c
-    print $ input & count \(from, to, letter, password) ->
+    print $ input & howMany \(from, to, letter, password) ->
         let match i = password !! pred i == letter in
         match from /= match to

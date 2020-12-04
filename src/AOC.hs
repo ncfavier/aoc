@@ -44,7 +44,7 @@ import           Text.Megaparsec hiding (parseMaybe, oneOf, noneOf, choice, many
 import qualified Text.Megaparsec as P
 import           Text.Megaparsec.Char
 import           Text.Megaparsec.Char.Lexer hiding (space)
-import           Text.Read hiding (choice, (+++))
+import           Text.Read (readMaybe)
 
 -- Parsing
 
