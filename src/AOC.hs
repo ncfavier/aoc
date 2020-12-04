@@ -1,19 +1,21 @@
 {-# LANGUAGE TypeFamilies #-}
 module AOC ( module AOC
            , module Control.Applicative
-           , module Control.Monad
            , module Control.Arrow
-           , module Data.Ord
-           , module Data.Ix
+           , module Control.Monad
            , module Data.Char
-           , module Data.List
-           , module Data.List.Split
            , module Data.Foldable
            , module Data.Function
+           , module Data.Ix
+           , module Data.List
+           , module Data.List.Split
+           , module Data.Maybe
+           , module Data.Ord
            , module Data.Traversable
            , module Text.Megaparsec
            , module Text.Megaparsec.Char
            , module Text.Megaparsec.Char.Lexer
+           , module Text.Read
            ) where
 
 import           Control.Applicative
@@ -27,6 +29,7 @@ import           Data.List
 import           Data.List.Split (splitOn, chunksOf)
 import           Data.Map (Map)
 import qualified Data.Map as Map
+import           Data.Maybe
 import           Data.Ord
 import           Data.PriorityQueue.FingerTree as PQ
 import           Data.Sequence (Seq(..))
@@ -37,9 +40,11 @@ import           Data.Traversable
 import           Data.Void
 import           System.Environment
 import           System.Exit
-import           Text.Megaparsec hiding (count, count', many, some)
+import           Text.Megaparsec hiding (parseMaybe, oneOf, noneOf, many, some)
+import qualified Text.Megaparsec as P
 import           Text.Megaparsec.Char
 import           Text.Megaparsec.Char.Lexer hiding (space)
+import           Text.Read hiding (choice, (+++))
 
 -- Parsing
 
@@ -66,6 +71,22 @@ parseInputLines p = do
 
 number :: Num a => Parser a
 number = signed (pure ()) decimal
+
+numberInRange :: (Ix a, Num a) => (a, a) -> Parser a
+numberInRange r = mfilter (inRange r) number
+
+parseMaybe :: Parser a -> String -> Maybe a
+parseMaybe = P.parseMaybe
+
+oneOf :: String -> Parser Char
+oneOf = P.oneOf
+
+noneOf :: String -> Parser Char
+noneOf = P.noneOf
+
+infixl 3 <||>
+(<||>) :: Parser a -> Parser a -> Parser a
+a <||> b = try a <|> b
 
 -- Coordinates
 
@@ -99,8 +120,8 @@ makeGrid s = (grid, width, height) where
 
 -- List utilities
 
-count :: (Num n, Foldable t) => (a -> Bool) -> t a -> n
-count p = foldl' (\c e -> if p e then c + 1 else c) 0
+howMany :: (Num n, Foldable t) => (a -> Bool) -> t a -> n
+howMany p = foldl' (\c e -> if p e then c + 1 else c) 0
 
 counts :: (Num n, Foldable t, Ord a) => t a -> Map a n
 counts = foldl' (\m e -> Map.insertWith (+) e 1 m) Map.empty

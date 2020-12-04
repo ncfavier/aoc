@@ -24,6 +24,7 @@ ghcFlags=(
     -XMultiWayIf
     -XTypeApplications
     -XTypeFamilies
+    -XScopedTypeVariables
     -XFlexibleContexts
     -XFlexibleInstances
     -XMultiParamTypeClasses
@@ -74,7 +75,7 @@ if (( $# )); then
     (( ${#days[@]} )) || days=({1..25})
 else
     year=$(date +%Y)
-    days=("$(date +%-d)")
+    days=("$(date -d '1 hour' +%-d)")
 fi
 
 runAll() for day in "${days[@]}"; do
