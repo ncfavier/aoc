@@ -31,7 +31,7 @@ import           Data.Map (Map)
 import qualified Data.Map as Map
 import           Data.Maybe
 import           Data.Ord
-import           Data.PriorityQueue.FingerTree as PQ
+import qualified Data.PriorityQueue.FingerTree as PQ
 import           Data.Sequence (Seq(..))
 import           Data.Set (Set)
 import qualified Data.Set as Set
@@ -40,7 +40,7 @@ import           Data.Traversable
 import           Data.Void
 import           System.Environment
 import           System.Exit
-import           Text.Megaparsec hiding (parseMaybe, oneOf, noneOf, many, some)
+import           Text.Megaparsec hiding (parseMaybe, oneOf, noneOf, choice, many, some)
 import qualified Text.Megaparsec as P
 import           Text.Megaparsec.Char
 import           Text.Megaparsec.Char.Lexer hiding (space)
@@ -87,6 +87,9 @@ noneOf = P.noneOf
 infixl 3 <||>
 (<||>) :: Parser a -> Parser a -> Parser a
 a <||> b = try a <|> b
+
+choice :: Foldable t => t (Parser a) -> Parser a
+choice = foldr (<||>) empty
 
 -- Coordinates
 
@@ -158,7 +161,7 @@ dijkstra = dijkstraOn id
 dijkstraOn :: (Num n, Ord n, Ord b) => (a -> b) -> (a -> [(a, n)]) -> a -> [(a, n)]
 dijkstraOn rep next start = go Set.empty (PQ.singleton 0 start) where
     go seen q
-        | Just ((d, n), q') <- minViewWithKey q =
+        | Just ((d, n), q') <- PQ.minViewWithKey q =
             let r = rep n in
             if r `Set.member` seen then
                 go seen q'
