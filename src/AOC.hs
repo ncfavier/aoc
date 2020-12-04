@@ -152,7 +152,7 @@ bfsOn rep next start = go Set.empty (Seq.singleton (start, 0)) where
     go seen Empty = []
     go seen ((n, d) :<| ps)
         | r `Set.member` seen = go seen ps
-        | otherwise         = (n, d):go (Set.insert r seen) (ps <> Seq.fromList [(n', d + 1) | n' <- next n])
+        | otherwise           = (n, d):go (Set.insert r seen) (ps <> Seq.fromList [(n', d + 1) | n' <- next n])
         where r = rep n
 
 dijkstra :: (Num n, Ord n, Ord a) => (a -> [(a, n)]) -> a -> [(a, n)]
