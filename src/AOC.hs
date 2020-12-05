@@ -40,7 +40,7 @@ import           Data.Traversable
 import           Data.Void
 import           System.Environment
 import           System.Exit
-import           Text.Megaparsec hiding (parseMaybe, oneOf, noneOf, choice, many, some)
+import           Text.Megaparsec hiding (State(..), parseMaybe, oneOf, noneOf, choice, many, some)
 import qualified Text.Megaparsec as P
 import           Text.Megaparsec.Char
 import           Text.Megaparsec.Char.Lexer hiding (space)
@@ -139,8 +139,24 @@ findDuplicates = go Set.empty where
 firstDuplicate :: Ord a => [a] -> a
 firstDuplicate = head . findDuplicates
 
+setAt :: Int -> a -> [a] -> [a]
+setAt n x xs = l ++ x:r where
+    (l, _:r) = splitAt n xs
+
 pickOne :: [a] -> [(a, [a])]
 pickOne l = [(y, xs ++ ys) | (xs, y:ys) <- zip (inits l) (tails l)]
+
+pickSubset :: Ord a => Integer -> Set a -> [(Set a, Set a)]
+pickSubset 0 s = pure (Set.empty, s)
+pickSubset n s = do
+    (x, s') <- maybeToList (Set.minView s)
+    let pick = do
+            (s1, s2) <- pickSubset (pred n) s'
+            pure (Set.insert x s1, s2)
+        don'tPick = do
+            (s1, s2) <- pickSubset n s'
+            pure (s1, Set.insert x s2)
+    pick <|> don'tPick
 
 -- Graph exploration
 
