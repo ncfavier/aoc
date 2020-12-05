@@ -17,6 +17,7 @@ ghcFlags=(
 
     -XBlockArguments
     -XLambdaCase
+    -XApplicativeDo
     -XNamedFieldPuns
     -XRecordWildCards
     -XOverloadedStrings
@@ -24,6 +25,7 @@ ghcFlags=(
     -XMultiWayIf
     -XTypeApplications
     -XTypeFamilies
+    -XGADTs
     -XScopedTypeVariables
     -XFlexibleContexts
     -XFlexibleInstances
