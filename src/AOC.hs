@@ -66,7 +66,7 @@ parseInputLines :: Parser a -> IO [a]
 parseInputLines p = do
     s <- readInput
     let p' = for (lines s) \line ->
-            setInput (line ++ "\n") *> p <* newline <* eof
+            setInput line *> p <* setInput "\n" <* newline <* eof
     parseIO p' s
 
 number :: Num a => Parser a
