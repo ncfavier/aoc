@@ -139,10 +139,6 @@ findDuplicates = go Set.empty where
 firstDuplicate :: Ord a => [a] -> a
 firstDuplicate = head . findDuplicates
 
-setAt :: Int -> a -> [a] -> [a]
-setAt n x xs = l ++ x:r where
-    (l, _:r) = splitAt n xs
-
 pickOne :: [a] -> [(a, [a])]
 pickOne l = [(y, xs ++ ys) | (xs, y:ys) <- zip (inits l) (tails l)]
 
