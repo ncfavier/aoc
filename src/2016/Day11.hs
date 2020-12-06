@@ -15,19 +15,19 @@ data Element = Strontium | Plutonium | Thulium | Ruthenium | Curium | Elerium | 
              deriving (Eq, Ord)
 
 data Unit a = (:@:) { _element :: a
-                    , _unitType :: UnitType
+                    , unitType :: UnitType
                     } deriving (Eq, Ord)
 
 makeLenses ''Unit
 
-data State a = State { _currentFloor :: Int
+data State a = State { currentFloor :: Int
                      , _floors :: Vector (Set (Unit a))
                      } deriving (Eq, Ord)
 
 makeLenses ''State
 
 initialState :: State Element
-initialState = State { _currentFloor = 0
+initialState = State { currentFloor = 0
                      , _floors = Vec.fromList $ map Set.fromList
                          [ [Strontium :@: Generator, Strontium :@: Chip, Plutonium :@: Generator, Plutonium :@: Chip]
                          , [Thulium :@: Generator, Ruthenium :@: Generator, Ruthenium :@: Chip, Curium :@: Generator, Curium :@: Chip]
@@ -50,17 +50,17 @@ check floor = null [() | _ :@: Generator <- units]
             where units = Set.toList floor
 
 nextStates :: Ord a => State a -> [State a]
-nextStates State{..} = do
-    nextFloor <- [pred _currentFloor, succ _currentFloor]
+nextStates s@State{..} = do
+    nextFloor <- [pred currentFloor, succ currentFloor]
     guard (inRange (0, 3) nextFloor)
     size <- [1, 2]
-    (moving, newCurrentFloor) <- pickSubset size (_floors Vec.! _currentFloor)
-    let newNextFloor = (_floors Vec.! nextFloor) <> moving
+    (moving, newCurrentFloor) <- pickSubset size (s ^. floors . ix currentFloor)
+    let newNextFloor = (s ^. floors . ix nextFloor) <> moving
     guard (check newCurrentFloor && check newNextFloor)
-    pure $ State nextFloor (_floors Vec.// [(_currentFloor, newCurrentFloor), (nextFloor, newNextFloor)])
+    pure $ State nextFloor (_floors Vec.// [(currentFloor, newCurrentFloor), (nextFloor, newNextFloor)])
 
 isDone :: State a -> Bool
-isDone State{..} = _currentFloor == 3 && all null (Vec.take 3 _floors)
+isDone State{..} = currentFloor == 3 && all null (Vec.take 3 _floors)
 
 minSteps :: Ord a => State a -> Integer
 minSteps start = head [steps | (s, steps) <- states, isDone s]
