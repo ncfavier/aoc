@@ -26,6 +26,8 @@ data State a = State { currentFloor :: Int
 
 makeLenses ''State
 
+lastFloor = 3
+
 initialState :: State Element
 initialState = State { currentFloor = 0
                      , _floors = Vec.fromList $ map Set.fromList
@@ -44,14 +46,14 @@ upToElementsPermutation s@State{..} = s & floors . each . sets Set.map . element
     where elementsOrder = nub $ s ^.. floors . each . folded . element
 
 check :: Ord a => Set (Unit a) -> Bool
-check floor = null [() | _ :@: Generator <- units]
+check floor =  null [() | _ :@: Generator <- units]
             || and [element :@: Generator `Set.member` floor | element :@: Chip <- units]
             where units = Set.toList floor
 
 nextStates :: Ord a => State a -> [State a]
 nextStates s@State{..} = do
     nextFloor <- [pred currentFloor, succ currentFloor]
-    guard (inRange (0, 3) nextFloor)
+    guard (inRange (0, lastFloor) nextFloor)
     size <- [1, 2]
     (moving, newCurrentFloor) <- pickSubset size (s ^. floors . ix currentFloor)
     let newNextFloor = (s ^. floors . ix nextFloor) <> moving
@@ -60,7 +62,8 @@ nextStates s@State{..} = do
                                            , (nextFloor, newNextFloor) ])
 
 isDone :: State a -> Bool
-isDone State{..} = currentFloor == 3 && all null (Vec.take 3 _floors)
+isDone State{..} =  currentFloor == lastFloor
+                 && all null (Vec.init _floors)
 
 minSteps :: Ord a => State a -> Integer
 minSteps start = head [steps | (s, steps) <- states, isDone s]
