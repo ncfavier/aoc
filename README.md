@@ -1,5 +1,6 @@
 This repository contains my Haskell solutions for some of the [Advent of Code](https://adventofcode.com/) challenges:
 
+- 2016 day 11
 - 2018 days 1, 2, 25
 - 2019
 - 2020 (in progress)
