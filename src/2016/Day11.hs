@@ -32,16 +32,15 @@ initialState = State { currentFloor = 0
                          [ [Strontium :@: Generator, Strontium :@: Chip, Plutonium :@: Generator, Plutonium :@: Chip]
                          , [Thulium :@: Generator, Ruthenium :@: Generator, Ruthenium :@: Chip, Curium :@: Generator, Curium :@: Chip]
                          , [Thulium :@: Chip]
-                         , []
-                         ]
-                     }
+                         , [] ] }
 
 extraUnits :: Set (Unit Element)
 extraUnits = Set.fromList [Elerium :@: Generator, Elerium :@: Chip, Dilithium :@: Generator, Dilithium :@: Chip]
 
 -- Two states are considered equivalent if they only differ by a permutation of elements
 upToElementsPermutation :: Eq a => State a -> State Int
-upToElementsPermutation s@State{..} = s & floors . each . sets Set.map . element %~ fromJust . (`elemIndex` elementsOrder)
+upToElementsPermutation s@State{..} = s & floors . each . sets Set.map . element
+                                        %~ fromJust . (`elemIndex` elementsOrder)
     where elementsOrder = nub $ s ^.. floors . each . folded . element
 
 check :: Ord a => Set (Unit a) -> Bool
@@ -57,7 +56,8 @@ nextStates s@State{..} = do
     (moving, newCurrentFloor) <- pickSubset size (s ^. floors . ix currentFloor)
     let newNextFloor = (s ^. floors . ix nextFloor) <> moving
     guard (check newCurrentFloor && check newNextFloor)
-    pure $ State nextFloor (_floors Vec.// [(currentFloor, newCurrentFloor), (nextFloor, newNextFloor)])
+    pure $ State nextFloor (_floors Vec.// [ (currentFloor, newCurrentFloor)
+                                           , (nextFloor, newNextFloor) ])
 
 isDone :: State a -> Bool
 isDone State{..} = currentFloor == 3 && all null (Vec.take 3 _floors)
