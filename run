@@ -34,6 +34,7 @@ ghcFlags=(
     -XNoMonomorphismRestriction
     -XBangPatterns
     -XViewPatterns
+    -XTemplateHaskell
 )
 
 log() {
