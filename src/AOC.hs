@@ -137,6 +137,10 @@ fixMem keys f = x where
     keysSet = foldMap Set.singleton keys
     x = f (Map.fromSet x keysSet Map.!)
 
+-- Lens utilities
+
+traverseSet f = fmap Set.fromList . traverse f . Set.toList
+
 -- Coordinates
 
 type Coords = (Integer, Integer)

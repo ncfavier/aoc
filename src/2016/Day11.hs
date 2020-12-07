@@ -42,8 +42,7 @@ extraUnits = Set.fromList [Elerium :@: Generator, Elerium :@: Chip, Dilithium :@
 -- Two states are considered equivalent if they only differ by a permutation of elements
 upToElementsPermutation :: Ord a => State a -> State Int
 upToElementsPermutation s = s & eachElement %~ fromJust . (`elemIndex` elementsOrder)
-    where traverseSet f = fmap Set.fromList . traverse f . Set.toList
-          eachElement = floors . each . traverseSet . element
+    where eachElement = floors . each . traverseSet . element
           elementsOrder = nub $ s ^.. eachElement
 
 check :: Ord a => Set (Unit a) -> Bool
