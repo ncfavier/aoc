@@ -132,9 +132,10 @@ pickSubset n s = do
 
 -- Function utilities
 
-fixMem :: Ord k => Set k -> ((k -> a) -> k -> a) -> k -> a
+fixMem :: (Ord k, Foldable t) => t k -> ((k -> a) -> k -> a) -> k -> a
 fixMem keys f = x where
-    x = f (Map.fromSet x keys Map.!)
+    keysSet = foldMap Set.singleton keys
+    x = f (Map.fromSet x keysSet Map.!)
 
 -- Coordinates
 
