@@ -132,9 +132,9 @@ pickSubset n s = do
 
 -- Function utilities
 
-fixMemoMap keys f = x where
-    m = Map.fromSet x keys
-    x = f (m Map.!)
+fixMem :: Ord k => Set k -> ((k -> a) -> k -> a) -> k -> a
+fixMem keys f = x where
+    x = f (Map.fromSet x keys Map.!)
 
 -- Coordinates
 

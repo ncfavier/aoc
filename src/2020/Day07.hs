@@ -16,10 +16,11 @@ rule = (,) <$> word <> " " <> word <* " bags contain " <*> contents <* "." where
 
 main = do
     rules <- Map.fromList <$> parseInputLines rule
-    let contains target = fixMemoMap (Map.keysSet rules) \contains k ->
+    let bags = Map.keysSet rules
+        contains target = fixMem bags \contains k ->
             notNull [ () | (k', _) <- rules Map.! k
                          , k' == target || contains k' ]
-        countBagsIn = fixMemoMap (Map.keysSet rules) \countBagsIn k ->
+        countBagsIn = fixMem bags \countBagsIn k ->
             sum [n * (countBagsIn k' + 1) | (k', n) <- rules Map.! k]
-    print $ howMany (contains "shiny gold") (Map.keys rules)
+    print $ howMany (contains "shiny gold") bags
     print $ countBagsIn "shiny gold"
