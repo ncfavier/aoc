@@ -70,7 +70,7 @@ parseInputLines p = do
     parseIO p' s
 
 word :: Parser String
-word = many letterChar
+word = some letterChar
 
 number :: Num a => Parser a
 number = signed (pure ()) decimal
