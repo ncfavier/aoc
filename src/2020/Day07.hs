@@ -8,15 +8,15 @@ import AOC
 type Rule = (String, [(String, Int)])
 
 rule :: Parser Rule
-rule = (,) <$> word <> " " <> word <* " bags contain " <*> contains <* "." where
-    contains = otherBags `sepBy1` ", " <||> [] <$ "no other bags"
+rule = (,) <$> word <> " " <> word <* " bags contain " <*> contents <* "." where
+    contents = otherBags `sepBy1` ", " <||> [] <$ "no other bags"
     otherBags = flip (,) <$> decimal <* " " <*> word <> " " <> word <* " bag" <* optional "s"
 
 main = do
     rules <- Map.fromList <$> parseInputLines rule
-    let k `leadsTo` target = notNull
+    let k `contains` target = notNull
             [ () | (k', _) <- rules Map.! k
-                 , k' == target || k' `leadsTo` target ]
+                 , k' == target || k' `contains` target ]
         countBagsIn k = sum [n * (countBagsIn k' + 1) | (k', n) <- rules Map.! k]
-    print $ howMany (`leadsTo` "shiny gold") (Map.keys rules)
+    print $ howMany (`contains` "shiny gold") (Map.keys rules)
     print $ countBagsIn "shiny gold"
