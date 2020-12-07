@@ -13,15 +13,13 @@ rule = (,) <$> word <> " " <> word <* " bags contain " <*> contains <* "." where
     otherBags = flip (,) <$> decimal <* " " <*> word <> " " <> word <* " bag" <* optional "s"
 
 main = do
-    input <- Map.fromList <$> parseInputLines rule
+    rules <- Map.fromList <$> parseInputLines rule
     let leadsToShinyGold k =
-            let vs = input Map.! k in
+            let vs = rules Map.! k in
             not (null [() | ("shiny gold", _) <- vs]) ||
             any (leadsToShinyGold . fst) vs
         countBagsIn k =
-            let vs = input Map.! k in
-            let s = sum (map snd vs) in
-            let s' = sum [n * countBagsIn k' | (k', n) <- vs] in
-            s + s'
-    print $ length $ Map.filterWithKey (\k v -> leadsToShinyGold k) input
+            let vs = rules Map.! k in
+            sum [n * countBagsIn k' + n | (k', n) <- vs]
+    print $ howMany leadsToShinyGold (Map.keys rules)
     print $ countBagsIn "shiny gold"
