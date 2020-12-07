@@ -14,12 +14,7 @@ rule = (,) <$> word <> " " <> word <* " bags contain " <*> contains <* "." where
 
 main = do
     rules <- Map.fromList <$> parseInputLines rule
-    let leadsToShinyGold k =
-            let vs = rules Map.! k in
-            not (null [() | ("shiny gold", _) <- vs]) ||
-            any (leadsToShinyGold . fst) vs
-        countBagsIn k =
-            let vs = rules Map.! k in
-            sum [n * countBagsIn k' + n | (k', n) <- vs]
+    let leadsToShinyGold k = not $ null [k' | (k', _) <- rules Map.! k, k' == "shiny gold" || leadsToShinyGold k']
+        countBagsIn k = sum [n * countBagsIn k' + n | (k', n) <- rules Map.! k]
     print $ howMany leadsToShinyGold (Map.keys rules)
     print $ countBagsIn "shiny gold"
