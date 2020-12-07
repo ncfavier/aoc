@@ -94,39 +94,9 @@ a <||> b = try a <|> b
 choice :: Foldable t => t (Parser a) -> Parser a
 choice = foldr (<||>) empty
 
--- Coordinates
-
-type Coords = (Integer, Integer)
-
-left, right, up, down :: Coords -> Coords
-left  = (pred *** id)
-right = (succ *** id)
-up    = (id *** pred)
-down  = (id *** succ)
-
-add :: Coords -> Coords -> Coords
-add (x1, y1) (x2, y2) = (x1 + x2, y1 + y2)
-
-ccw, cw :: Coords -> Coords
-ccw (x, y) = (y, -x)
-cw  (x, y) = (-y, x)
-
-flatten :: [[a]] -> [((Integer, Integer), a)]
-flatten rows = [ ((x, y), a)
-               | (y, row) <- zip [0..] rows
-               , (x, a)   <- zip [0..] row
-               ]
-
-makeGrid :: Num n => String -> (Map (Integer, Integer) Char, n, n)
-makeGrid s = (grid, width, height) where
-    rows = lines s
-    grid = Map.fromList (flatten rows)
-    width = genericLength (head rows)
-    height = genericLength rows
-
 -- List utilities
 
-notNull :: [a] -> Bool
+notNull :: Foldable t => t a -> Bool
 notNull = not . null
 
 howMany :: (Num n, Foldable t) => (a -> Bool) -> t a -> n
@@ -159,6 +129,42 @@ pickSubset n s = do
             (s1, s2) <- pickSubset n s'
             pure (s1, Set.insert x s2)
     pick <|> don'tPick
+
+-- Function utilities
+
+fixMemoMap keys f = x where
+    m = Map.fromSet x keys
+    x = f (m Map.!)
+
+-- Coordinates
+
+type Coords = (Integer, Integer)
+
+left, right, up, down :: Coords -> Coords
+left  = (pred *** id)
+right = (succ *** id)
+up    = (id *** pred)
+down  = (id *** succ)
+
+add :: Coords -> Coords -> Coords
+add (x1, y1) (x2, y2) = (x1 + x2, y1 + y2)
+
+ccw, cw :: Coords -> Coords
+ccw (x, y) = (y, -x)
+cw  (x, y) = (-y, x)
+
+flatten :: [[a]] -> [((Integer, Integer), a)]
+flatten rows = [ ((x, y), a)
+               | (y, row) <- zip [0..] rows
+               , (x, a)   <- zip [0..] row
+               ]
+
+makeGrid :: Num n => String -> (Map (Integer, Integer) Char, n, n)
+makeGrid s = (grid, width, height) where
+    rows = lines s
+    grid = Map.fromList (flatten rows)
+    width = genericLength (head rows)
+    height = genericLength rows
 
 -- Graph exploration
 

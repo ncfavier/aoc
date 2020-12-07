@@ -2,6 +2,8 @@ module Day07 where
 
 import           Data.Map (Map)
 import qualified Data.Map as Map
+import           Data.Set (Set)
+import qualified Data.Set as Set
 
 import AOC
 
@@ -14,9 +16,10 @@ rule = (,) <$> word <> " " <> word <* " bags contain " <*> contents <* "." where
 
 main = do
     rules <- Map.fromList <$> parseInputLines rule
-    let k `contains` target = notNull
-            [ () | (k', _) <- rules Map.! k
-                 , k' == target || k' `contains` target ]
-        countBagsIn k = sum [n * (countBagsIn k' + 1) | (k', n) <- rules Map.! k]
-    print $ howMany (`contains` "shiny gold") (Map.keys rules)
+    let contains target = fixMemoMap (Map.keysSet rules) \contains k ->
+            notNull [ () | (k', _) <- rules Map.! k
+                         , k' == target || contains k' ]
+        countBagsIn = fixMemoMap (Map.keysSet rules) \countBagsIn k ->
+            sum [n * (countBagsIn k' + 1) | (k', n) <- rules Map.! k]
+    print $ howMany (contains "shiny gold") (Map.keys rules)
     print $ countBagsIn "shiny gold"
