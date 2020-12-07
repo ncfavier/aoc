@@ -126,6 +126,9 @@ makeGrid s = (grid, width, height) where
 
 -- List utilities
 
+notNull :: [a] -> Bool
+notNull = not . null
+
 howMany :: (Num n, Foldable t) => (a -> Bool) -> t a -> n
 howMany p = foldl' (\c e -> if p e then c + 1 else c) 0
 
