@@ -13,8 +13,7 @@ main = do
     rules <- Map.fromList <$> parseInputLines rule
     let bags = Map.keysSet rules
         contains target = fixMem bags \containsTarget k ->
-            notNull [ () | (k', _) <- rules Map.! k
-                         , k' == target || containsTarget k' ]
+            or [k' == target || containsTarget k' | (k', _) <- rules Map.! k]
         countBagsIn = fixMem bags \countBagsIn k ->
             sum [n * (countBagsIn k' + 1) | (k', n) <- rules Map.! k]
     print $ howMany (contains "shiny gold") bags
