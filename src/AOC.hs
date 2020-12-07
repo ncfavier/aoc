@@ -69,6 +69,9 @@ parseInputLines p = do
             setInput line *> p <* setInput "\n" <* newline <* eof
     parseIO p' s
 
+word :: Parser String
+word = many letterChar
+
 number :: Num a => Parser a
 number = signed (pure ()) decimal
 
