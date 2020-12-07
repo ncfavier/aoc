@@ -5,9 +5,6 @@ import qualified Data.Map as Map
 
 import AOC
 
-type Rule = (String, [(String, Int)])
-
-rule :: Parser Rule
 rule = (,) <$> word <> " " <> word <* " bags contain " <*> contents <* "." where
     contents = otherBags `sepBy1` ", " <||> [] <$ "no other bags"
     otherBags = flip (,) <$> decimal <* " " <*> word <> " " <> word <* " bag" <* optional "s"
