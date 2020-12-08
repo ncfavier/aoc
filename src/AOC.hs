@@ -105,15 +105,22 @@ howMany p = foldl' (\c e -> if p e then c + 1 else c) 0
 counts :: (Num n, Foldable t, Ord a) => t a -> Map a n
 counts = foldl' (\m e -> Map.insertWith (+) e 1 m) Map.empty
 
-findDuplicates :: Ord a => [a] -> [a]
-findDuplicates = go Set.empty where
-    go seen (x:xs) | x `Set.member` seen = x:xs'
+findDuplicatesBy :: Ord b => (a -> b) -> [a] -> [a]
+findDuplicatesBy f = go Set.empty where
+    go seen (x:xs) | r `Set.member` seen = x:xs'
                    | otherwise = xs'
-                   where xs' = go (Set.insert x seen) xs
+                   where xs' = go (Set.insert r seen) xs
+                         r = f x
     go _ [] = []
 
+findDuplicates :: Ord a => [a] -> [a]
+findDuplicates = findDuplicatesBy id
+
+firstDuplicateBy :: Ord b => (a -> b) -> [a] -> a
+firstDuplicateBy f = head . findDuplicatesBy f
+
 firstDuplicate :: Ord a => [a] -> a
-firstDuplicate = head . findDuplicates
+firstDuplicate = firstDuplicateBy id
 
 pickOne :: [a] -> [(a, [a])]
 pickOne l = [(y, xs ++ ys) | (xs, y:ys) <- zip (inits l) (tails l)]
