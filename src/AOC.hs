@@ -140,23 +140,23 @@ pickSubset n s = do
 -- Function utilities
 
 fixMem :: (Ord k, Foldable t) => t k -> ((k -> a) -> k -> a) -> k -> a
-fixMem keys f = x where
-    keysSet = foldMap Set.singleton keys
-    x = f (Map.fromSet x keysSet Map.!)
+fixMem keys f = go where
+    mem = Map.fromSet go (foldMap Set.singleton keys)
+    go = f \x -> Map.findWithDefault (go x) x mem
 
 -- Lens utilities
 
 traverseSet f = fmap Set.fromList . traverse f . Set.toList
 
--- Coordinates
+-- 2D coordinates
 
 type Coords = (Integer, Integer)
 
 left, right, up, down :: Coords -> Coords
-left  = (pred *** id)
-right = (succ *** id)
-up    = (id *** pred)
-down  = (id *** succ)
+left  = pred *** id
+right = succ *** id
+up    = id *** pred
+down  = id *** succ
 
 add :: Coords -> Coords -> Coords
 add (x1, y1) (x2, y2) = (x1 + x2, y1 + y2)
