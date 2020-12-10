@@ -33,9 +33,9 @@ import           Data.Maybe
 import           Data.Ord
 import qualified Data.PriorityQueue.FingerTree as PQ
 import           Data.Sequence (Seq(..))
+import qualified Data.Sequence as Seq
 import           Data.Set (Set)
 import qualified Data.Set as Set
-import qualified Data.Sequence as Seq
 import           Data.Traversable
 import           Data.Void
 import           System.Environment
