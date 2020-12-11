@@ -105,6 +105,9 @@ howMany p = foldl' (\c e -> if p e then c + 1 else c) 0
 counts :: (Num n, Foldable t, Ord a) => t a -> Map a n
 counts = foldl' (\m e -> Map.insertWith (+) e 1 m) Map.empty
 
+iterate1 :: (a -> a) -> a -> [a]
+iterate1 f x = iterate f (f x)
+
 findDuplicatesBy :: Ord b => (a -> b) -> [a] -> [a]
 findDuplicatesBy f = go Set.empty where
     go seen (x:xs) | r `Set.member` seen = x:xs'
@@ -152,18 +155,27 @@ traverseSet f = fmap Set.fromList . traverse f . Set.toList
 
 type Coords = (Integer, Integer)
 
-left, right, up, down :: Coords -> Coords
-left  = pred *** id
-right = succ *** id
-up    = id *** pred
-down  = id *** succ
-
 add :: Coords -> Coords -> Coords
 add (x1, y1) (x2, y2) = (x1 + x2, y1 + y2)
 
 ccw, cw :: Coords -> Coords
 ccw (x, y) = (y, -x)
 cw  (x, y) = (-y, x)
+
+cardinal :: [Coords]
+cardinal = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+
+interCardinal :: [Coords]
+interCardinal = [(-1, -1), (1, 1), (-1, 1), (1, -1)]
+
+principal :: [Coords]
+principal = cardinal ++ interCardinal
+
+left, right, up, down :: Coords -> Coords
+[left, right, up, down] = map add cardinal
+
+angle :: RealFloat n => Coords -> n
+angle (x, y) = -atan2 (fromIntegral x) (fromIntegral y)
 
 flatten :: [[a]] -> [((Integer, Integer), a)]
 flatten rows = [ ((x, y), a)
