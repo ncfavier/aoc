@@ -19,7 +19,7 @@ runRobot program c = go (M.singleton p0 c) p0 (0, -1) (runIntcode program) where
         Output c (Output w e) ->
             let h' = M.insert p c h
                 d' = (if w == 0 then ccw else cw) d
-                p' = add d' p
+                p' = d' + p
             in go h' p' d' e
 
 extend (lx, ly, ux, uy) (x, y) = (min lx x, min ly y, max ux x, max uy y)

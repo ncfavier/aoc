@@ -4,7 +4,7 @@ import Data.Map (Map)
 import qualified Data.Map as M
 import qualified Data.Set as S
 
-import AOC
+import AOC hiding (manhattan)
 
 type Position = (Integer, Integer, Integer, Integer)
 

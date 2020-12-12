@@ -10,7 +10,7 @@ directions :: [Coords]
 directions = [(-1, 0), (0, -1), (1, 0), (0, 1)]
 
 neighbours :: Coords -> [Coords]
-neighbours p = map (add p) directions
+neighbours p = map (p +) directions
 
 groupMoves :: String -> [String]
 groupMoves p = go (group p) where
@@ -47,11 +47,11 @@ main = do
                 | (p@(x, y), '#') <- M.toList grid
                 , all (\p -> tile p == '#') (neighbours p)
                 ]
-    let path p d | canGo d       = 'F':path (p `add` d) d
+    let path p d | canGo d       = 'F':path (p + d) d
                  | canGo (ccw d) = 'L':path p           (ccw d)
                  | canGo (cw d)  = 'R':path p           (cw d)
                  | otherwise     = []
-                 where canGo d = tile (p `add` d) == '#'
+                 where canGo d = tile (p + d) == '#'
         (start, d)   = head [ (p, directions !! d)
                             | (p, c) <- M.toList grid
                             , Just d <- [c `elemIndex` "<^>v"] ]

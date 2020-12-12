@@ -6,10 +6,6 @@ import AOC
 
 parseAsteroids g = [p | (p, '#') <- flatten (lines g)]
 
-angle (x, y) = -atan2 (fromIntegral x) (fromIntegral y)
-
-manhattan (x, y) = abs x + abs y
-
 insertAsteroid [x] = insertBy (comparing manhattan) x
 
 nthAsteroid n asteroids | n <= r    = M.elemAt (n - 1) rotation

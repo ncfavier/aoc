@@ -18,10 +18,10 @@ evolve crowded neighbour grid = Map.mapWithKey f grid where
 
 main = do
     (Map.filter (/= '.') -> grid, width, height) <- makeGrid <$> readInput
-    let direct grid p d = grid Map.!? (p `add` d)
+    let direct grid p d = grid Map.!? (p + d)
         visible grid p d = asum (map (grid Map.!?) sight)
             where sight = takeWhile (inRange ((0, 0), (width, height)))
-                        $ iterate1 (add d) p
+                        $ iterate1 (+ d) p
     for [(4, direct), (5, visible)] \(crowded, neighbour) ->
         print $ howMany (== '#')
               $ firstDuplicate
