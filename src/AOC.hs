@@ -142,6 +142,11 @@ pickSubset n s = do
 
 -- Function utilities
 
+nTimes :: (a -> a) -> Integer -> a -> a
+nTimes f 0 = id
+nTimes f 1 = f
+nTimes f n = f . nTimes f (pred n)
+
 fixMem :: (Ord k, Foldable t) => t k -> ((k -> a) -> k -> a) -> k -> a
 fixMem keys f = go where
     mem = Map.fromSet go (foldMap Set.singleton keys)
@@ -155,12 +160,23 @@ traverseSet f = fmap Set.fromList . traverse f . Set.toList
 
 type Coords = (Integer, Integer)
 
-add :: Coords -> Coords -> Coords
-add (x1, y1) (x2, y2) = (x1 + x2, y1 + y2)
+instance Num Coords where
+    (x1, y1) + (x2, y2) = (x1 + x2, y1 + y2)
+    (*) = undefined
+    fromInteger = undefined
+    negate = undefined
+    abs = undefined
+    signum = undefined
+
+mul :: Integer -> Coords -> Coords
+mul n (x, y) = (n * x, n * y)
 
 ccw, cw :: Coords -> Coords
 ccw (x, y) = (y, -x)
 cw  (x, y) = (-y, x)
+
+manhattan :: Coords -> Integer
+manhattan (x, y) = abs x + abs y
 
 cardinal :: [Coords]
 cardinal = [(-1, 0), (1, 0), (0, -1), (0, 1)]
@@ -172,7 +188,7 @@ principal :: [Coords]
 principal = cardinal ++ interCardinal
 
 left, right, up, down :: Coords -> Coords
-[left, right, up, down] = map add cardinal
+[left, right, up, down] = map (+) cardinal
 
 angle :: RealFloat n => Coords -> n
 angle (x, y) = -atan2 (fromIntegral x) (fromIntegral y)
