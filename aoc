@@ -13,7 +13,6 @@
 
 ghcFlags=(
     -O2
-    -dynamic # bloody arch linux
 
     -XBlockArguments
     -XLambdaCase

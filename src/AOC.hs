@@ -11,10 +11,10 @@ module AOC ( module AOC
            , module Data.List.Split
            , module Data.Maybe
            , module Data.Ord
+           , module Data.Semigroup
            , module Data.Traversable
            , module Text.Megaparsec
            , module Text.Megaparsec.Char
-           , module Text.Megaparsec.Char.Lexer
            , module Text.Read
            ) where
 
@@ -32,6 +32,7 @@ import qualified Data.Map as Map
 import           Data.Maybe
 import           Data.Ord
 import qualified Data.PriorityQueue.FingerTree as PQ
+import           Data.Semigroup hiding (option)
 import           Data.Sequence (Seq(..))
 import qualified Data.Sequence as Seq
 import           Data.Set (Set)
@@ -43,7 +44,7 @@ import           System.Exit
 import           Text.Megaparsec hiding (State(..), parseMaybe, oneOf, noneOf, choice, many, some)
 import qualified Text.Megaparsec as P
 import           Text.Megaparsec.Char
-import           Text.Megaparsec.Char.Lexer hiding (space)
+import qualified Text.Megaparsec.Char.Lexer as Lex
 import           Text.Read (readMaybe)
 
 -- Parsing
@@ -69,11 +70,14 @@ parseInputLines p = do
             setInput line *> p <* setInput "\n" <* newline <* eof
     parseIO p' s
 
+lexeme :: Parser a -> Parser a
+lexeme = Lex.lexeme (Lex.space space1 empty empty)
+
 word :: Parser String
 word = some letterChar
 
 number :: Num a => Parser a
-number = signed (pure ()) decimal
+number = Lex.signed (pure ()) Lex.decimal
 
 numberInRange :: (Ix a, Num a) => (a, a) -> Parser a
 numberInRange r = mfilter (inRange r) number
@@ -104,6 +108,12 @@ howMany p = foldl' (\c e -> if p e then c + 1 else c) 0
 
 counts :: (Num n, Foldable t, Ord a) => t a -> Map a n
 counts = foldl' (\m e -> Map.insertWith (+) e 1 m) Map.empty
+
+minimumOn :: (Foldable t, Ord b) => (a -> b) -> t a -> a
+minimumOn = minimumBy . comparing
+
+maximumOn :: (Foldable t, Ord b) => (a -> b) -> t a -> a
+maximumOn = maximumBy . comparing
 
 iterate1 :: (a -> a) -> a -> [a]
 iterate1 f x = iterate f (f x)
