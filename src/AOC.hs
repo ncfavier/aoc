@@ -76,6 +76,12 @@ lexeme = Lex.lexeme (Lex.space space1 empty empty)
 word :: Parser String
 word = some letterChar
 
+decimal, binary, octal, hexadecimal :: Num a => Parser a
+decimal     = Lex.decimal
+binary      = Lex.binary
+octal       = Lex.octal
+hexadecimal = Lex.hexadecimal
+
 number :: Num a => Parser a
 number = Lex.signed (pure ()) Lex.decimal
 
