@@ -13,7 +13,7 @@ schedule = do
 
 main = do
     (departure, buses) <- parseInput schedule
-    print $ uncurry (*) $ minimumOn snd [(m, (-departure) `mod` m) | (_, m) <- buses]
+    print $ uncurry (*) $ minimum [((-departure) `mod` m, m) | (_, m) <- buses]
     let residues = [(-i) `modulo` fromIntegral m | (i, m) <- buses]
     case foldrM chineseSomeMod (0 `modulo` 1) residues of
         Just (SomeMod n) -> print (getVal n)
