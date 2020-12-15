@@ -1,7 +1,7 @@
 module Day15 where
 
-import           Data.IntMap (IntMap)
-import qualified Data.IntMap as IM
+import Data.IntMap (IntMap)
+import Data.IntMap qualified as IM
 
 import AOC
 

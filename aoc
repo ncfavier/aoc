@@ -35,6 +35,7 @@ ghcFlags=(
     -XBangPatterns
     -XViewPatterns
     -XTemplateHaskell
+    -XImportQualifiedPost
 )
 
 log() {
