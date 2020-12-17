@@ -9,43 +9,45 @@ module AOC ( module AOC
            , module Data.Ix
            , module Data.List
            , module Data.List.Split
+           , module Data.Map
            , module Data.Maybe
            , module Data.Ord
            , module Data.Semigroup
+           , module Data.Set
            , module Data.Traversable
            , module Text.Megaparsec
            , module Text.Megaparsec.Char
            , module Text.Read
            ) where
 
-import           Control.Applicative
-import           Control.Arrow hiding (left, right)
-import           Control.Monad
-import           Data.Char
-import           Data.Foldable
-import           Data.Function
-import           Data.Ix
-import           Data.List
-import           Data.List.Split (splitOn, chunksOf)
-import           Data.Map (Map)
-import qualified Data.Map as Map
-import           Data.Maybe
-import           Data.Ord
-import qualified Data.PriorityQueue.FingerTree as PQ
-import           Data.Semigroup hiding (option)
-import           Data.Sequence (Seq(..))
-import qualified Data.Sequence as Seq
-import           Data.Set (Set)
-import qualified Data.Set as Set
-import           Data.Traversable
-import           Data.Void
-import           System.Environment
-import           System.Exit
-import           Text.Megaparsec hiding (State(..), parseMaybe, oneOf, noneOf, choice, many, some)
-import qualified Text.Megaparsec as P
-import           Text.Megaparsec.Char
-import qualified Text.Megaparsec.Char.Lexer as Lex
-import           Text.Read (readMaybe)
+import Control.Applicative
+import Control.Arrow hiding (left, right)
+import Control.Monad
+import Data.Char
+import Data.Foldable
+import Data.Function
+import Data.Ix
+import Data.List
+import Data.List.Split (splitOn, chunksOf)
+import Data.Map (Map)
+import Data.Map qualified as Map
+import Data.Maybe
+import Data.Ord
+import Data.PriorityQueue.FingerTree qualified as PQ
+import Data.Semigroup hiding (option)
+import Data.Sequence (Seq(..))
+import Data.Sequence qualified as Seq
+import Data.Set (Set)
+import Data.Set qualified as Set
+import Data.Traversable
+import Data.Void
+import System.Environment
+import System.Exit
+import Text.Megaparsec hiding (State(..), Pos, parseMaybe, oneOf, noneOf, choice, many, some)
+import Text.Megaparsec qualified as P
+import Text.Megaparsec.Char
+import Text.Megaparsec.Char.Lexer qualified as Lex
+import Text.Read (readMaybe)
 
 -- Parsing
 
