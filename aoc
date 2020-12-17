@@ -14,28 +14,32 @@
 ghcFlags=(
     -O2
 
-    -XBlockArguments
-    -XLambdaCase
+    -XAllowAmbiguousTypes
     -XApplicativeDo
-    -XNamedFieldPuns
-    -XRecordWildCards
-    -XOverloadedStrings
-    -XTupleSections
-    -XMultiWayIf
-    -XTypeApplications
-    -XTypeFamilies
-    -XGADTs
-    -XScopedTypeVariables
+    -XBangPatterns
+    -XBlockArguments
+    -XDeriveGeneric
+    -XDerivingVia
     -XFlexibleContexts
     -XFlexibleInstances
-    -XMultiParamTypeClasses
-    -XTypeSynonymInstances
-    -XAllowAmbiguousTypes
-    -XNoMonomorphismRestriction
-    -XBangPatterns
-    -XViewPatterns
-    -XTemplateHaskell
+    -XGADTs
     -XImportQualifiedPost
+    -XLambdaCase
+    -XMultiParamTypeClasses
+    -XMultiWayIf
+    -XNamedFieldPuns
+    -XNoMonomorphismRestriction
+    -XOverloadedStrings
+    -XParallelListComp
+    -XRecordWildCards
+    -XScopedTypeVariables
+    -XStandaloneDeriving
+    -XTemplateHaskell
+    -XTupleSections
+    -XTypeApplications
+    -XTypeFamilies
+    -XTypeSynonymInstances
+    -XViewPatterns
 )
 
 log() {
