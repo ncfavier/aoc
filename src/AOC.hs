@@ -3,6 +3,7 @@ module AOC ( module AOC
            , module Control.Applicative
            , module Control.Arrow
            , module Control.Monad
+           , module Control.Monad.Combinators.Expr
            , module Data.Char
            , module Data.Foldable
            , module Data.Function
@@ -23,6 +24,7 @@ module AOC ( module AOC
 import Control.Applicative
 import Control.Arrow hiding (left, right)
 import Control.Monad
+import Control.Monad.Combinators.Expr
 import Data.Char
 import Data.Foldable
 import Data.Function
@@ -56,11 +58,18 @@ readInput = maybe getContents readFile =<< lookupEnv "AOC_INPUT"
 
 type Parser = Parsec Void String
 
+parseLines :: String -> Parser a -> Parser [a]
+parseLines s p = for (lines s) \line ->
+    setInput line *> p <* setInput "\n" <* newline <* eof
+
 parseIO :: Parser a -> String -> IO a
 parseIO p s = do
     case runParser (p <* eof) "" s of
         Left e -> die (errorBundlePretty e)
         Right a -> pure a
+
+parseIOLines :: Parser a -> String -> IO [a]
+parseIOLines p s = parseIO (parseLines s p) s
 
 parseInput :: Parser a -> IO a
 parseInput p = parseIO p =<< readInput
@@ -68,9 +77,7 @@ parseInput p = parseIO p =<< readInput
 parseInputLines :: Parser a -> IO [a]
 parseInputLines p = do
     s <- readInput
-    let p' = for (lines s) \line ->
-            setInput line *> p <* setInput "\n" <* newline <* eof
-    parseIO p' s
+    parseIOLines p s
 
 lexeme :: Parser a -> Parser a
 lexeme = Lex.lexeme (Lex.space space1 empty empty)
