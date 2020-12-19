@@ -6,7 +6,7 @@
     name = "";
     shell = { pkgs }: pkgs.mkShell {
       nativeBuildInputs = [
-        (pkgs.haskellPackages.ghcWithHoogle (p: with p; [
+        (pkgs.haskellPackages.ghcWithPackages (p: with p; [
           arithmoi
           comonad
           containers
