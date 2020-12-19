@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
-# usage: run [-t] [-c] [-r] [-i INPUT] [YEAR] [DAYS...]
+# usage: aoc [run|edit|submit]
+#
+# run [-t] [-c] [-r] [-i INPUT] [YEAR] [DAYS...]
+#   compile and run the specified days
 #
 #   -t          time execution
 #   -c          only compile the source files
@@ -10,6 +13,14 @@
 #   run                 # run the current day
 #   run YEAR            # run days 1-25 of YEAR
 #   run [YEAR] DAYS...  # run given DAYS of YEAR (defaults to current year)
+#
+# edit [[YEAR] DAY]
+#   open the specified day in $EDITOR with a default template
+#
+# submit LEVEL ANSWER [[YEAR] DAY]
+#   submit an answer
+
+# === config ===
 
 ghcFlags=(
     -O2
@@ -42,6 +53,8 @@ ghcFlags=(
     -XViewPatterns
 )
 
+# === end config ===
+
 log() {
     echo "$(tput setaf 2)✓$(tput sgr0) $*"
 }
@@ -51,71 +64,140 @@ die() {
     exit 1
 }
 
-session=$(< .session) || die "No session file found"
-export TZ=EST
+request() {
+    session=$(< .session) || die "No session file found"
+    curl -fsSL -b "session=$session" "$@"
+}
 
-time=0 runOnly=0 compileOnly=0 forceInput=
+getDays() {
+    year=
+    days=()
 
-while getopts :tcri: o; do case $o in
-    t) time=1;;
-    c) compileOnly=1;;
-    r) runOnly=1;;
-    i) forceInput=$2;;
-    :) die "Flag -$OPTARG requires an argument";;
-    *) die "Invalid flag -$OPTARG";;
-esac done
+    if (( $# )); then
+        for arg do
+            [[ $arg == +([0-9]) ]] || die "Invalid argument \`$arg\`"
+            if (( arg > 100 )); then
+                year=$arg
+            else
+                days+=("$arg")
+            fi
+        done
+        year=${year:-$(date +%Y)}
+        (( ${#days[@]} )) || days=({1..25})
+    else
+        year=$(date +%Y)
+        days=("$(date -d '1 hour' +%-d)")
+    fi
+}
 
-shift "$(( OPTIND - 1 ))"
+getDay() {
+    year=$1 day=$2
+    printf -v module Day%02d "$day"
+    src=src/$year/$module.hs input=inputs/$year/$day bin=bin/$year/$day build=build/$year
+    url="https://adventofcode.com/$year/day/$day"
+}
 
-year=
-days=()
+run() {
+    time=0 runOnly=0 compileOnly=0 forceInput=
 
-if (( $# )); then
-    for arg do
-        [[ $arg == +([0-9]) ]] || die "Invalid argument \`$arg\`"
-        if (( arg > 100 )); then
-            year=$arg
-        else
-            days+=("$arg")
+    while getopts :tcri: o; do case $o in
+        t) time=1;;
+        c) compileOnly=1;;
+        r) runOnly=1;;
+        i) forceInput=$2;;
+        :) die "Flag -$OPTARG requires an argument";;
+        *) die "Invalid flag -$OPTARG";;
+    esac done
+    shift "$(( OPTIND - 1 ))"
+    getDays "$@"
+
+    runAll() for day in "${days[@]}"; do
+        getDay "$year" "$day"
+
+        [[ -e $src ]] || continue
+        (( ! runOnly )) && mkdir -p "$(dirname "$input")" "$(dirname "$bin")" "$build"
+
+        if (( ! runOnly )) && [[ ! -e $input ]]; then
+            log "Downloading input for day $day, $year"
+            request -o "$input" "$url/input" || exit
+        fi
+
+        if (( ! runOnly )); then
+            log "Compiling day $day, $year"
+            ghc "${ghcFlags[@]}" -isrc -i"src/$year" -outputdir "$build" -o "$bin" -main-is "$module" "$src" || exit
+        fi
+
+        if (( ! compileOnly )); then
+            export AOC_INPUT=${forceInput:-$input}
+
+            (( ! runOnly )) && log "Running day $day, $year"
+            if (( time && ${#days[@]} == 1 )); then
+                time "$bin"
+            else
+                "$bin"
+            fi
         fi
     done
-    year=${year:-$(date +%Y)}
-    (( ${#days[@]} )) || days=({1..25})
-else
-    year=$(date +%Y)
-    days=("$(date -d '1 hour' +%-d)")
-fi
 
-runAll() for day in "${days[@]}"; do
-    printf -v module Day%02d "$day"
+    if (( time && ${#days[@]} > 1 )); then
+        time runAll
+    else
+        runAll
+    fi
+}
 
-    input=inputs/$year/$day bin=bin/$year/$day build=build/$year
-    (( ! runOnly )) && mkdir -p "$(dirname "$input")" "$(dirname "$bin")" "$build"
+edit() {
+    getDays "$@"
+    (( ${#days[@]} == 1 )) || die "Multiple days provided"
 
-    if (( ! runOnly )) && [[ ! -e $input ]]; then
-        log "Downloading input for day $day, $year"
-        curl -fsSL -o "$input" -b "session=$session" "https://adventofcode.com/$year/day/$day/input"
+    getDay "$year" "${days[0]}"
+
+    if [[ ! -s $src ]]; then
+        cat > "$src" << EOF
+module $module where
+
+import Control.Lens
+import Data.Map qualified as Map
+import Data.Set qualified as Set
+
+import AOC
+
+main :: IO ()
+main = do
+    input <- readInput
+    print input
+EOF
     fi
 
-    if (( ! runOnly )); then
-        log "Compiling day $day, $year"
-        ghc "${ghcFlags[@]}" -isrc -i"src/$year" -outputdir "$build" -o "$bin" -main-is "$module" "src/$year/$module.hs" || exit
-    fi
+    exec $EDITOR -- "$src"
+}
 
-    if (( ! compileOnly )); then
-        export AOC_INPUT=${forceInput:-$input}
+submit() {
+    level=$1 answer=$2
+    shift 2
 
-        (( ! runOnly )) && log "Running day $day, $year"
-        if (( time && ${#days[@]} == 1 )); then
-            time "$bin"
-        else
-            "$bin"
-        fi
-    fi
-done
+    getDays "$@"
+    (( ${#days[@]} == 1 )) || die "Multiple days provided"
 
-if (( time && ${#days[@]} > 1 )); then
-    time runAll
-else
-    runAll
-fi
+    getDay "$year" "${days[0]}"
+
+    request --data-raw "level=$level&answer=$answer" "$url/answer" |
+    xmllint --html --xpath '//main/article' - 2> /dev/null |
+    pandoc -t plain -
+
+    echo "$url#part2"
+}
+
+export TZ=EST
+
+(( $# )) || set run
+
+cmd=$1
+shift
+
+case $cmd in
+    run) run "$@";;
+    edit) edit "$@";;
+    submit) submit "$@";;
+    *) die "available commands: run, edit, submit";;
+esac

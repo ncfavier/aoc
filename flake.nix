@@ -5,8 +5,11 @@
     inherit self nixpkgs;
     name = "";
     shell = { pkgs }: pkgs.mkShell {
-      nativeBuildInputs = [
-        (pkgs.haskellPackages.ghcWithPackages (p: with p; [
+      nativeBuildInputs = with pkgs; [
+        curl
+        pandoc
+        libxml2
+        (haskellPackages.ghcWithPackages (p: with p; [
           arithmoi
           comonad
           containers
