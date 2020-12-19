@@ -79,8 +79,9 @@ parseInputLines p = do
     s <- readInput
     parseIOLines p s
 
-lexeme :: Parser a -> Parser a
-lexeme = Lex.lexeme (Lex.space space1 empty empty)
+lexeme, lexeme' :: Parser a -> Parser a
+lexeme p = p <* skipMany spaceChar
+lexeme' p = p <* skipMany (char ' ')
 
 word :: Parser String
 word = some letterChar
