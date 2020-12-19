@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# usage: aoc [run|edit|submit]
+# usage: aoc [run|edit|submit] [OPTIONS...]
 #
 # run [-t] [-c] [-r] [-i INPUT] [YEAR] [DAYS...]
 #   compile and run the specified days
