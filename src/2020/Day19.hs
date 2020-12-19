@@ -1,6 +1,7 @@
 module Day19 where
 
 import Data.Map qualified as Map
+import Text.ParserCombinators.ReadP (ReadP)
 import Text.ParserCombinators.ReadP qualified as R
 
 import AOC
@@ -14,14 +15,14 @@ rule = do
       <|> Sub <$> some (lexeme' decimal) `sepBy` lexeme' "|"
     pure (n, r)
 
-inputP :: Parser (Map Int Rule, [String])
-inputP = do
+rulesAndMessages :: Parser (Map Int Rule, [String])
+rulesAndMessages = do
     rules <- Map.fromList <$> rule `endBy` newline
     newline
     msgs <- many letterChar `endBy` newline
     pure (rules, msgs)
 
-parser :: Map Int Rule -> R.ReadP ()
+parser :: Map Int Rule -> ReadP ()
 parser rules = go Map.! 0 *> R.eof where
     go = f <$> rules
     f (Char c) = () <$ R.char c
@@ -29,7 +30,7 @@ parser rules = go Map.! 0 *> R.eof where
 
 main :: IO ()
 main = do
-    (rules, msgs) <- parseInput inputP
+    (rules, msgs) <- parseInput rulesAndMessages
     let rules' = rules & Map.insert 8 (Sub [[42], [42, 8]])
                        & Map.insert 11 (Sub [[42, 31], [42, 11, 31]])
     for_ [rules, rules'] \rules -> do
