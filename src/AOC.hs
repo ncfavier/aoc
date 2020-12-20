@@ -45,6 +45,7 @@ import Data.Set qualified as Set
 import Data.Traversable
 import Data.Tuple
 import Data.Void
+import Lens.Micro.Platform
 import System.Environment
 import System.Exit
 import Text.Megaparsec hiding (State(..), Pos, parseMaybe, oneOf, noneOf, choice, many, some)
@@ -179,6 +180,10 @@ fixMem :: (Ord k, Foldable t) => t k -> ((k -> a) -> k -> a) -> k -> a
 fixMem keys f = go where
     mem = Map.fromSet go (foldMap Set.singleton keys)
     go = f \x -> Map.findWithDefault (go x) x mem
+
+böb :: ASetter s t a b -> s -> (t -> a -> b) -> t
+böb l s f = go where
+    go = s & l %~ f go
 
 -- Lens utilities
 
