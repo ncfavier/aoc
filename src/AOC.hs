@@ -16,6 +16,7 @@ module AOC ( module AOC
            , module Data.Semigroup
            , module Data.Set
            , module Data.Traversable
+           , module Data.Tuple
            , module Text.Megaparsec
            , module Text.Megaparsec.Char
            , module Text.Read
@@ -42,6 +43,7 @@ import Data.Sequence qualified as Seq
 import Data.Set (Set)
 import Data.Set qualified as Set
 import Data.Traversable
+import Data.Tuple
 import Data.Void
 import System.Environment
 import System.Exit
@@ -188,9 +190,9 @@ type Coords = (Integer, Integer)
 
 instance Num Coords where
     (x1, y1) + (x2, y2) = (x1 + x2, y1 + y2)
+    negate (x, y) = (-x, -y)
     (*) = undefined
     fromInteger = undefined
-    negate = undefined
     abs = undefined
     signum = undefined
 
@@ -205,7 +207,7 @@ manhattan :: Coords -> Integer
 manhattan (x, y) = abs x + abs y
 
 cardinal :: [Coords]
-cardinal = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+cardinal = [(0, -1), (1, 0), (0, 1), (-1, 0)]
 
 interCardinal :: [Coords]
 interCardinal = [(-1, -1), (1, 1), (-1, 1), (1, -1)]
