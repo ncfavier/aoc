@@ -50,11 +50,11 @@ contextualise p (Tile _ g) = Map.fromList
     where (subtract 2 -> size, _) = dimensions g
 
 findPattern :: Set Coords -> Grid -> Set Coords
-findPattern pat image = mconcat
+findPattern pat (gridToSet id -> image) = mconcat
     [ occurrence
     | (x, y) <- range (minImg, maxImg - (width, height) + 1)
     , let occurrence = Set.map (+ (x, y)) pat
-    , all (\p -> Map.findWithDefault False p image) occurrence
+    , occurrence `Set.isSubsetOf` image
     ]
     where (width, height) = dimensions pat
           (minImg, maxImg) = boundingBox image
