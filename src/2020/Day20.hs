@@ -43,7 +43,7 @@ assemble (t:ts) = go ts [] (Map.singleton (0, 0) t) where
 
 contextualise :: Coords -> Tile -> Grid
 contextualise p (Tile _ g) = Map.fromList
-    [ ((fromInteger size * p) + p' - 1, b)
+    [ (size `mul` p + p' - 1, b)
     | (p', b) <- Map.toList g
     , inRange ((1, 1), (size, size)) p'
     ]

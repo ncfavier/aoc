@@ -196,6 +196,9 @@ instance Num Coords where
     abs (x, y) = (abs x, abs y)
     signum = undefined
 
+mul :: Integer -> Coords -> Coords
+mul n p = fromInteger n * p
+
 ccw, cw :: Coords -> Coords
 ccw (x, y) = (y, -x)
 cw  (x, y) = (-y, x)
