@@ -15,6 +15,7 @@
           containers
           fingertree
           kan-extensions
+          lattices
           lens
           linear
           megaparsec

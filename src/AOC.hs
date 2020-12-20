@@ -184,20 +184,17 @@ fixMem keys f = go where
 
 traverseSet f = fmap Set.fromList . traverse f . Set.toList
 
--- 2D coordinates
+-- 2D coordinates and grids
 
 type Coords = (Integer, Integer)
 
 instance Num Coords where
     (x1, y1) + (x2, y2) = (x1 + x2, y1 + y2)
+    (x1, y1) * (x2, y2) = (x1 * x2, y1 * y2)
     negate (x, y) = (-x, -y)
-    (*) = undefined
-    fromInteger = undefined
-    abs = undefined
+    fromInteger n = (n, n)
+    abs (x, y) = (abs x, abs y)
     signum = undefined
-
-mul :: Integer -> Coords -> Coords
-mul n (x, y) = (n * x, n * y)
 
 ccw, cw :: Coords -> Coords
 ccw (x, y) = (y, -x)
@@ -233,6 +230,38 @@ makeGrid s = (grid, width, height) where
     grid = Map.fromList (flatten rows)
     width = genericLength (head rows)
     height = genericLength rows
+
+gridToSet :: (a -> Bool) -> Map Coords a -> Set Coords
+gridToSet p = Map.keysSet . Map.filter p
+
+class GridLike a where
+    getCoords :: a -> [Coords]
+    mapCoords :: (Coords -> Coords) -> a -> a
+
+instance GridLike (Set Coords) where
+    getCoords = Set.toList
+    mapCoords = Set.map
+
+instance GridLike (Map Coords a) where
+    getCoords = Map.keys
+    mapCoords = Map.mapKeys
+
+boundingBox :: GridLike a => a -> (Coords, Coords)
+boundingBox g = (i, a) where
+    i = foldl1 (\(ix, iy) (x, y) -> (ix `min` x, iy `min` y)) c
+    a = foldl1 (\(ax, ay) (x, y) -> (ax `max` x, ay `max` y)) c
+    c = getCoords g
+
+dimensions :: GridLike a => a -> (Integer, Integer)
+dimensions g = (maxX - minX + 1, maxY - minY + 1) where
+    ((minX, minY), (maxX, maxY)) = boundingBox g
+
+rotateGrid :: GridLike a => a -> a
+rotateGrid g = mapCoords (\(x, y) -> (y, width - x - 1)) g where
+    (width, _) = dimensions g
+
+flipGrid :: GridLike a => a -> a
+flipGrid = mapCoords swap
 
 -- Graph exploration
 
