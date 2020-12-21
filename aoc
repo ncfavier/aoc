@@ -192,12 +192,7 @@ export TZ=EST
 
 (( $# )) || set run
 
-cmd=$1
-shift
-
-case $cmd in
-    run) run "$@";;
-    edit) edit "$@";;
-    submit) submit "$@";;
-    *) die "available commands: run, edit, submit";;
+case $1 in
+    run|edit|submit) "$@";;
+    *) die "Invalid command \`$1\`";;
 esac
