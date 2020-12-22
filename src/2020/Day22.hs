@@ -1,6 +1,6 @@
 module Day22 where
 
-import Data.Set qualified as Set
+import Data.HashSet qualified as Set
 import Safe.Exact
 
 import AOC

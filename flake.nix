@@ -24,6 +24,7 @@
           profunctors
           safe
           split
+          unordered-containers
           vector
         ]))
       ];
