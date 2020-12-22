@@ -5,6 +5,7 @@ module AOC ( module AOC
            , module Control.Monad
            , module Control.Monad.Combinators.Expr
            , module Data.Char
+           , module Data.Either
            , module Data.Foldable
            , module Data.Function
            , module Data.Ix
@@ -27,6 +28,7 @@ import Control.Arrow hiding (left, right)
 import Control.Monad
 import Control.Monad.Combinators.Expr
 import Data.Char
+import Data.Either
 import Data.Foldable
 import Data.Function
 import Data.Ix

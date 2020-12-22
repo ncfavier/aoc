@@ -22,6 +22,7 @@
           microlens-platform
           mtl
           profunctors
+          safe
           split
           vector
         ]))
