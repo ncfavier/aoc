@@ -15,6 +15,7 @@ module AOC ( module AOC
            , module Data.Maybe
            , module Data.Ord
            , module Data.Semigroup
+           , module Data.Sequence
            , module Data.Set
            , module Data.Traversable
            , module Data.Tuple
