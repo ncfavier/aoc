@@ -16,9 +16,9 @@ handsP = do
 
 game :: Bool -> ([Int], [Int]) -> Either [Int] [Int]
 game recursive = go Set.empty where
-    go seen s@(p1, p2) | s `Set.member` seen = Left p1
-    go _    (p1, []) = Left  p1
-    go _    ([], p2) = Right p2
+    go seen s@(p1, _) | s `Set.member` seen = Left p1
+    go _ (p1, []) = Left  p1
+    go _ ([], p2) = Right p2
     go seen s@(x1:p1, x2:p2)
         | leftWins  = go seen' (p1 ++ [x1, x2], p2)
         | otherwise = go seen' (p1, p2 ++ [x2, x1])
