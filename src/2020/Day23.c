@@ -15,10 +15,9 @@ int main(void) {
     long init[9] = {3,9,8,2,5,4,7,1,6};
     int rinit[9] = {7,3,0,5,4,8,6,2,1};
 
-    for (long i = 0; i < NCUPS; i++) {
+    for (long i = 0; i < NCUPS; i++)
         cups[i] = (cup) { .label = i < 9 ? init[i] : i + 1
                         , .next = cups + (i + 1) % NCUPS };
-    }
 
     cup *cur = cups;
     for (int i = 0; i < NMOVES; i++){
