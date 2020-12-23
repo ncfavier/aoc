@@ -9,6 +9,7 @@
         curl
         pandoc
         libxml2
+        xsel
         (haskellPackages.ghcWithPackages (p: with p; [
           arithmoi
           comonad
