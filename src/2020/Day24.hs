@@ -4,18 +4,15 @@ import Data.Map qualified as Map
 
 import AOC
 
-tileP :: Parser [Coords]
-tileP = many (choice dirs) where
-    dirs = [ ( 1,  0) <$ "e"
-           , (-1,  0) <$ "w"
-           , ( 0, -1) <$ "ne"
-           , (-1, -1) <$ "nw"
-           , ( 0,  1) <$ "sw"
-           , ( 1,  1) <$ "se"
-           ]
+hexDirs :: [Coords]
+hexDirs = [(-1, 0), (1, 0), (-1, -1), (0, -1), (0, 1), (1, 1)]
+
+tileP :: Parser Coords
+tileP = sum <$> many (choice dirP) where
+    dirP = zipWith (<$) hexDirs ["w", "e", "nw", "ne", "sw", "se"]
 
 neighbours :: Coords -> [Coords]
-neighbours p = map (p +) [(0, 0), (1,0), (-1,0), (0, -1), (-1, -1), (0, 1), (1, 1)]
+neighbours = traverse (+) ((0, 0):hexDirs)
 
 rule :: Cell -> Bool
 rule (Cell True n) | inRange (1,2) n = True
@@ -25,6 +22,6 @@ rule _                               = False
 main :: IO ()
 main = do
     tiles <- parseInputLines tileP
-    let alive = gridToSet id $ Map.fromListWith xor [(sum t, True) | t <- tiles]
+    let alive = gridToSet id $ Map.fromListWith xor [(t, True) | t <- tiles]
     print $ length alive
     print $ length $ iterate (evolve neighbours rule) alive !! 100

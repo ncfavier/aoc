@@ -7,7 +7,7 @@ import AOC
 type Pos = [Int]
 
 neighbours :: Pos -> [Pos]
-neighbours p = traverse (traverse (+) [-1..1]) p
+neighbours = traverse (traverse (+) [-1..1])
 
 rule :: Cell -> Bool
 rule (Cell True n) | inRange (2, 3) n = True
