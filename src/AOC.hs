@@ -4,6 +4,7 @@ module AOC ( module AOC
            , module Control.Arrow
            , module Control.Monad
            , module Control.Monad.Combinators.Expr
+           , module Data.Bits
            , module Data.Char
            , module Data.Either
            , module Data.Foldable
@@ -28,6 +29,7 @@ import Control.Applicative
 import Control.Arrow hiding (left, right)
 import Control.Monad
 import Control.Monad.Combinators.Expr
+import Data.Bits
 import Data.Char
 import Data.Either
 import Data.Foldable
@@ -37,6 +39,7 @@ import Data.List
 import Data.List.Split (splitOn, chunksOf)
 import Data.Map (Map)
 import Data.Map qualified as Map
+import Data.Map.Strict qualified as MapS
 import Data.Maybe
 import Data.Ord
 import Data.PriorityQueue.FingerTree qualified as PQ
@@ -273,6 +276,20 @@ rotateGrid g = mapCoords (\(x, y) -> (y, width - x - 1)) g where
 
 flipGrid :: GridLike a => a -> a
 flipGrid = mapCoords swap
+
+-- Cellular automata
+
+data Cell = Cell !Bool !Int
+
+instance Semigroup Cell where
+    Cell a1 n1 <> Cell a2 n2 = Cell (a1 || a2) (n1 + n2)
+
+evolve :: Ord a => (a -> [a]) -> (Cell -> Bool) -> Set a -> Set a
+evolve neighbours rule alive = MapS.keysSet (MapS.filter rule cells) where
+    cells = MapS.fromListWith (<>) (foldMap neighbourhood alive)
+    neighbourhood p = [ (p', Cell self (1 - fromEnum self))
+                      | p' <- neighbours p
+                      , let self = p == p' ]
 
 -- Graph exploration
 

@@ -3,7 +3,7 @@ module Day11 where
 import           Data.Map (Map)
 import qualified Data.Map as Map
 
-import AOC
+import AOC hiding (evolve)
 
 evolve :: Integer
        -> (Map Coords Char -> Coords -> Coords -> Maybe Char)
@@ -16,13 +16,14 @@ evolve crowded neighbour grid = Map.mapWithKey f grid where
           where neighbours = mapMaybe (neighbour grid p) principal
                 n = howMany (== '#') neighbours
 
+main :: IO ()
 main = do
     (Map.filter (/= '.') -> grid, width, height) <- makeGrid <$> readInput
     let direct grid p d = grid Map.!? (p + d)
         visible grid p d = asum (map (grid Map.!?) sight)
             where sight = takeWhile (inRange ((0, 0), (width, height)))
                         $ iterate1 (+ d) p
-    for [(4, direct), (5, visible)] \(crowded, neighbour) ->
+    for_ [(4, direct), (5, visible)] \(crowded, neighbour) ->
         print $ howMany (== '#')
               $ firstDuplicate
               $ iterate (evolve crowded neighbour) grid
