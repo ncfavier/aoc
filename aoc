@@ -29,6 +29,7 @@ ghcFlags=(
     -XApplicativeDo
     -XBangPatterns
     -XBlockArguments
+    -XDataKinds
     -XDeriveGeneric
     -XDerivingVia
     -XFlexibleContexts

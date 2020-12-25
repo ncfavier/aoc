@@ -20,6 +20,8 @@ module AOC ( module AOC
            , module Data.Set
            , module Data.Traversable
            , module Data.Tuple
+           , module GHC.Natural
+           , module Math.NumberTheory.Moduli
            , module Text.Megaparsec
            , module Text.Megaparsec.Char
            , module Text.Read
@@ -51,7 +53,9 @@ import Data.Set qualified as Set
 import Data.Traversable
 import Data.Tuple
 import Data.Void
+import GHC.Natural
 import Lens.Micro.Platform
+import Math.NumberTheory.Moduli
 import System.Environment
 import System.Exit
 import Text.Megaparsec hiding (State(..), Pos, parseMaybe, oneOf, noneOf, choice, many, some)
