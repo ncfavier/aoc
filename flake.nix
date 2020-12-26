@@ -12,6 +12,7 @@
         xsel
         (haskellPackages.ghcWithPackages (p: with p; [
           arithmoi
+          array
           comonad
           containers
           fingertree
