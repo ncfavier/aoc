@@ -5,6 +5,6 @@ This repository contains my Haskell solutions for some of the [Advent of Code](h
 - [2019](https://github.com/ncfavier/aoc/tree/master/src/2019)
 - [2020](https://github.com/ncfavier/aoc/tree/master/src/2020)
 
-You can find me in [freenode](https://webchat.freenode.net/)'s `##adventofcode`, `##adventofcode-help`, `##adventofcode-spoilers` and `#haskell` channels during December, as **nf**.
+You can probably find me in the `#adventofcode`, `#adventofcode-spoilers`, `#adventofcode-help` and `#haskell` channels on [Libera](https://libera.chat/), as **nf**.
 
-Also check out [glguy](https://github.com/glguy?tab=repositories&q=advent&type=source)'s, [jle](https://github.com/mstksg/advent-of-code-2020)'s and [nerdypepper](https://git.peppe.rs/fun/aoc/tree/)'s solutions.
+Also check out [glguy](https://github.com/glguy?tab=repositories&q=advent&type=source)'s, [jle](https://github.com/mstksg?tab=repositories&q=advent&type=source)'s and [nerdypepper](https://git.peppe.rs/fun/aoc/tree/)'s solutions.
