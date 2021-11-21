@@ -24,7 +24,6 @@
 
 ghcFlags=(
     -O2
-
     -XAllowAmbiguousTypes
     -XApplicativeDo
     -XBangPatterns
@@ -183,8 +182,7 @@ submit() {
     getDay "$year" "${days[0]}"
 
     request --data-raw "level=$level&answer=$answer" "$url/answer" |
-    xmllint --html --xpath '//main/article' - 2> /dev/null |
-    pandoc -t plain -
+    htmlq 'main article' | pandoc -t plain -
 
     echo "$url#part2"
 }

@@ -7,8 +7,8 @@
     shell = { pkgs }: pkgs.mkShell {
       nativeBuildInputs = with pkgs; [
         curl
+        htmlq
         pandoc
-        libxml2
         xsel
         (haskellPackages.ghcWithPackages (p: with p; [
           arithmoi
