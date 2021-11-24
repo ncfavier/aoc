@@ -315,6 +315,17 @@ evolve neighbours rule alive = MapS.keysSet (MapS.filter rule cells) where
 
 -- Graph exploration
 
+dfs :: (Num n, Ord a) => (a -> [a]) -> a -> [(a, n)]
+dfs = dfsOn id
+
+dfsOn :: (Num n, Ord b) => (a -> b) -> (a -> [a]) -> a -> [(a, n)]
+dfsOn rep next start = go Set.empty (Seq.singleton (start, 0)) where
+    go _ Seq.Empty = []
+    go seen (ps Seq.:|> (n, d))
+        | r `Set.member` seen = go seen ps
+        | otherwise           = (n, d):go (Set.insert r seen) (ps <> Seq.fromList [(n', d + 1) | n' <- next n])
+        where r = rep n
+
 bfs :: (Num n, Ord a) => (a -> [a]) -> a -> [(a, n)]
 bfs = bfsOn id
 
