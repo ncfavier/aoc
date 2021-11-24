@@ -24,32 +24,65 @@
 
 ghcFlags=(
     -O2
+    -W
     -XAllowAmbiguousTypes
     -XApplicativeDo
     -XBangPatterns
     -XBlockArguments
+    -XConstrainedClassMethods
+    -XConstraintKinds
     -XDataKinds
+    -XDeriveDataTypeable
+    -XDeriveFoldable
+    -XDeriveFunctor
     -XDeriveGeneric
+    -XDeriveLift
+    -XDeriveTraversable
     -XDerivingVia
+    -XDoAndIfThenElse
+    -XEmptyCase
+    -XEmptyDataDecls
+    -XEmptyDataDeriving
+    -XExistentialQuantification
+    -XExplicitForAll
     -XFlexibleContexts
     -XFlexibleInstances
     -XGADTs
+    -XHexFloatLiterals
     -XImportQualifiedPost
+    -XInstanceSigs
+    -XKindSignatures
     -XLambdaCase
+    -XLiberalTypeSynonyms
+    -XMonadComprehensions
     -XMultiParamTypeClasses
     -XMultiWayIf
     -XNamedFieldPuns
+    -XNamedWildCards
     -XNoMonomorphismRestriction
+    -XNumericUnderscores
     -XOverloadedStrings
+    -XPatternGuards
+    -XPatternSynonyms
     -XParallelListComp
+    -XPolyKinds
+    -XPostfixOperators
+    -XRankNTypes
     -XRecordWildCards
+    -XRecursiveDo
+    -XRelaxedPolyRec
     -XScopedTypeVariables
     -XStandaloneDeriving
+    -XStandaloneKindSignatures
+    -XStarIsType
     -XTemplateHaskell
+    -XTraditionalRecordSyntax
     -XTupleSections
     -XTypeApplications
+    -XTypeOperators
     -XTypeFamilies
     -XTypeSynonymInstances
+    -XUnicodeSyntax
     -XViewPatterns
 )
 
@@ -153,6 +186,7 @@ edit() {
     getDay "$year" "${days[0]}"
 
     if [[ ! -s $src ]]; then
+        mkdir -p "${src%/*}"
         cat > "$src" << EOF
 module $module where
 
@@ -164,8 +198,8 @@ import AOC
 
 main :: IO ()
 main = do
-    input <- readInput
-    print input
+  input <- readInput
+  print input
 EOF
     fi
 

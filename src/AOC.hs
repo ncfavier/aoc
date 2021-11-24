@@ -8,6 +8,8 @@ module AOC ( module AOC
            , module Data.Char
            , module Data.Either
            , module Data.Foldable
+           , module Data.Functor
+           , module Data.Functor.Identity
            , module Data.Function
            , module Data.Ix
            , module Data.List
@@ -54,7 +56,6 @@ import Data.Semigroup hiding (option)
 import Data.Sequence qualified as Seq
 import Data.Set (Set)
 import Data.Set qualified as Set
-import Data.String
 import Data.Traversable
 import Data.Tuple
 import Data.Void
@@ -131,7 +132,10 @@ a <||> b = try a <|> b
 choice :: Foldable t => t (Parser a) -> Parser a
 choice = foldr (<||>) empty
 
--- List utilities
+-- Lists and maps
+
+infixr 1 ~>
+type (~>) = Map
 
 notNull :: Foldable t => t a -> Bool
 notNull = not . null
@@ -139,8 +143,11 @@ notNull = not . null
 howMany :: (Num n, Foldable t) => (a -> Bool) -> t a -> n
 howMany p = foldl' (\c e -> if p e then c + 1 else c) 0
 
-counts :: (Num n, Foldable t, Ord a) => t a -> Map a n
+counts :: (Num n, Foldable t, Ord a) => t a -> a ~> n
 counts = foldl' (\m e -> Map.insertWith (+) e 1 m) Map.empty
+
+groups :: Ord k => [(k, a)] -> k ~> [a]
+groups kv = Map.fromListWith (<>) [(k, pure v) | (k, v) <- kv]
 
 minimumOn :: (Foldable t, Ord b) => (a -> b) -> t a -> a
 minimumOn = minimumBy . comparing
@@ -183,10 +190,10 @@ pickSubset n s = do
             pure (s1, Set.insert x s2)
     pick <|> don'tPick
 
--- Function utilities
+-- Functions and memoizing
 
 nTimes :: (a -> a) -> Integer -> a -> a
-nTimes f 0 = id
+nTimes _ 0 = id
 nTimes f 1 = f
 nTimes f n = f . nTimes f (pred n)
 
@@ -199,8 +206,9 @@ böb :: ASetter s t a b -> s -> (t -> a -> b) -> t
 böb l s f = go where
     go = s & l %~ f go
 
--- Lens utilities
+-- Lenses and traversals
 
+traverseSet :: (Applicative f, Ord b) => (a -> f b) -> Set a -> f (Set b)
 traverseSet f = fmap Set.fromList . traverse f . Set.toList
 
 -- 2D coordinates and grids
@@ -252,14 +260,14 @@ flattenWithCoords rows = [ ((x, y), a)
                          , (x, a)   <- zip [0..] row
                          ]
 
-makeGrid :: Num n => String -> (Map (Integer, Integer) Char, n, n)
+makeGrid :: Num n => String -> ((Integer, Integer) ~> Char, n, n)
 makeGrid s = (grid, width, height) where
     rows = lines s
     grid = Map.fromList (flattenWithCoords rows)
     width = genericLength (head rows)
     height = genericLength rows
 
-gridToSet :: (a -> Bool) -> Map Coords a -> Set Coords
+gridToSet :: (a -> Bool) -> Coords ~> a -> Set Coords
 gridToSet p = Map.keysSet . Map.filter p
 
 class GridLike a where
@@ -270,7 +278,7 @@ instance GridLike (Set Coords) where
     getCoords = Set.toList
     mapCoords = Set.map
 
-instance GridLike (Map Coords a) where
+instance GridLike (Coords ~> a) where
     getCoords = Map.keys
     mapCoords = Map.mapKeys
 
@@ -312,8 +320,8 @@ bfs = bfsOn id
 
 bfsOn :: (Num n, Ord b) => (a -> b) -> (a -> [a]) -> a -> [(a, n)]
 bfsOn rep next start = go Set.empty (Seq.singleton (start, 0)) where
-    go seen Empty = []
-    go seen ((n, d) :< ps)
+    go _ Seq.Empty = []
+    go seen ((n, d) Seq.:<| ps)
         | r `Set.member` seen = go seen ps
         | otherwise           = (n, d):go (Set.insert r seen) (ps <> Seq.fromList [(n', d + 1) | n' <- next n])
         where r = rep n
