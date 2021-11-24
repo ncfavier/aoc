@@ -14,7 +14,7 @@ format = (,) <$> rule `endBy` newline <* newline <*> some atom <* newline
     atom = (:) <$> upperChar <*> many lowerChar
     rule = (,) . pure <$> word <* " => " <*> some atom
 
-alter :: Molecule ~> [Molecule] -> Molecule -> [Molecule]
+alter :: Molecule `Map` [Molecule] -> Molecule -> [Molecule]
 alter rules m = do
   (old, news) <- Map.assocs rules
   (prefix, tail) <- zip (inits m) (tails m)

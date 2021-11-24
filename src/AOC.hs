@@ -134,19 +134,16 @@ choice = foldr (<||>) empty
 
 -- Lists and maps
 
-infixr 1 ~>
-type (~>) = Map
-
 notNull :: Foldable t => t a -> Bool
 notNull = not . null
 
 howMany :: (Num n, Foldable t) => (a -> Bool) -> t a -> n
 howMany p = foldl' (\c e -> if p e then c + 1 else c) 0
 
-counts :: (Num n, Foldable t, Ord a) => t a -> a ~> n
+counts :: (Num n, Foldable t, Ord a) => t a -> Map a n
 counts = foldl' (\m e -> Map.insertWith (+) e 1 m) Map.empty
 
-groups :: Ord k => [(k, a)] -> k ~> [a]
+groups :: Ord k => [(k, a)] -> Map k [a]
 groups kv = Map.fromListWith (<>) [(k, pure v) | (k, v) <- kv]
 
 minimumOn :: (Foldable t, Ord b) => (a -> b) -> t a -> a
@@ -260,14 +257,14 @@ flattenWithCoords rows = [ ((x, y), a)
                          , (x, a)   <- zip [0..] row
                          ]
 
-makeGrid :: Num n => String -> ((Integer, Integer) ~> Char, n, n)
+makeGrid :: Num n => String -> (Map (Integer, Integer) Char, n, n)
 makeGrid s = (grid, width, height) where
     rows = lines s
     grid = Map.fromList (flattenWithCoords rows)
     width = genericLength (head rows)
     height = genericLength rows
 
-gridToSet :: (a -> Bool) -> Coords ~> a -> Set Coords
+gridToSet :: (a -> Bool) -> Map Coords a -> Set Coords
 gridToSet p = Map.keysSet . Map.filter p
 
 class GridLike a where
@@ -278,7 +275,7 @@ instance GridLike (Set Coords) where
     getCoords = Set.toList
     mapCoords = Set.map
 
-instance GridLike (Coords ~> a) where
+instance GridLike (Map Coords a) where
     getCoords = Map.keys
     mapCoords = Map.mapKeys
 
