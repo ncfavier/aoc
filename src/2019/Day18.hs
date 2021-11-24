@@ -43,7 +43,7 @@ main = do
     input <- lines <$> readInput
     let (width, height) = (genericLength (head input), genericLength input)
         center = (width `div` 2, height `div` 2)
-        grid = array ((0, 0), (width - 1, height - 1)) (flatten input)
+        grid = array ((0, 0), (width - 1, height - 1)) (flattenWithCoords input)
     print (shortestPath grid)
     let grid' = grid // [(p, '#') | p <- center:neighbours center]
                      // [(p, '@') | p <- diagonal center]

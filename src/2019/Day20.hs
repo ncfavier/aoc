@@ -13,7 +13,7 @@ main = do
     input <- lines <$> readInput
     let (width, height) = (genericLength (head input), genericLength input)
         distanceToEdge (x, y) = minimum [x, width - x, y, height - y]
-        grid = M.fromList $ flatten input
+        grid = M.fromList $ flattenWithCoords input
         tile p = M.findWithDefault ' ' p grid
         portal p | isUpper (tile (up p))    = Just [tile (up (up p)), tile (up p)]
                  | isUpper (tile (down p))  = Just [tile (down p), tile (down (down p))]

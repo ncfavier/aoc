@@ -4,7 +4,7 @@ import qualified Data.Map as M
 
 import AOC
 
-parseAsteroids g = [p | (p, '#') <- flatten (lines g)]
+parseAsteroids g = [p | (p, '#') <- flattenWithCoords (lines g)]
 
 insertAsteroid [x] = insertBy (comparing manhattan) x
 
