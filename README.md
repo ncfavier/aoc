@@ -1,10 +1,9 @@
-This repository contains my Haskell solutions for some of the [Advent of Code](https://adventofcode.com/) challenges:
+# λ ho. ho ho
 
-- [2016](https://github.com/ncfavier/aoc/tree/master/src/2016) day 11
-- [2018](https://github.com/ncfavier/aoc/tree/master/src/2018) days 1, 2, 25
-- [2019](https://github.com/ncfavier/aoc/tree/master/src/2019)
-- [2020](https://github.com/ncfavier/aoc/tree/master/src/2020)
+This repository contains my Haskell solutions for some of the [Advent of Code](https://adventofcode.com/) puzzles ([2015](https://github.com/ncfavier/aoc/tree/main/src/2015), [2016](https://github.com/ncfavier/aoc/tree/main/src/2016), [2018](https://github.com/ncfavier/aoc/tree/main/src/2018), [2019](https://github.com/ncfavier/aoc/tree/main/src/2019), [2020](https://github.com/ncfavier/aoc/tree/main/src/2020), 2021 soon). The [`AOC`](https://github.com/ncfavier/aoc/blob/main/src/AOC.hs) module defines shared utility functions.
 
-You can probably find me in the `#adventofcode`, `#adventofcode-spoilers`, `#adventofcode-help` and `#haskell` channels on [Libera](https://libera.chat/), as **nf**.
+I participate in Advent of Code mainly to learn stuff about Haskell, but also because waking up at 6 a.m. through December to do programming puzzles is [*fun*](http://dwarffortresswiki.org/index.php/DF2014:Losing).
+
+If you want to chat, you can probably find me in the `#adventofcode`, `#adventofcode-spoilers`, `#adventofcode-help` and `#haskell` channels on [Libera](https://libera.chat/), as **nf**.
 
 Also check out [glguy](https://github.com/glguy?tab=repositories&q=advent&type=source)'s, [jle](https://github.com/mstksg?tab=repositories&q=advent&type=source)'s and [nerdypepper](https://git.peppe.rs/fun/aoc/tree/)'s solutions.
