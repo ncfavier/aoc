@@ -78,13 +78,12 @@ type Parser = Parsec Void String
 
 parseLines :: String -> Parser a -> Parser [a]
 parseLines s p = for (lines s) \line ->
-    setInput line *> p <* setInput "\n" <* newline <* eof
+  setInput line *> p <* setInput "\n" <* newline <* eof
 
 parseIO :: Parser a -> String -> IO a
-parseIO p s = do
-    case runParser (p <* eof) "" s of
-        Left e -> die (errorBundlePretty e)
-        Right a -> pure a
+parseIO p s = case runParser (p <* eof) "" s of
+  Left e -> die (errorBundlePretty e)
+  Right a -> pure a
 
 parseIOLines :: Parser a -> String -> IO [a]
 parseIOLines p s = parseIO (parseLines s p) s
@@ -93,9 +92,7 @@ parseInput :: Parser a -> IO a
 parseInput p = parseIO p =<< readInput
 
 parseInputLines :: Parser a -> IO [a]
-parseInputLines p = do
-    s <- readInput
-    parseIOLines p s
+parseInputLines p = parseIOLines p =<< readInput
 
 lexeme, lexeme' :: Parser a -> Parser a
 lexeme p = p <* skipMany spaceChar
@@ -157,11 +154,11 @@ iterate1 f x = iterate f (f x)
 
 findDuplicatesBy :: Ord b => (a -> b) -> [a] -> [a]
 findDuplicatesBy f = go Set.empty where
-    go seen (x:xs) | r `Set.member` seen = x:xs'
-                   | otherwise = xs'
-                   where xs' = go (Set.insert r seen) xs
-                         r = f x
-    go _ [] = []
+  go seen (x:xs) | r `Set.member` seen = x:xs'
+                 | otherwise = xs'
+                 where xs' = go (Set.insert r seen) xs
+                       r = f x
+  go _ [] = []
 
 findDuplicates :: Ord a => [a] -> [a]
 findDuplicates = findDuplicatesBy id
@@ -178,14 +175,14 @@ pickOne l = [(y, xs ++ ys) | (xs, y:ys) <- zip (inits l) (tails l)]
 pickSubset :: Ord a => Integer -> Set a -> [(Set a, Set a)]
 pickSubset 0 s = pure (Set.empty, s)
 pickSubset n s = do
-    (x, s') <- maybeToList (Set.minView s)
-    let pick = do
-            (s1, s2) <- pickSubset (pred n) s'
-            pure (Set.insert x s1, s2)
-        don'tPick = do
-            (s1, s2) <- pickSubset n s'
-            pure (s1, Set.insert x s2)
-    pick <|> don'tPick
+  (x, s') <- maybeToList (Set.minView s)
+  let pick = do
+        (s1, s2) <- pickSubset (pred n) s'
+        pure (Set.insert x s1, s2)
+      don'tPick = do
+        (s1, s2) <- pickSubset n s'
+        pure (s1, Set.insert x s2)
+  pick <|> don'tPick
 
 -- Functions and memoizing
 
@@ -196,12 +193,12 @@ nTimes f n = f . nTimes f (pred n)
 
 fixMem :: (Ord k, Foldable t) => t k -> ((k -> a) -> k -> a) -> k -> a
 fixMem keys f = go where
-    mem = Map.fromSet go (foldMap Set.singleton keys)
-    go = f \x -> Map.findWithDefault (go x) x mem
+  mem = Map.fromSet go (foldMap Set.singleton keys)
+  go = f \x -> Map.findWithDefault (go x) x mem
 
 böb :: ASetter s t a b -> s -> (t -> a -> b) -> t
 böb l s f = go where
-    go = s & l %~ f go
+  go = s & l %~ f go
 
 -- Lenses and traversals
 
@@ -213,12 +210,12 @@ traverseSet f = fmap Set.fromList . traverse f . Set.toList
 type Coords = (Integer, Integer)
 
 instance Num Coords where
-    (x1, y1) + (x2, y2) = (x1 + x2, y1 + y2)
-    (x1, y1) * (x2, y2) = (x1 * x2, y1 * y2)
-    negate (x, y) = (-x, -y)
-    fromInteger n = (n, n)
-    abs (x, y) = (abs x, abs y)
-    signum = undefined
+  (x1, y1) + (x2, y2) = (x1 + x2, y1 + y2)
+  (x1, y1) * (x2, y2) = (x1 * x2, y1 * y2)
+  negate (x, y) = (-x, -y)
+  fromInteger n = (n, n)
+  abs (x, y) = (abs x, abs y)
+  signum = undefined
 
 clamp :: Coords -> Coords -> Coords -> Coords
 clamp (xmin, ymin) (xmax, ymax) (x, y) = (min xmax (max xmin x), min ymax (max ymin y))
@@ -259,39 +256,39 @@ flattenWithCoords rows = [ ((x, y), a)
 
 makeGrid :: Num n => String -> (Map (Integer, Integer) Char, n, n)
 makeGrid s = (grid, width, height) where
-    rows = lines s
-    grid = Map.fromList (flattenWithCoords rows)
-    width = genericLength (head rows)
-    height = genericLength rows
+  rows = lines s
+  grid = Map.fromList (flattenWithCoords rows)
+  width = genericLength (head rows)
+  height = genericLength rows
 
 gridToSet :: (a -> Bool) -> Map Coords a -> Set Coords
 gridToSet p = Map.keysSet . Map.filter p
 
 class GridLike a where
-    getCoords :: a -> [Coords]
-    mapCoords :: (Coords -> Coords) -> a -> a
+  getCoords :: a -> [Coords]
+  mapCoords :: (Coords -> Coords) -> a -> a
 
 instance GridLike (Set Coords) where
-    getCoords = Set.toList
-    mapCoords = Set.map
+  getCoords = Set.toList
+  mapCoords = Set.map
 
 instance GridLike (Map Coords a) where
-    getCoords = Map.keys
-    mapCoords = Map.mapKeys
+  getCoords = Map.keys
+  mapCoords = Map.mapKeys
 
 boundingBox :: GridLike a => a -> (Coords, Coords)
 boundingBox g = (i, a) where
-    i = foldl1 (\(ix, iy) (x, y) -> (ix `min` x, iy `min` y)) c
-    a = foldl1 (\(ax, ay) (x, y) -> (ax `max` x, ay `max` y)) c
-    c = getCoords g
+  i = foldl1 (\(ix, iy) (x, y) -> (ix `min` x, iy `min` y)) c
+  a = foldl1 (\(ax, ay) (x, y) -> (ax `max` x, ay `max` y)) c
+  c = getCoords g
 
 dimensions :: GridLike a => a -> (Integer, Integer)
 dimensions g = (maxX - minX + 1, maxY - minY + 1) where
-    ((minX, minY), (maxX, maxY)) = boundingBox g
+  ((minX, minY), (maxX, maxY)) = boundingBox g
 
 rotateGrid :: GridLike a => a -> a
 rotateGrid g = mapCoords (\(x, y) -> (y, width - x - 1)) g where
-    (width, _) = dimensions g
+  (width, _) = dimensions g
 
 flipGrid :: GridLike a => a -> a
 flipGrid = mapCoords swap
@@ -301,14 +298,14 @@ flipGrid = mapCoords swap
 data Cell = Cell !Bool !Int
 
 instance Semigroup Cell where
-    Cell a1 n1 <> Cell a2 n2 = Cell (a1 || a2) (n1 + n2)
+  Cell a1 n1 <> Cell a2 n2 = Cell (a1 || a2) (n1 + n2)
 
 evolve :: Ord a => (a -> [a]) -> (Cell -> Bool) -> Set a -> Set a
 evolve neighbours rule alive = MapS.keysSet (MapS.filter rule cells) where
-    cells = MapS.fromListWith (<>) (foldMap neighbourhood alive)
-    neighbourhood p = [ (p', Cell self (1 - fromEnum self))
-                      | p' <- neighbours p
-                      , let self = p == p' ]
+  cells = MapS.fromListWith (<>) (foldMap neighbourhood alive)
+  neighbourhood p = [ (p', Cell self (1 - fromEnum self))
+                    | p' <- neighbours p
+                    , let self = p == p' ]
 
 -- Graph exploration
 
@@ -317,33 +314,33 @@ dfs = dfsOn id
 
 dfsOn :: (Num n, Ord b) => (a -> b) -> (a -> [a]) -> a -> [(a, n)]
 dfsOn rep next start = go Set.empty (Seq.singleton (start, 0)) where
-    go _ Seq.Empty = []
-    go seen (ps Seq.:|> (n, d))
-        | r `Set.member` seen = go seen ps
-        | otherwise           = (n, d):go (Set.insert r seen) (ps <> Seq.fromList [(n', d + 1) | n' <- next n])
-        where r = rep n
+  go _ Seq.Empty = []
+  go seen (ps Seq.:|> (n, d))
+    | r `Set.member` seen = go seen ps
+    | otherwise           = (n, d):go (Set.insert r seen) (ps <> Seq.fromList [(n', d + 1) | n' <- next n])
+    where r = rep n
 
 bfs :: (Num n, Ord a) => (a -> [a]) -> a -> [(a, n)]
 bfs = bfsOn id
 
 bfsOn :: (Num n, Ord b) => (a -> b) -> (a -> [a]) -> a -> [(a, n)]
 bfsOn rep next start = go Set.empty (Seq.singleton (start, 0)) where
-    go _ Seq.Empty = []
-    go seen ((n, d) Seq.:<| ps)
-        | r `Set.member` seen = go seen ps
-        | otherwise           = (n, d):go (Set.insert r seen) (ps <> Seq.fromList [(n', d + 1) | n' <- next n])
-        where r = rep n
+  go _ Seq.Empty = []
+  go seen ((n, d) Seq.:<| ps)
+    | r `Set.member` seen = go seen ps
+    | otherwise           = (n, d):go (Set.insert r seen) (ps <> Seq.fromList [(n', d + 1) | n' <- next n])
+    where r = rep n
 
 dijkstra :: (Num n, Ord n, Ord a) => (a -> [(a, n)]) -> a -> [(a, n)]
 dijkstra = dijkstraOn id
 
 dijkstraOn :: (Num n, Ord n, Ord b) => (a -> b) -> (a -> [(a, n)]) -> a -> [(a, n)]
 dijkstraOn rep next start = go Set.empty (PQ.singleton 0 start) where
-    go seen q
-        | Just ((d, n), q') <- PQ.minViewWithKey q =
-            let r = rep n in
-            if r `Set.member` seen then
-                go seen q'
-            else
-                (n, d):go (Set.insert r seen) (PQ.union q' (PQ.fromList [(d + c, n') | (n', c) <- next n]))
-        | otherwise = []
+  go seen q
+    | Just ((d, n), q') <- PQ.minViewWithKey q =
+      let r = rep n in
+      if r `Set.member` seen then
+        go seen q'
+      else
+        (n, d):go (Set.insert r seen) (PQ.union q' (PQ.fromList [(d + c, n') | (n', c) <- next n]))
+    | otherwise = []

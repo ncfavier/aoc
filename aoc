@@ -196,14 +196,17 @@ import Data.Set qualified as Set
 
 import AOC
 
+format = do
+  takeRest
+
 main :: IO ()
 main = do
-  input <- readInput
+  input <- parseInput format
   print input
 EOF
     fi
 
-    exec $EDITOR -- "$src"
+    exec $EDITOR "$src"
 }
 
 submit() {
