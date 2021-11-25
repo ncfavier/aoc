@@ -22,6 +22,6 @@ finalDistance move _direction = go Ship { _position = (0, 0), .. } where
         ('F', n):xs -> go (s & position +~ n `mul` _direction) xs
 
 main = do
-    steps <- parseInputLines ((,) <$> letterChar <*> decimal)
+    steps <- parseInput (eachLine $ (,) <$> letterChar <*> decimal)
     print $ finalDistance position (1, 0) steps
     print $ finalDistance direction (10, -1) steps

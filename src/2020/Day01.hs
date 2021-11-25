@@ -10,5 +10,5 @@ solve nums n = product . head $ go nums n [] where
         go tail (pred n) (x:xs)
 
 main = do
-    nums <- parseInputLines number
+    nums <- parseInput $ eachLine number
     for [2, 3] do solve nums >>> print

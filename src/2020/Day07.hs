@@ -10,7 +10,7 @@ rule = (,) <$> word <> " " <> word <* " bags contain " <*> contents <* "." where
     otherBags = flip (,) <$> decimal <* " " <*> word <> " " <> word <* " bag" <* optional "s"
 
 main = do
-    rules <- Map.fromList <$> parseInputLines rule
+    rules <- Map.fromList <$> parseInput (eachLine rule)
     let bags = Map.keysSet rules
         contains target = fixMem bags \containsTarget k ->
             or [k' == target || containsTarget k' | (k', _) <- rules Map.! k]

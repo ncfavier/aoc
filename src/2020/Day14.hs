@@ -38,5 +38,5 @@ run version = go (replicate 36 'X') Map.empty where
 
 main :: IO ()
 main = do
-    ins <- parseInputLines (mask <|> mem)
+    ins <- parseInput (eachLine $ mask <|> mem)
     for_ [1, 2] \version -> print (run version ins)

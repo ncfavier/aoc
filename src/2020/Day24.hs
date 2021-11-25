@@ -21,7 +21,7 @@ rule _                               = False
 
 main :: IO ()
 main = do
-    tiles <- parseInputLines tileP
+    tiles <- parseInput $ eachLine tileP
     let alive = gridToSet id $ Map.fromListWith xor [(t, True) | t <- tiles]
     print $ length alive
     print $ length $ iterate (evolve neighbours rule) alive !! 100

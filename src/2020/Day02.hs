@@ -6,7 +6,7 @@ policiesAndPasswords :: Parser (Int, Int, Char, String)
 policiesAndPasswords = (,,,) <$> decimal <* "-" <*> decimal <* space <*> letterChar <* ": " <*> many letterChar
 
 main = do
-    input <- parseInputLines policiesAndPasswords
+    input <- parseInput $ eachLine policiesAndPasswords
     print $ input & howMany \(from, to, letter, password) ->
         let c = howMany (== letter) password in
         inRange (from, to) c

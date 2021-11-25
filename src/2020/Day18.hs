@@ -15,4 +15,4 @@ main :: IO ()
 main = do
     input <- readInput
     for_ [[[plus, times]], [[plus], [times]]] \ops ->
-        print . sum =<< parseIOLines (expr ops) input
+        print . sum =<< parseIO (eachLine $ expr ops) input

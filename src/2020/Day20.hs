@@ -16,7 +16,7 @@ tileP = do
     pure (Tile n grid)
 
 symmetries :: Grid -> [Grid]
-symmetries g = rotations g ++ rotations (flipGrid g) where
+symmetries g = rotations g ++ rotations (transposeGrid g) where
     rotations = take 4 . iterate rotateGrid
 
 edges :: Grid -> [[Bool]]

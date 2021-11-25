@@ -17,5 +17,5 @@ crack pk = discreteLogarithm cg rt x where
 main :: IO ()
 main = case someNatVal m of
     SomeNat (_ :: _proxy m) -> do
-        [card, door] <- parseInputLines (decimal @(Mod m))
+        [card, door] <- parseInput (eachLine $ decimal @(Mod m))
         print $ getVal $ door ^% crack card

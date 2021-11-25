@@ -6,7 +6,7 @@ import qualified Data.Set as Set
 import AOC
 
 main = do
-    ids <- Set.fromList <$> parseInputLines do
+    ids <- fmap Set.fromList . parseInput $ eachLine do
         setInput =<< many ('0' <$ oneOf "LF" <|> '1' <$ oneOf "RB")
         binary
     print (Set.findMax ids)

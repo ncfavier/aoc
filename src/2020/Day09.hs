@@ -11,7 +11,7 @@ noSum ns = last ns `Set.notMember` sums
         sums = foldr (\(x:xs) ss -> Set.fromList (map (+x) xs) <> ss) Set.empty ts
 
 main = do
-    nums <- parseInputLines decimal
+    nums <- parseInput $ eachLine decimal
     let blocks = filter (\x -> length x == 26) $ map (take 26) $ tails nums
         invalid = last $ head [t | t <- blocks, noSum t]
     print invalid

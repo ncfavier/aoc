@@ -76,23 +76,20 @@ readInput = maybe getContents readFile =<< lookupEnv "AOC_INPUT"
 
 type Parser = Parsec Void String
 
-parseLines :: String -> Parser a -> Parser [a]
-parseLines s p = for (lines s) \line ->
-  setInput line *> p <* setInput "\n" <* newline <* eof
-
 parseIO :: Parser a -> String -> IO a
 parseIO p s = case runParser (p <* eof) "" s of
   Left e -> die (errorBundlePretty e)
   Right a -> pure a
 
-parseIOLines :: Parser a -> String -> IO [a]
-parseIOLines p s = parseIO (parseLines s p) s
-
 parseInput :: Parser a -> IO a
 parseInput p = parseIO p =<< readInput
 
-parseInputLines :: Parser a -> IO [a]
-parseInputLines p = parseIOLines p =<< readInput
+-- | Runs a parser on each input line isolated from the others.
+eachLine :: Parser a -> Parser [a]
+eachLine p = do
+  input <- getInput
+  for (lines input) \line ->
+    setInput line *> p <* setInput "\n" <* newline <* eof
 
 lexeme, lexeme' :: Parser a -> Parser a
 lexeme p = p <* skipMany spaceChar
@@ -290,8 +287,8 @@ rotateGrid :: GridLike a => a -> a
 rotateGrid g = mapCoords (\(x, y) -> (y, width - x - 1)) g where
   (width, _) = dimensions g
 
-flipGrid :: GridLike a => a -> a
-flipGrid = mapCoords swap
+transposeGrid :: GridLike a => a -> a
+transposeGrid = mapCoords swap
 
 -- Cellular automata
 

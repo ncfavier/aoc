@@ -18,7 +18,7 @@ instruction = (,) <$> op <* " " <*> number
     where op = Acc <$ "acc" <|> Nop <$ "nop" <|> Jmp <$ "jmp"
 
 main = do
-    program <- parseInputLines instruction
+    program <- parseInput $ eachLine instruction
     let run ins n acc seen = do
             -- if n `Set.member` seen then acc else
                 if n >= length ins then [(True, n, acc)] else

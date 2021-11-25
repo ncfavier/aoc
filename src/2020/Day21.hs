@@ -22,7 +22,7 @@ solve (sortOn (length . snd) -> (i, cs):xs) = do
 
 main :: IO ()
 main = do
-    input <- parseInputLines inputP
+    input <- parseInput $ eachLine inputP
     let candidates = Map.fromListWith Set.intersection
             [ (a, ingredients)
             | (Set.fromList -> ingredients, allergens) <- input

@@ -7,7 +7,7 @@ import qualified Data.IntSet as IS
 import AOC
 
 main = do
-    input <- parseInputLines decimal
+    input <- parseInput $ eachLine decimal
     let nums = 0:sort input ++ [device]
         device = maximum input + 3
         diffs = counts (zipWith subtract nums (tail nums))

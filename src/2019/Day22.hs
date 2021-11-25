@@ -64,7 +64,7 @@ techniqueToLinear (Increment k) = fromInteger k :+ 0
 
 main :: IO ()
 main = do
-    techniques <- parseInputLines technique
+    techniques <- parseInput $ eachLine technique
     let shuffle :: KnownNat n => Linear (Mod n)
         shuffle = foldMap techniqueToLinear techniques
     print $ shuffle @10007 $@ 2019
