@@ -131,6 +131,10 @@ choice = foldr (<||>) empty
 notNull :: Foldable t => t a -> Bool
 notNull = not . null
 
+lengthAtLeast, lengthAtMost :: Foldable t => t a -> Int -> Bool
+lengthAtLeast t n = length (take n (toList t)) == n
+lengthAtMost t n = length (take (n + 1) (toList t)) <= n
+
 howMany :: (Num n, Foldable t) => (a -> Bool) -> t a -> n
 howMany p = foldl' (\c e -> if p e then c + 1 else c) 0
 
@@ -138,7 +142,7 @@ counts :: (Num n, Foldable t, Ord a) => t a -> Map a n
 counts = foldl' (\m e -> Map.insertWith (+) e 1 m) Map.empty
 
 groups :: Ord k => [(k, a)] -> Map k [a]
-groups kv = Map.fromListWith (<>) [(k, pure v) | (k, v) <- kv]
+groups kv = Map.fromListWith (++) [(k, [v]) | (k, v) <- kv]
 
 minimumOn :: (Foldable t, Ord b) => (a -> b) -> t a -> a
 minimumOn = minimumBy . comparing
@@ -213,6 +217,9 @@ instance Num Coords where
   fromInteger n = (n, n)
   abs (x, y) = (abs x, abs y)
   signum = undefined
+
+rectangle :: Coords -> (Integer, Integer) -> [Coords]
+rectangle (x, y) (w, h) = [(i, j) | i <- [x..x + w - 1], j <- [y..y + h - 1]]
 
 clamp :: Coords -> Coords -> Coords -> Coords
 clamp (xmin, ymin) (xmax, ymax) (x, y) = (min xmax (max xmin x), min ymax (max ymin y))
