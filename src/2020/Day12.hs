@@ -1,7 +1,5 @@
 module Day12 where
 
-import Lens.Micro.Platform
-
 import AOC
 
 data Ship = Ship { _position  :: Coords

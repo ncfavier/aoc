@@ -45,6 +45,7 @@ ghcFlags=(
     -XEmptyDataDeriving
     -XExistentialQuantification
     -XExplicitForAll
+    -XExtendedDefaultRules
     -XFlexibleContexts
     -XFlexibleInstances
     -XGADTs

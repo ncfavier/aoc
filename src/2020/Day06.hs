@@ -7,5 +7,5 @@ import AOC
 
 main = do
     groups <- map (map Set.fromList . lines) . splitOn "\n\n" <$> readInput
-    for [Set.unions, foldr1 Set.intersection] \f ->
+    for_ [Set.unions, foldr1 Set.intersection] \f ->
         print $ sum $ map (length . f) groups

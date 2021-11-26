@@ -4,9 +4,8 @@ import           Data.Set (Set)
 import qualified Data.Set as Set
 import           Data.Vector (Vector)
 import qualified Data.Vector as Vec
-import           Lens.Micro.Platform
 
-import AOC
+import AOC hiding (State, element)
 
 data UnitType = Chip | Generator
               deriving (Eq, Ord)

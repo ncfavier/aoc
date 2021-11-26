@@ -1,10 +1,13 @@
-{-# LANGUAGE TypeFamilies #-}
 module AOC ( module AOC
            , module Control.Applicative
            , module Control.Arrow
+           , module Control.Lens
            , module Control.Monad
            , module Control.Monad.Combinators.Expr
+           , module Control.Monad.Search
+           , module Control.Monad.State
            , module Data.Bits
+           , module Data.Bool
            , module Data.Char
            , module Data.Either
            , module Data.Foldable
@@ -31,10 +34,13 @@ module AOC ( module AOC
 
 import Control.Applicative
 import Control.Arrow hiding (left, right)
-import Control.Lens
+import Control.Lens hiding (noneOf, index)
 import Control.Monad
 import Control.Monad.Combinators.Expr
+import Control.Monad.Search
+import Control.Monad.State
 import Data.Bits
+import Data.Bool
 import Data.Char
 import Data.Either
 import Data.Foldable
@@ -42,7 +48,7 @@ import Data.Function
 import Data.Functor
 import Data.Functor.Identity
 import Data.Ix
-import Data.List
+import Data.List hiding (uncons)
 import Data.List.Split (splitOn, chunksOf)
 import Data.Map (Map)
 import Data.Map qualified as Map
@@ -63,11 +69,13 @@ import GHC.Natural
 import Math.NumberTheory.Moduli
 import System.Environment
 import System.Exit
-import Text.Megaparsec hiding (State(..), Pos, parseMaybe, oneOf, noneOf, choice, many, some)
+import Text.Megaparsec hiding (State(..), Pos, choice, many, some)
 import Text.Megaparsec qualified as P
 import Text.Megaparsec.Char
 import Text.Megaparsec.Char.Lexer qualified as Lex
 import Text.Read (readMaybe)
+
+instance (Ord c, Monoid c, Monad m) => MonadFail (SearchT c m) where fail _ = empty
 
 -- Parsing
 
@@ -110,15 +118,6 @@ number = Lex.signed (pure ()) Lex.decimal
 numberInRange :: (Ix a, Num a) => (a, a) -> Parser a
 numberInRange r = mfilter (inRange r) number
 
-parseMaybe :: Parser a -> String -> Maybe a
-parseMaybe = P.parseMaybe
-
-oneOf :: String -> Parser Char
-oneOf = P.oneOf
-
-noneOf :: String -> Parser Char
-noneOf = P.noneOf
-
 infixl 3 <||>
 (<||>) :: Parser a -> Parser a -> Parser a
 a <||> b = try a <|> b
@@ -127,6 +126,8 @@ choice :: Foldable t => t (Parser a) -> Parser a
 choice = foldr (<||>) empty
 
 -- Lists and maps
+
+(==>) = (,)
 
 notNull :: Foldable t => t a -> Bool
 notNull = not . null
@@ -184,6 +185,12 @@ pickSubset n s = do
         (s1, s2) <- pickSubset n s'
         pure (s1, Set.insert x s2)
   pick <|> don'tPick
+
+enumerate :: (Bounded a, Enum a) => [a]
+enumerate = [minBound..maxBound]
+
+alt :: (Foldable t, Alternative f) => t a -> f a
+alt = auf (_Wrapping Alt) foldMap pure
 
 -- Functions and memoizing
 

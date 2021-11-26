@@ -21,7 +21,7 @@
           lens
           linear
           megaparsec
-          microlens-platform
+          monad-dijkstra
           mtl
           profunctors
           safe
