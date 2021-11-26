@@ -66,8 +66,8 @@ game = loop [hardMode >> effects, playerTurn >> effects, bossTurn]
 
 wins = mfilter ((<= 0) . view bossHp) game
 
-minimumCostToWin start = c where
-  Just (Sum c, _) = evalState (runSearchBestT (evalStateT wins start)) Set.empty
+minimumCostToWin start = c
+  where Just (Sum c, _) = evalState (runSearchBestT (evalStateT wins start)) Set.empty
 
 main = do
   (_bossHp, bossDamage) <- parseInput do
