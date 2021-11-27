@@ -1,6 +1,5 @@
 module Day21 where
 
-import Control.Lens
 import Data.Map qualified as Map
 import Data.Set qualified as Set
 

@@ -70,7 +70,6 @@ import Math.NumberTheory.Moduli
 import System.Environment
 import System.Exit
 import Text.Megaparsec hiding (State(..), Pos, choice, many, some)
-import Text.Megaparsec qualified as P
 import Text.Megaparsec.Char
 import Text.Megaparsec.Char.Lexer qualified as Lex
 import Text.Read (readMaybe)
@@ -138,6 +137,9 @@ lengthAtMost t n = length (take (n + 1) (toList t)) <= n
 
 howMany :: (Num n, Foldable t) => (a -> Bool) -> t a -> n
 howMany p = foldl' (\c e -> if p e then c + 1 else c) 0
+
+rle :: Eq a => [a] -> [(a, Int)]
+rle = map (head &&& length) . group
 
 counts :: (Num n, Foldable t, Ord a) => t a -> Map a n
 counts = foldl' (\m e -> Map.insertWith (+) e 1 m) Map.empty

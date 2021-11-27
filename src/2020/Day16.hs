@@ -1,7 +1,5 @@
 module Day16 where
 
-import Control.Lens
-
 import AOC
 
 type Field = (String, Int -> Bool)
