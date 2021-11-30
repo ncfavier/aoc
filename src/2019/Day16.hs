@@ -5,14 +5,14 @@ import qualified Data.Vector.Unboxed as V
 
 import AOC
 
-pattern :: Int -> [Int]
-pattern i = tail $ cycle $ [0, 1, 0, -1] >>= replicate (i + 1)
+pattern' :: Int -> [Int]
+pattern' i = tail $ cycle $ [0, 1, 0, -1] >>= replicate (i + 1)
 
 ones :: Int -> Int
 ones n = abs n `mod` 10
 
 phase :: [Int] -> [Int]
-phase l = [ones $ sum $ zipWith (*) l (pattern i) | i <- [0..pred (length l)]]
+phase l = [ones $ sum $ zipWith (*) l (pattern' i) | i <- [0..pred (length l)]]
 
 phase' :: Vector Int -> Vector Int
 phase' = V.scanr1 f

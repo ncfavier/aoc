@@ -20,11 +20,12 @@
 # submit LEVEL ANSWER [[YEAR] DAY]
 #   submit an answer
 
-# === config ===
-
-ghcFlags=(
+ghcBuildFlags=(
     -O3
     -W
+)
+
+ghcFlags=(
     -XAllowAmbiguousTypes
     -XApplicativeDo
     -XBangPatterns
@@ -86,8 +87,6 @@ ghcFlags=(
     -XUnicodeSyntax
     -XViewPatterns
 )
-
-# === end config ===
 
 log() {
     echo "$(tput setaf 2)✓$(tput sgr0) $*"
@@ -158,7 +157,7 @@ run() {
 
         if (( ! runOnly )); then
             log "Compiling day $day, $year"
-            ghc "${ghcFlags[@]}" -isrc -i"src/$year" -outputdir "$build" -o "$bin" -main-is "$module" "$src" || exit
+            ghc "${ghcFlags[@]}" "${ghcBuildFlags[@]}" -isrc -i"src/$year" -outputdir "$build" -o "$bin" -main-is "$module" "$src" || exit
         fi
 
         if (( ! compileOnly )); then
@@ -178,6 +177,10 @@ run() {
     else
         runAll
     fi
+}
+
+bios() {
+  printf '%s\n' "${ghcFlags[@]}" -isrc -i"${HIE_BIOS_ARG%/*}" AOC Intcode{,IO} > "$HIE_BIOS_OUTPUT"
 }
 
 edit() {
@@ -229,6 +232,6 @@ export TZ=EST
 (( $# )) || set run
 
 case $1 in
-    run|edit|submit) "$@";;
+    run|bios|edit|submit) "$@";;
     *) die "Invalid command \`$1\`";;
 esac

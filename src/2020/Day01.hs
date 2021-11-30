@@ -11,4 +11,4 @@ solve nums n = product . head $ go nums n [] where
 
 main = do
     nums <- parseInput $ eachLine number
-    for [2, 3] do solve nums >>> print
+    for_ [2, 3] do solve nums >>> print
