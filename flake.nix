@@ -6,10 +6,6 @@
     name = "";
     shell = { pkgs }: pkgs.mkShell {
       nativeBuildInputs = with pkgs; [
-        curl
-        htmlq
-        pandoc
-        xsel
         (haskellPackages.ghcWithPackages (p: with p; [
           arithmoi
           array
@@ -29,6 +25,10 @@
           unordered-containers
           vector
         ]))
+        curl
+        htmlq
+        pandoc
+        xsel
       ];
     };
   };

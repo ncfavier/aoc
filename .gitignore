@@ -1,4 +1,4 @@
+flake.lock
 bin
 build
-dist-newstyle
 .session
