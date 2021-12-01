@@ -199,10 +199,10 @@ edit() {
         cat > "$src" << EOF
 module $module where
 
+import AOC
+
 import Data.Map qualified as Map
 import Data.Set qualified as Set
-
-import AOC
 
 format = do
   takeRest

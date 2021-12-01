@@ -1,6 +1,6 @@
 # λ ho. ho ho
 
-This repository contains my Haskell solutions for some of the [Advent of Code](https://adventofcode.com/) puzzles ([2015](https://github.com/ncfavier/aoc/tree/main/src/2015), [2016](https://github.com/ncfavier/aoc/tree/main/src/2016), [2018](https://github.com/ncfavier/aoc/tree/main/src/2018), [2019](https://github.com/ncfavier/aoc/tree/main/src/2019), [2020](https://github.com/ncfavier/aoc/tree/main/src/2020), 2021 soon). The [`AOC`](https://github.com/ncfavier/aoc/blob/main/src/AOC.hs) module defines shared utility functions.
+This repository contains my Haskell solutions for some of the [Advent of Code](https://adventofcode.com/) puzzles ([2015](https://github.com/ncfavier/aoc/tree/main/src/2015), [2016](https://github.com/ncfavier/aoc/tree/main/src/2016), [2018](https://github.com/ncfavier/aoc/tree/main/src/2018), [2019](https://github.com/ncfavier/aoc/tree/main/src/2019), [2020](https://github.com/ncfavier/aoc/tree/main/src/2020), [2021](https://github.com/ncfavier/aoc/tree/main/src/2021)). The [`AOC`](https://github.com/ncfavier/aoc/blob/main/src/AOC.hs) module defines shared utility functions.
 
 I participate in Advent of Code mainly to learn stuff about Haskell, but also because waking up at 6 a.m. through December to do programming puzzles is [*fun*](http://dwarffortresswiki.org/index.php/DF2014:Losing).
 
