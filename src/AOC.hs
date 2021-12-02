@@ -26,6 +26,11 @@ module AOC ( module AOC
            , module Data.Traversable
            , module Data.Tuple
            , module GHC.Natural
+           , module Linear.V0
+           , module Linear.V1
+           , module Linear.V2
+           , module Linear.V3
+           , module Linear.V4
            , module Math.NumberTheory.Moduli
            , module Text.Megaparsec
            , module Text.Megaparsec.Char
@@ -66,6 +71,11 @@ import Data.Traversable
 import Data.Tuple
 import Data.Void
 import GHC.Natural
+import Linear.V0
+import Linear.V1
+import Linear.V2
+import Linear.V3
+import Linear.V4
 import Math.NumberTheory.Moduli
 import System.Environment
 import System.Exit
@@ -258,8 +268,8 @@ interCardinal = [(-1, -1), (1, 1), (-1, 1), (1, -1)]
 principal :: [Coords]
 principal = cardinal ++ interCardinal
 
-angle :: RealFloat n => Coords -> n
-angle (x, y) = -atan2 (fromIntegral x) (fromIntegral y)
+coordsAngle :: RealFloat n => Coords -> n
+coordsAngle (x, y) = -atan2 (fromIntegral x) (fromIntegral y)
 
 flattenWithCoords :: [[a]] -> [((Integer, Integer), a)]
 flattenWithCoords rows = [ ((x, y), a)
