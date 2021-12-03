@@ -20,9 +20,9 @@ search criterion xs = head [x | [x] <- scanl sieve xs [0..]]
 main :: IO ()
 main = do
   report <- map (map (== '1')) . lines <$> readInput
-  let gamma = mostCommon <$> transpose report
-      epsilon = not <$> gamma
-      oxygen = search False report
-      co2    = search True report
-  print (fromBits gamma * fromBits epsilon)
-  print (fromBits oxygen * fromBits co2)
+  let γ = mostCommon <$> transpose report
+      ε = not <$> γ
+      o₂  = search False report
+      co₂ = search True report
+  print (fromBits γ * fromBits ε)
+  print (fromBits o₂ * fromBits co₂)
