@@ -271,7 +271,7 @@ principal = cardinal ++ interCardinal
 coordsAngle :: RealFloat n => Coords -> n
 coordsAngle (x, y) = -atan2 (fromIntegral x) (fromIntegral y)
 
-flattenWithCoords :: [[a]] -> [((Integer, Integer), a)]
+flattenWithCoords :: (Num n, Enum n) => [[a]] -> [((n, n), a)]
 flattenWithCoords rows = [ ((x, y), a)
                          | (y, row) <- zip [0..] rows
                          , (x, a)   <- zip [0..] row

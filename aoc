@@ -120,7 +120,7 @@ getDays() {
         (( ${#days[@]} )) || days=({1..25})
     else
         year=$(date +%Y)
-        days=("$(date -d '1 hour' +%-d)")
+        days=("$(date -d '2 hours' +%-d)")
     fi
 }
 
@@ -138,7 +138,7 @@ run() {
         t) time=1;;
         c) compileOnly=1;;
         r) runOnly=1;;
-        i) forceInput=$2;;
+        i) forceInput=$OPTARG;;
         :) die "Flag -$OPTARG requires an argument";;
         *) die "Invalid flag -$OPTARG";;
     esac done

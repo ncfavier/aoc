@@ -2,13 +2,11 @@ module Day03 where
 
 import AOC
 
-import Data.Map qualified as M
-
 fromBits :: (Foldable t, Num a) => t Bool -> a
 fromBits = foldl' (\a b -> 2*a + if b then 1 else 0) 0
 
 mostCommon :: Foldable t => t Bool -> Bool
-mostCommon = counts >>> \m -> m M.! True >= m M.! False
+mostCommon t = howMany (== True) t >= howMany (== False) t
 
 search :: Bool -> [[Bool]] -> [Bool]
 search criterion xs = head [x | [x] <- scanl sieve xs [0..]]
