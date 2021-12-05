@@ -201,6 +201,10 @@ pickSubset n s = do
 enumerate :: (Bounded a, Enum a) => [a]
 enumerate = [minBound..maxBound]
 
+fromTo :: (Ord a, Enum a) => a -> a -> [a]
+fromTo from to | from <= to = [from..to]
+               | otherwise  = [from,pred from..to]
+
 alt :: (Foldable t, Alternative f) => t a -> f a
 alt = auf (_Wrapping Alt) foldMap pure
 
