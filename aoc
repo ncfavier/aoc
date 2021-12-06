@@ -21,7 +21,7 @@
 #   submit an answer
 
 ghcBuildFlags=(
-    -O3
+    -O2
     -W
     -Wno-incomplete-patterns
 )
