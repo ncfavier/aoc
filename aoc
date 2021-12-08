@@ -23,7 +23,6 @@
 ghcBuildFlags=(
     -O2
     -W
-    -Wno-incomplete-patterns
 )
 
 ghcFlags=(
