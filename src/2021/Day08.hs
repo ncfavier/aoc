@@ -17,11 +17,11 @@ decode (digits, outputs) = (ds M.!) <$> outputs
       [l51, l52, l53, l61, l62, l63]
     ds = M.fromList [(d0,0),(d1,1),(d2,2),(d3,3),(d4,4),(d5,5),(d6,6),(d7,7),(d8,8),(d9,9)]
 
-toBase10 = foldl' (\a b -> a * 10 + b) 0
+fromBase10 = foldl' (\a b -> a * 10 + b) 0
 
 main :: IO ()
 main = do
   displays <- parseInput format
   let outputs = decode <$> displays
   print $ howMany (`elem` [1, 4, 7, 8]) $ concat outputs
-  print $ sum $ toBase10 <$> outputs
+  print $ sum $ fromBase10 <$> outputs
