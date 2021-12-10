@@ -145,6 +145,8 @@ lengthAtLeast, lengthAtMost :: Foldable t => t a -> Int -> Bool
 lengthAtLeast t n = length (take n (toList t)) == n
 lengthAtMost t n = length (take (n + 1) (toList t)) <= n
 
+median l = l !! (length l `div` 2)
+
 howMany :: (Num n, Foldable t) => (a -> Bool) -> t a -> n
 howMany p = foldl' (\c e -> if p e then c + 1 else c) 0
 
