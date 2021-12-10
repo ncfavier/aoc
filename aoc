@@ -20,12 +20,11 @@
 # submit LEVEL ANSWER [[YEAR] DAY]
 #   submit an answer
 
-ghcBuildFlags=(
+ghcFlags=(
     -O2
     -W
-)
+    -Wno-incomplete-patterns
 
-ghcFlags=(
     -XAllowAmbiguousTypes
     -XApplicativeDo
     -XBangPatterns
@@ -157,7 +156,7 @@ run() {
 
         if (( ! runOnly )); then
             log "Compiling day $day, $year"
-            ghc "${ghcFlags[@]}" "${ghcBuildFlags[@]}" -isrc -i"src/$year" -outputdir "$build" -o "$bin" -main-is "$module" "$src" || exit
+            ghc "${ghcFlags[@]}" -isrc -i"src/$year" -outputdir "$build" -o "$bin" -main-is "$module" "$src" || exit
         fi
 
         if (( ! compileOnly )); then
