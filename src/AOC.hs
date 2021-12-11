@@ -186,6 +186,11 @@ firstDuplicateBy f = head . findDuplicatesBy f
 firstDuplicate :: Ord a => [a] -> a
 firstDuplicate = firstDuplicateBy id
 
+fixedPoint :: Eq a => (a -> a) -> a -> a
+fixedPoint f = go where
+  go x | x == f x  = x
+       | otherwise =  go (f x)
+
 pickOne :: [a] -> [(a, [a])]
 pickOne l = [(y, xs ++ ys) | (xs, y:ys) <- zip (inits l) (tails l)]
 

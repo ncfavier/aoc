@@ -10,7 +10,7 @@ step width height octopuses = update flashes where
     | p <- flashes, d <- principal, let p' = p + d
     , inRange ((0, 0), (height - 1, width - 1)) p'
     ]
-  flashes = firstDuplicate $ iterate (M.keys . M.filter (== 0) . update) []
+  flashes = fixedPoint (M.keys . M.filter (== 0) . update) []
   reset = fmap (\n -> if n > 9 then 0 else n)
 
 main :: IO ()
