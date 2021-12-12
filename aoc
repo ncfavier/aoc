@@ -22,8 +22,6 @@
 
 ghcFlags=(
     -O2
-    -W
-    -Wno-incomplete-patterns
 
     -XAllowAmbiguousTypes
     -XApplicativeDo
@@ -156,7 +154,8 @@ run() {
 
         if (( ! runOnly )); then
             log "Compiling day $day, $year"
-            ghc "${ghcFlags[@]}" -isrc -i"src/$year" -outputdir "$build" -o "$bin" -main-is "$module" "$src" || exit
+            ghc -W -Wno-incomplete-patterns "${ghcFlags[@]}" \
+                -isrc -i"src/$year" -outputdir "$build" -o "$bin" -main-is "$module" "$src" || exit
         fi
 
         if (( ! compileOnly )); then

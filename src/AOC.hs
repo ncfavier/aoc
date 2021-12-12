@@ -155,7 +155,8 @@ rle :: Eq a => [a] -> [(a, Int)]
 rle = map (head &&& length) . group
 
 counts :: (Num n, Foldable t, Ord a) => t a -> Map a n
-counts = foldl' (\m e -> Map.insertWith (+) e 1 m) Map.empty
+counts = countsOf folded
+countsOf t = foldlOf' t (\m e -> Map.insertWith (+) e 1 m) Map.empty
 
 groups :: Ord k => [(k, a)] -> Map k [a]
 groups kv = Map.fromListWith (++) [(k, [v]) | (k, v) <- kv]
