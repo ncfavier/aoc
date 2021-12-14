@@ -314,13 +314,13 @@ instance GridLike (Map Coords a) where
 
 boundingBox :: GridLike a => a -> (Coords, Coords)
 boundingBox g = (i, a) where
-  i = foldl1 (\(ix, iy) (x, y) -> (ix `min` x, iy `min` y)) c
-  a = foldl1 (\(ax, ay) (x, y) -> (ax `max` x, ay `max` y)) c
+  i = foldl1 (\(xmin, ymin) (x, y) -> (xmin `min` x, ymin `min` y)) c
+  a = foldl1 (\(xmax, ymax) (x, y) -> (xmax `max` x, ymax `max` y)) c
   c = getCoords g
 
 dimensions :: GridLike a => a -> (Integer, Integer)
-dimensions g = (maxX - minX + 1, maxY - minY + 1) where
-  ((minX, minY), (maxX, maxY)) = boundingBox g
+dimensions g = (xmax - xmin + 1, ymax - ymin + 1) where
+  ((xmin, ymin), (xmax, ymax)) = boundingBox g
 
 rotateGrid :: GridLike a => a -> a
 rotateGrid g = mapCoords (\(x, y) -> (y, width - x - 1)) g where
