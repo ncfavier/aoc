@@ -242,11 +242,11 @@ traverseSet f = fmap Set.fromList . traverse f . Set.toList
 
 type Coords = (Integer, Integer)
 
-instance Num Coords where
+instance Num i => Num (i, i) where
   (x1, y1) + (x2, y2) = (x1 + x2, y1 + y2)
   (x1, y1) * (x2, y2) = (x1 * x2, y1 * y2)
   negate (x, y) = (-x, -y)
-  fromInteger n = (n, n)
+  fromInteger n = (fromInteger n, fromInteger n)
   abs (x, y) = (abs x, abs y)
   signum = undefined
 
@@ -266,19 +266,19 @@ cw  (x, y) = (-y, x)
 manhattan :: Coords -> Integer
 manhattan (x, y) = abs x + abs y
 
-up, right, down, left :: Coords
+up, right, down, left :: Num i => (i, i)
 right = (1, 0)
 down = (0, 1)
-left = -right
-up = -down
+left = (-1, 0)
+up = (0, -1)
 
-cardinal :: [Coords]
+cardinal :: Num i => [(i, i)]
 cardinal = [up, right, down, left]
 
-interCardinal :: [Coords]
+interCardinal :: Num i => [(i, i)]
 interCardinal = [(-1, -1), (1, 1), (-1, 1), (1, -1)]
 
-principal :: [Coords]
+principal :: Num i => [(i, i)]
 principal = cardinal ++ interCardinal
 
 coordsAngle :: RealFloat n => Coords -> n
@@ -290,7 +290,7 @@ flattenWithCoords rows = [ ((x, y), a)
                          , (x, a)   <- zip [0..] row
                          ]
 
-makeGrid :: Num n => String -> (Map (Integer, Integer) Char, n, n)
+makeGrid :: (Ord n, Enum n, Num n) => String -> (Map (n, n) Char, n, n)
 makeGrid s = (grid, width, height) where
   rows = lines s
   grid = Map.fromList (flattenWithCoords rows)
@@ -328,6 +328,9 @@ rotateGrid g = mapCoords (\(x, y) -> (y, width - x - 1)) g where
 
 transposeGrid :: GridLike a => a -> a
 transposeGrid = mapCoords swap
+
+withNeighbours :: (Ord i, Num i) => [i] -> (i -> a -> b) -> Map i a -> i -> [b]
+withNeighbours ds f g p = [f p' a | p' <- map (p +) ds, Just a <- [g Map.!? p']]
 
 -- Cellular automata
 
