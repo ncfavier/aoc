@@ -2,9 +2,6 @@ module Day03 where
 
 import AOC
 
-fromBits :: (Foldable t, Num a) => t Bool -> a
-fromBits = foldl' (\a b -> 2*a + if b then 1 else 0) 0
-
 mostCommon :: Foldable t => t Bool -> Bool
 mostCommon t = howMany (== True) t >= howMany (== False) t
 

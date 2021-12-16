@@ -34,6 +34,7 @@ module AOC ( module AOC
            , module Math.NumberTheory.Moduli
            , module Text.Megaparsec
            , module Text.Megaparsec.Char
+           , module Text.Megaparsec.Char.Lexer
            , module Text.Read
            ) where
 
@@ -79,9 +80,10 @@ import Linear.V4
 import Math.NumberTheory.Moduli
 import System.Environment
 import System.Exit
-import Text.Megaparsec hiding (State(..), Pos, choice, many, some)
+import Text.Megaparsec hiding (State(..), Pos, choice, many, some, takeP, takeWhileP, takeWhile1P)
+import Text.Megaparsec qualified
 import Text.Megaparsec.Char
-import Text.Megaparsec.Char.Lexer qualified as Lex
+import Text.Megaparsec.Char.Lexer (signed, binary, octal, decimal, hexadecimal)
 import Text.Read (readMaybe)
 
 instance (Ord c, Monoid c, Monad m) => MonadFail (SearchT c m) where fail _ = empty
@@ -108,24 +110,28 @@ eachLine p = do
   for (lines input) \line ->
     setInput line *> p <* setInput "\n" <* newline <* eof
 
-lexeme, lexeme' :: Parser a -> Parser a
-lexeme p = p <* skipMany spaceChar
-lexeme' p = p <* skipMany (char ' ')
+takeP       = Text.Megaparsec.takeP Nothing
+takeWhileP  = Text.Megaparsec.takeWhileP Nothing
+takeWhile1P = Text.Megaparsec.takeWhile1P Nothing
+
+lexeme, hlexeme :: Parser a -> Parser a
+lexeme p = p <* space
+hlexeme p = p <* hspace
 
 word :: Parser String
 word = some letterChar
 
-decimal, binary, octal, hexadecimal :: Num a => Parser a
-decimal     = Lex.decimal
-binary      = Lex.binary
-octal       = Lex.octal
-hexadecimal = Lex.hexadecimal
-
 number :: Num a => Parser a
-number = Lex.signed (pure ()) Lex.decimal
+number = signed (pure ()) decimal
 
 numberInRange :: (Ix a, Num a) => (a, a) -> Parser a
 numberInRange r = mfilter (inRange r) number
+
+fromBits :: (Foldable t, Num a) => t Bool -> a
+fromBits = foldl' (\a b -> 2*a + if b then 1 else 0) 0
+
+toBits :: Bits a => Int -> a -> [Bool]
+toBits l n = [testBit n i | i <- [l-1,l-2..0]]
 
 infixl 3 <||>
 (<||>) :: Parser a -> Parser a -> Parser a
