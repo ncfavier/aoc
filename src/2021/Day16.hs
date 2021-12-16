@@ -2,14 +2,16 @@ module Day16 where
 
 import AOC
 
+type BParser = Parsec Void [Bool]
+
 data Packet a = Packet Int (Payload a)
 data Payload a = Literal a | Operator OType [Packet a]
 data OType = OSum | OProduct | OMinimum | OMaximum | OGreaterThan | OLessThan | OEqual
 
-format = concat <$> many (toBits 4 . digitToInt <$> hexDigitChar) <* newline
-
+int :: Num a => Int -> BParser a
 int l = fromBits <$> takeP l
 
+packet :: Num a => BParser (Packet a)
 packet = do
   version <- int 3
   typeID <- int 3
@@ -18,10 +20,12 @@ packet = do
     _ -> operator typeID
   pure (Packet version payload)
 
+literal :: Num a => BParser (Payload a)
 literal = do
   value <- fromBits <$> (concat <$> many (single True *> takeP 4)) <> (single False *> takeP 4)
   pure (Literal value)
 
+operator :: Num a => Int -> BParser (Payload a)
 operator typeID = do
   lengthType <- anySingle
   packets <- if lengthType then do
@@ -59,6 +63,9 @@ eval (Packet _ p) = eval' p
     op OGreaterThan = \[a, b] -> bool 0 1 (a > b)
     op OLessThan    = \[a, b] -> bool 0 1 (a < b)
     op OEqual       = \[a, b] -> bool 0 1 (a == b)
+
+format :: Parser [Bool]
+format = concat <$> many (toBits 4 . digitToInt <$> hexDigitChar) <* newline
 
 main :: IO ()
 main = do

@@ -25,6 +25,7 @@ module AOC ( module AOC
            , module Data.Set
            , module Data.Traversable
            , module Data.Tuple
+           , module Data.Void
            , module GHC.Natural
            , module Linear.V0
            , module Linear.V1
