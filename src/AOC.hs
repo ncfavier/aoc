@@ -128,18 +128,23 @@ number = signed (pure ()) decimal
 numberInRange :: (Ix a, Num a) => (a, a) -> Parser a
 numberInRange r = mfilter (inRange r) number
 
-fromBits :: (Foldable t, Num a) => t Bool -> a
-fromBits = foldl' (\a b -> 2*a + if b then 1 else 0) 0
-
-toBits :: Bits a => Int -> a -> [Bool]
-toBits l n = [testBit n i | i <- [l-1,l-2..0]]
-
 infixl 3 <||>
 (<||>) :: Parser a -> Parser a -> Parser a
 a <||> b = try a <|> b
 
 choice :: Foldable t => t (Parser a) -> Parser a
 choice = foldr (<||>) empty
+
+-- Math
+
+sumUpTo :: Integral a => a -> a
+sumUpTo n = n * (n + 1) `div` 2
+
+fromBits :: (Foldable t, Num a) => t Bool -> a
+fromBits = foldl' (\a b -> 2*a + if b then 1 else 0) 0
+
+toBits :: Bits a => Int -> a -> [Bool]
+toBits l n = [testBit n i | i <- [l-1,l-2..0]]
 
 -- Lists and maps
 
@@ -152,14 +157,12 @@ lengthAtLeast, lengthAtMost :: Foldable t => t a -> Int -> Bool
 lengthAtLeast t n = length (take n (toList t)) == n
 lengthAtMost t n = length (take (n + 1) (toList t)) <= n
 
+median :: [a] -> a
 median l = l !! (length l `div` 2)
 
 howMany :: (Num n, Foldable t) => (a -> Bool) -> t a -> n
 howMany = howManyOf folded
 howManyOf t p = foldlOf' t (\c e -> if p e then c + 1 else c) 0
-
-rle :: Eq a => [a] -> [(a, Int)]
-rle = map (head &&& length) . group
 
 counts :: (Num n, Foldable t, Ord a) => t a -> Map a n
 counts = countsOf folded
@@ -168,14 +171,14 @@ countsOf t = foldlOf' t (\m e -> Map.insertWith (+) e 1 m) Map.empty
 groups :: Ord k => [(k, a)] -> Map k [a]
 groups kv = Map.fromListWith (++) [(k, [v]) | (k, v) <- kv]
 
+rle :: Eq a => [a] -> [(a, Int)]
+rle = map (head &&& length) . group
+
 minimumOn :: (Foldable t, Ord b) => (a -> b) -> t a -> a
 minimumOn = minimumBy . comparing
 
 maximumOn :: (Foldable t, Ord b) => (a -> b) -> t a -> a
 maximumOn = maximumBy . comparing
-
-iterate1 :: (a -> a) -> a -> [a]
-iterate1 f x = iterate f (f x)
 
 findDuplicatesBy :: Ord b => (a -> b) -> [a] -> [a]
 findDuplicatesBy f = go Set.empty where
@@ -193,11 +196,6 @@ firstDuplicateBy f = head . findDuplicatesBy f
 
 firstDuplicate :: Ord a => [a] -> a
 firstDuplicate = firstDuplicateBy id
-
-fixedPoint :: Eq a => (a -> a) -> a -> a
-fixedPoint f = go where
-  go x | x == f x  = x
-       | otherwise =  go (f x)
 
 pickOne :: [a] -> [(a, [a])]
 pickOne l = [(y, xs ++ ys) | (xs, y:ys) <- zip (inits l) (tails l)]
@@ -226,6 +224,14 @@ alt = auf (_Wrapping Alt) foldMap pure
 
 -- Functions and memoizing
 
+fixedPoint :: Eq a => (a -> a) -> a -> a
+fixedPoint f = go where
+  go x | x == f x  = x
+       | otherwise = go (f x)
+
+iterate1 :: (a -> a) -> a -> [a]
+iterate1 f x = iterate f (f x)
+
 nTimes :: (a -> a) -> Integer -> a -> a
 nTimes _ 0 = id
 nTimes f 1 = f
@@ -239,8 +245,6 @@ fixMem keys f = go where
 böb :: ASetter s t a b -> s -> (t -> a -> b) -> t
 böb l s f = go where
   go = s & l %~ f go
-
--- Lenses and traversals
 
 traverseSet :: (Applicative f, Ord b) => (a -> f b) -> Set a -> f (Set b)
 traverseSet f = fmap Set.fromList . traverse f . Set.toList
