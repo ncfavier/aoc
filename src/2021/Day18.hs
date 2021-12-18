@@ -36,4 +36,4 @@ main :: IO ()
 main = do
   numbers <- parseInput (eachLine snailfish)
   print $ magnitude $ foldl1 (+) numbers
-  print $ maximum [magnitude (a + b) | a <- numbers, b <- numbers]
+  print $ maximum [magnitude (a + b) | a <- numbers, b <- numbers, a /= b]
