@@ -49,4 +49,3 @@ main = do
   (scanners, beacons) <- assemble <$> parseInput format
   print $ length beacons
   print $ maximum [sum (abs (a - b)) | (a, b) <- pairs scanners]
-
