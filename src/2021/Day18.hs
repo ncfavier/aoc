@@ -3,7 +3,7 @@ module Day18 where
 
 import AOC
 
-data Snailfish = Pure Int | Pair Snailfish Snailfish
+data Snailfish = Pure Int | Pair Snailfish Snailfish deriving (Eq)
 
 magnitude (Pure n) = n
 magnitude (Pair a b) = 3 * magnitude a + 2 * magnitude b
@@ -28,7 +28,9 @@ split (Pure n) | n >= 10 = Just $ Pair (Pure $ n `div` 2) (Pure $ (n + 1) `div` 
                | otherwise = Nothing
 split (Pair a b) = flip Pair b <$> split a <|> Pair a <$> split b
 
-final x = maybe x final $ explode x <|> split x
+reduce x = explode x <|> split x
+
+final x = maybe x final $ reduce x
 
 instance Num Snailfish where a + b = final (Pair a b)
 
