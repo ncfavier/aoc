@@ -27,11 +27,7 @@ module AOC ( module AOC
            , module Data.Tuple
            , module Data.Void
            , module GHC.Natural
-           , module Linear.V0
-           , module Linear.V1
-           , module Linear.V2
-           , module Linear.V3
-           , module Linear.V4
+           , module Linear
            , module Math.NumberTheory.Moduli
            , module Text.Megaparsec
            , module Text.Megaparsec.Char
@@ -73,11 +69,7 @@ import Data.Traversable
 import Data.Tuple
 import Data.Void
 import GHC.Natural
-import Linear.V0
-import Linear.V1
-import Linear.V2
-import Linear.V3
-import Linear.V4
+import Linear hiding (transpose, rotate)
 import Math.NumberTheory.Moduli
 import System.Environment
 import System.Exit
@@ -197,6 +189,10 @@ firstDuplicateBy f = head . findDuplicatesBy f
 firstDuplicate :: Ord a => [a] -> a
 firstDuplicate = firstDuplicateBy id
 
+pairs :: [a] -> [(a, a)]
+pairs [] = []
+pairs (x:xs) = (x,) <$> xs <|> pairs xs
+
 pickOne :: [a] -> [(a, [a])]
 pickOne l = [(y, xs ++ ys) | (xs, y:ys) <- zip (inits l) (tails l)]
 
@@ -225,9 +221,14 @@ alt = alaf Alt foldMap pure
 -- Functions and memoizing
 
 fixedPoint :: Eq a => (a -> a) -> a -> a
-fixedPoint f = go where
-  go x | x == f x  = x
-       | otherwise = go (f x)
+fixedPoint = fixedPointOn id
+
+fixedPointOn :: Eq b => (a -> b) -> (a -> a) -> a -> a
+fixedPointOn rep f x = go x (rep x) where
+  go x rx | rx == rfx = fx
+          | otherwise = go fx rfx
+          where fx = f x
+                rfx = rep fx
 
 iterate1 :: (a -> a) -> a -> [a]
 iterate1 f x = iterate f (f x)
@@ -246,6 +247,7 @@ böb :: ASetter s t a b -> s -> (t -> a -> b) -> t
 böb l s f = go where
   go = s & l %~ f go
 
+-- not a valid Traversal, but useful
 traverseSet :: (Applicative f, Ord b) => (a -> f b) -> Set a -> f (Set b)
 traverseSet f = fmap Set.fromList . traverse f . Set.toList
 
