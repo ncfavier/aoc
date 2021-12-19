@@ -4,12 +4,12 @@ This repository contains my Haskell solutions for some of the [Advent of Code](h
 
 You can run my solutions locally using [Nix](https://nixos.org) with Flakes enabled:
 
-```bash
+```sh
 git clone https://github.com/ncfavier/aoc
 cd aoc
 nix --experimental-features 'nix-command flakes' develop
-echo "$session" > .session
-aoc run YEAR DAY
+echo {your session cookie} > .session
+aoc run {year} {day}
 ```
 
 I participate in Advent of Code mainly to practice my Haskell and learn things, but also because waking up at 6 a.m. through December to do programming puzzles is [*fun*](http://dwarffortresswiki.org/index.php/DF2014:Losing).
