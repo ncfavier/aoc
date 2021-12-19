@@ -8,7 +8,7 @@ You can run my solutions locally using [Nix](https://nixos.org) with Flakes enab
 git clone https://github.com/ncfavier/aoc
 cd aoc
 nix --experimental-features 'nix-command flakes' develop
-echo {your session cookie} > .session
+echo {your adventofcode.com session cookie} > .session
 aoc run {year} {day}
 ```
 
