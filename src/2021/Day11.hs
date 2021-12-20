@@ -15,7 +15,7 @@ step width height octopuses = update flashes where
 
 main :: IO ()
 main = do
-  (fmap digitToInt -> octopuses, width, height) <- makeGrid <$> readInput
+  (fmap digitToInt -> octopuses, width, height) <- makeGrid' <$> readInput
   let history = iterate1 (step width height) octopuses
   print $ howManyOf (each . each) (== 0) (take 100 history)
   print $ head [n | (n, g) <- zip [1..] history, all (== 0) g]

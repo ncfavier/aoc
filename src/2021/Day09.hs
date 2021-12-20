@@ -7,7 +7,7 @@ import Data.Set qualified as S
 
 main :: IO ()
 main = do
-  (fmap digitToInt -> grid, _, _) <- makeGrid <$> readInput
+  (fmap digitToInt -> grid) <- makeGrid <$> readInput
   let riskLevel pos n = if all (> n) (catMaybes [M.lookup p grid | d <- cardinal, let p = pos + d]) then n + 1 else 0
       basin p = fst <$> bfs (\p' -> [p'' | d <- cardinal, let p'' = p' + d, Just n <- [M.lookup p'' grid], n < 9]) p
       basins = go (M.keysSet $ M.filter (/= 9) grid) where

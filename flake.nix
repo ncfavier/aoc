@@ -17,6 +17,7 @@
           lens
           linear
           megaparsec
+          MemoTrie
           monad-dijkstra
           mtl
           profunctors

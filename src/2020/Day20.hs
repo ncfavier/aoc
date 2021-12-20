@@ -12,7 +12,7 @@ type Board = Map Coords Tile
 tileP :: Parser Tile
 tileP = do
     n <- "Tile " *> decimal <* ":\n"
-    (fmap (== '#') -> grid, _, _) <- makeGrid <$> many anySingle
+    (fmap (== '#') -> grid) <- makeGrid <$> many anySingle
     pure (Tile n grid)
 
 symmetries :: Grid -> [Grid]
@@ -50,7 +50,7 @@ contextualise p (Tile _ g) = Map.fromList
     where (subtract 2 -> size, _) = dimensions g
 
 findPattern :: Set Coords -> Grid -> Set Coords
-findPattern pat (gridToSet id -> image) = mconcat
+findPattern pat (mapToSet id -> image) = mconcat
     [ occurrence
     | (x, y) <- range (minImg, maxImg - (width, height) + 1)
     , let occurrence = Set.map (+ (x, y)) pat
@@ -67,7 +67,7 @@ main = do
         ((ix, iy), (ax, ay)) = boundingBox board
     print $ product [tileId (board Map.! (x, y)) | x <- [ix, ax], y <- [iy, ay]]
     let image = Map.foldMapWithKey contextualise board
-        (gridToSet (== '#') -> seaMonster, _, _) = makeGrid
+        (mapToSet (== '#') -> seaMonster) = makeGrid
             $ unlines ["                  # "
                       ,"#    ##    ##    ###"
                       ," #  #  #  #  #  #   "]

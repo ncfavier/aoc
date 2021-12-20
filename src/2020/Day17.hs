@@ -16,8 +16,8 @@ rule _                                = False
 
 main :: IO ()
 main = do
-    (grid, _, _) <- makeGrid <$> readInput
-    let alive = gridToSet (== '#') grid
+    grid <- makeGrid <$> readInput
+    let alive = mapToSet (== '#') grid
         dim n = Set.map (\(x, y) -> replicate (n - 2) 0 ++ map fromInteger [x, y]) alive
     for_ [3, 4] \n ->
         print $ length $ iterate (evolve neighbours rule) (dim n) !! 6

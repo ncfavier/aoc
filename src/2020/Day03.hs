@@ -6,7 +6,7 @@ import qualified Data.Map as Map
 import AOC
 
 main = do
-    (grid, width, height) <- makeGrid <$> readInput
+    (grid, width, height) <- makeGrid' <$> readInput
     let countTrees slope = howMany (== '#') (go (0, 0)) where
             go p@(x, y) | y >= height = []
                         | otherwise   = grid Map.! (x `mod` width, y):go (p + slope)
