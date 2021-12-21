@@ -21,6 +21,7 @@
 #   submit an answer
 
 ghcFlags=(
+    -isrc
     -O2
 
     -XAllowAmbiguousTypes
@@ -155,7 +156,7 @@ run() {
         if (( ! runOnly )); then
             log "Compiling day $day, $year"
             ghc -W -Wno-incomplete-patterns "${ghcFlags[@]}" \
-                -isrc -i"src/$year" -outputdir "$build" -o "$bin" -main-is "$module" "$src" || exit
+                -i"src/$year" -outputdir "$build" -o "$bin" -main-is "$module" "$src" || exit
         fi
 
         if (( ! compileOnly )); then
@@ -178,7 +179,7 @@ run() {
 }
 
 bios() {
-    printf '%s\n' "${ghcFlags[@]}" -isrc -i"${HIE_BIOS_ARG%/*}" AOC Intcode > "$HIE_BIOS_OUTPUT"
+    printf '%s\n' "${ghcFlags[@]}" -i"${HIE_BIOS_ARG%/*}" AOC Intcode > "$HIE_BIOS_OUTPUT"
 }
 
 repl() {
@@ -188,7 +189,6 @@ repl() {
 edit() {
     getDays "$@"
     (( ${#days[@]} == 1 )) || die "Multiple days provided"
-
     getDay "$year" "${days[0]}"
 
     if [[ ! -s $src ]]; then
@@ -197,7 +197,6 @@ edit() {
 module $module where
 
 import AOC
-
 import Data.Map qualified as M
 import Data.Set qualified as S
 

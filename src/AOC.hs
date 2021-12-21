@@ -9,6 +9,7 @@ module AOC ( module AOC
            , module Data.Bits
            , module Data.Bool
            , module Data.Char
+           , module Data.Composition
            , module Data.Either
            , module Data.Foldable
            , module Data.Functor
@@ -46,6 +47,7 @@ import Control.Monad.State
 import Data.Bits
 import Data.Bool
 import Data.Char
+import Data.Composition
 import Data.Either
 import Data.Foldable
 import Data.Function
@@ -75,6 +77,7 @@ import Linear hiding (transpose, rotate)
 import Math.NumberTheory.Moduli
 import System.Environment
 import System.Exit
+import System.IO
 import Text.Megaparsec hiding (State(..), Pos, choice, many, some, takeP, takeWhileP, takeWhile1P)
 import Text.Megaparsec qualified
 import Text.Megaparsec.Char
@@ -83,10 +86,12 @@ import Text.Read (readMaybe)
 
 instance (Ord c, Monoid c, Monad m) => MonadFail (SearchT c m) where fail _ = empty
 
--- Parsing
+-- IO and parsing
 
 readInput :: IO String
-readInput = maybe getContents readFile =<< lookupEnv "AOC_INPUT"
+readInput = do
+  hSetBuffering stdout NoBuffering -- I don't know where else to put this
+  maybe getContents readFile =<< lookupEnv "AOC_INPUT"
 
 type Parser = Parsec Void String
 
@@ -130,6 +135,9 @@ choice :: Foldable t => t (Parser a) -> Parser a
 choice = foldr (<||>) empty
 
 -- Math
+
+mod1 :: Integral a => a -> a -> a
+a `mod1` n = (a - 1) `mod` n + 1
 
 sumUpTo :: Integral a => a -> a
 sumUpTo n = n * (n + 1) `div` 2

@@ -10,8 +10,10 @@
           arithmoi
           array
           comonad
+          composition
           containers
           fingertree
+          foldl
           kan-extensions
           lattices
           lens
