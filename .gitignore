@@ -2,3 +2,4 @@ flake.lock
 bin
 build
 .session
+.direnv

@@ -250,8 +250,12 @@ nTimes f n = f . nTimes f (pred n)
 
 fixMem :: (Ord k, Foldable t) => t k -> ((k -> a) -> k -> a) -> k -> a
 fixMem keys f = go where
-  mem = Map.fromSet go (foldMap Set.singleton keys)
-  go = f \x -> Map.findWithDefault (go x) x mem
+  m = Map.fromList [(x, go x) | x <- toList keys]
+  go = f \x -> Map.findWithDefault (go x) x m
+
+mem :: (Ord k, Foldable t) => t k -> (k -> a) -> k -> a
+mem keys f = \x -> Map.findWithDefault (f x) x m
+  where m = Map.fromList [(x, f x) | x <- toList keys]
 
 böb :: ASetter s t a b -> s -> (t -> a -> b) -> t
 böb l s f = go where

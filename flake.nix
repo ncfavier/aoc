@@ -5,7 +5,7 @@
     inherit self nixpkgs;
     name = "";
     shell = { pkgs }: pkgs.mkShell {
-      nativeBuildInputs = with pkgs; [
+      packages = with pkgs; [
         (haskellPackages.ghcWithPackages (p: with p; [
           arithmoi
           array
