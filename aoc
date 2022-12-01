@@ -97,7 +97,7 @@ die() {
 
 request() {
     session=$(< .session) || die "Please create a .session file containing the session cookie from your web browser"
-    curl -fsSL -b "session=$session" "$@"
+    curl -fsSL --user-agent "https://github.com/ncfavier/aoc by n@monade.li" -b "session=$session" "$@"
 }
 
 getDays() {
