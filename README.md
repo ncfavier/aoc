@@ -14,6 +14,6 @@ aoc run {year} {day}
 
 I participate in Advent of Code mainly to practice my Haskell and learn things, but also because waking up at 6 a.m. through December to do programming puzzles is [*fun*](http://dwarffortresswiki.org/index.php/DF2014:Losing).
 
-If you want to chat, you can probably find me in the `#adventofcode`, `#adventofcode-spoilers`, `#adventofcode-help` and `#haskell` channels on [Libera](https://libera.chat/), as **nf**.
+If you want to chat, you can probably find me in the `#adventofcode`, `#adventofcode-spoilers`, `#adventofcode-help` and `#haskell` channels on [Libera](https://libera.chat/), as **ncf**.
 
 Also check out [glguy](https://github.com/glguy?tab=repositories&q=advent&type=source)'s, [jle](https://github.com/mstksg?tab=repositories&q=advent&type=source)'s and [nerdypepper](https://git.peppe.rs/fun/aoc/tree/)'s solutions.
