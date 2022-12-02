@@ -1,8 +1,6 @@
 module Day01 where
 
 import AOC
-import Data.Map qualified as M
-import Data.Set qualified as S
 
 format = many (number <* newline) `sepBy` newline
 
