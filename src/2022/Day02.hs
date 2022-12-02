@@ -14,9 +14,11 @@ mod3 :: Enum a => Iso' a (Int `Mod` 3)
 mod3 = from enum . iso toMod unMod
 
 -- | The game of rock-paper-scissors: given one of the players' move, there is a one-to-one
--- correspondence between the other player's move and the outcomes.
+-- correspondence between the other player's moves and the outcomes.
+-- The correspondence is given by subtracting the moves mod 3 and adjusting so that equality
+-- corresponds to 0.
 rps :: RPS -> Iso' RPS Ordering
-rps m = mod3 . adding (1 - view mod3 m) . from mod3
+rps m = mod3 . subtracting (view mod3 m) . adding (view mod3 EQ) . from mod3
 
 opponentMove = \case 'A' -> Rock; 'B' -> Paper; 'C' -> Scissors
 myMove       = \case 'X' -> Rock; 'Y' -> Paper; 'Z' -> Scissors
