@@ -2,27 +2,18 @@ module Day02 where
 
 import AOC
 
+import Data.Modular
+import Numeric.Lens
+
 format = eachLine ((,) <$> anySingle <* " " <*> anySingle)
 
-data RPS = Rock | Paper | Scissors deriving (Eq, Show)
+data RPS = Rock | Paper | Scissors deriving (Eq, Enum, Show)
 
-instance Ord RPS where
-  compare :: RPS -> RPS -> Ordering
-  compare x y | x == y = EQ
-  compare Scissors Paper = GT
-  compare Paper Rock = GT
-  compare Rock Scissors = GT
-  compare _ _ = LT
+mod3 :: Enum a => Iso' a (Int `Mod` 3)
+mod3 = from enum . iso (toMod @3) unMod
 
--- | @uncompare x@ is an inverse to @(`compare` x)@.
-uncompare :: RPS -> Ordering -> RPS
-uncompare x EQ = x
-uncompare Rock LT = Scissors
-uncompare Rock GT = Paper
-uncompare Paper LT = Rock
-uncompare Paper GT = Scissors
-uncompare Scissors LT = Paper
-uncompare Scissors GT = Rock
+moveOutcome :: RPS -> Iso' RPS Ordering
+moveOutcome m = mod3 . adding (1 - view mod3 m) . from mod3
 
 opponentMove = \case 'A' -> Rock; 'B' -> Paper; 'C' -> Scissors
 myMove       = \case 'X' -> Rock; 'Y' -> Paper; 'Z' -> Scissors
@@ -31,8 +22,8 @@ outcome      = \case 'X' -> LT;   'Y' -> EQ;    'Z' -> GT
 moveScore    = \case Rock -> 1; Paper -> 2; Scissors -> 3
 outcomeScore = \case LT -> 0; EQ -> 3; GT -> 6
 
-score1 (op, me) = moveScore me + outcomeScore (compare me op)
-score2 (op, ou) = moveScore (uncompare op ou) + outcomeScore ou
+score1 (op, me) = moveScore me + outcomeScore (view (moveOutcome op) me)
+score2 (op, ou) = moveScore (view (from (moveOutcome op)) ou) + outcomeScore ou
 
 main :: IO ()
 main = do

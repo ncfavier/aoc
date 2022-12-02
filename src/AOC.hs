@@ -30,7 +30,6 @@ module AOC ( module AOC
            , module Data.Void
            , module GHC.Natural
            , module Linear
-           , module Math.NumberTheory.Moduli
            , module Text.Megaparsec
            , module Text.Megaparsec.Char
            , module Text.Megaparsec.Char.Lexer
@@ -74,7 +73,6 @@ import Data.Tuple
 import Data.Void
 import GHC.Natural
 import Linear hiding (transpose, rotate)
-import Math.NumberTheory.Moduli
 import System.Environment
 import System.Exit
 import System.IO

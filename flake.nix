@@ -20,6 +20,7 @@
           linear
           megaparsec
           MemoTrie
+          modular-arithmetic
           monad-dijkstra
           mtl
           profunctors
