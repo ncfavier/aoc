@@ -197,6 +197,7 @@ edit() {
 module $module where
 
 import AOC
+
 import Data.Map qualified as M
 import Data.Set qualified as S
 
