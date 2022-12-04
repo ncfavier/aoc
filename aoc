@@ -210,7 +210,7 @@ main = do
 EOF
     fi
 
-    exec codium . "$src"
+    exec codium . "$src" src/AOC.hs
 }
 
 submit() {
