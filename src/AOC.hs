@@ -54,7 +54,7 @@ import Data.Functor
 import Data.Functor.Identity
 import Data.Ix
 import Data.List hiding (uncons)
-import Data.List.Split (splitOn, chunksOf)
+import Data.List.Split (splitOn, chunksOf, divvy)
 import Data.Map (Map)
 import Data.Map qualified as Map
 import Data.Map.Strict qualified as MapS
