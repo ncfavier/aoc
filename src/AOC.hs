@@ -112,6 +112,9 @@ takeP       = Text.Megaparsec.takeP Nothing
 takeWhileP  = Text.Megaparsec.takeWhileP Nothing
 takeWhile1P = Text.Megaparsec.takeWhile1P Nothing
 
+restOfLine :: Parser String
+restOfLine = takeWhileP (/= '\n') <* newline
+
 lexeme, hlexeme :: Parser a -> Parser a
 lexeme p = p <* space
 hlexeme p = p <* hspace
