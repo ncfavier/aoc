@@ -294,7 +294,8 @@ cw  (x, y) = (-y, x)
 manhattan :: Coords -> Integer
 manhattan (x, y) = abs x + abs y
 
-up, right, down, left :: Num i => (i, i)
+origin, up, right, down, left :: Num i => (i, i)
+origin = (0, 0)
 right = (1, 0)
 down = (0, 1)
 left = (-1, 0)
