@@ -183,6 +183,9 @@ minimumOn = minimumBy . comparing
 maximumOn :: (Foldable t, Ord b) => (a -> b) -> t a -> a
 maximumOn = maximumBy . comparing
 
+sortDesc :: Ord a => [a] -> [a]
+sortDesc = sortBy (flip compare)
+
 findDuplicatesBy :: Ord b => (a -> b) -> [a] -> [a]
 findDuplicatesBy f = go Set.empty where
   go seen (x:xs) | r `Set.member` seen = x:xs'
