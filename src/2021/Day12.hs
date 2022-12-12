@@ -19,4 +19,4 @@ main = do
                 _:_:_ -> False
                 _:_ -> part2 && 2 `notElem` counts (filter (all isLower) path)
                 _ -> True
-    print $ length [() | ("end":_, _) <- dfs next ["start"]]
+    print $ length [() | ("end":_, _) <- dfs next [["start"]]]

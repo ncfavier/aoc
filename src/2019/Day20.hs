@@ -31,5 +31,5 @@ main = do
                  [n | Just (n, _) <- [links M.!? p]]
         stepLayered (p, l) = [(n, l ) | n <- neighbours p, tile n == '.'] ++
                              [(n, l') | Just (n, d) <- [links M.!? p], let l' = l + d, l' >= 0]
-    print $ head [d | (p, d) <- bfs step start, p == end]
-    print $ head [d | ((p, 0), d) <- bfs stepLayered (start, 0), p == end]
+    print $ head [d | (p, d) <- bfs step [start], p == end]
+    print $ head [d | ((p, 0), d) <- bfs stepLayered [(start, 0)], p == end]

@@ -26,4 +26,4 @@ main :: IO ()
 main = do
   (rules, medicine) <- parseInput format
   print $ length $ Set.fromList $ alter (groups rules) medicine
-  print $ head [n | (m, n) <- dfs (alter (groups $ map swap rules)) medicine, m == ["e"]]
+  print $ head [n | (m, n) <- dfs (alter (groups $ map swap rules)) [medicine], m == ["e"]]

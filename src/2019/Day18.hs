@@ -16,7 +16,7 @@ diagonal :: Coords -> [Coords]
 diagonal p = [d p | d <- [left . up, left . down, right . up, right . down]]
 
 shortestPath :: UArray Coords Char -> Integer
-shortestPath grid = head [d | ((ps, ks), d) <- dijkstra bigStep (start, S.empty)
+shortestPath grid = head [d | ((ps, ks), d) <- dijkstra bigStep [(start, S.empty)]
                             , length ks == length keys]
     where
         keys = [(p, c) | (p, c) <- A.assocs grid, isLower c]
@@ -29,7 +29,7 @@ shortestPath grid = head [d | ((ps, ks), d) <- dijkstra bigStep (start, S.empty)
                 _ -> return (n, ks)
         distancesToKeys = M.fromList [(p, dists p) | p <- start ++ map fst keys]
             where dists start = [ (k, p, d, ds)
-                                | ((p, ds), d) <- bfsOn fst smallStep (start, S.empty)
+                                | ((p, ds), d) <- bfsOn fst smallStep [(start, S.empty)]
                                 , let k = grid ! p
                                 , isLower k ]
         bigStep (ps, ks) = [ ((insert p' ps', S.insert k ks), d)

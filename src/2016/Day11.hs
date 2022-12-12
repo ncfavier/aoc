@@ -66,7 +66,7 @@ isDone State{..} =  currentFloor == lastFloor
 
 minSteps :: Ord a => State a -> Integer
 minSteps start = head [steps | (s, steps) <- states, isDone s]
-    where states = bfsOn upToElementsPermutation nextStates start
+    where states = bfsOn upToElementsPermutation nextStates [start]
 
 main = do
     print $ minSteps initialState

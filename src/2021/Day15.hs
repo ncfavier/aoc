@@ -8,7 +8,7 @@ plus :: Int -> Int -> Int
 a `plus` b = (a + b - 1) `mod` 9 + 1
 
 solve :: Map (Int, Int) Int -> Int
-solve grid = fromJust $ lookup (maximum (M.keys grid)) (dijkstra step (0, 0))
+solve grid = fromJust $ lookup (maximum (M.keys grid)) (dijkstra step [(0, 0)])
   where step = withNeighbours cardinal (,) grid
 
 main :: IO ()

@@ -384,33 +384,33 @@ evolve neighbours rule alive = MapS.keysSet (MapS.filter rule cells) where
 
 -- Graph exploration
 
-dfs :: (Num n, Ord a) => (a -> [a]) -> a -> [(a, n)]
+dfs :: (Num n, Ord a) => (a -> [a]) -> [a] -> [(a, n)]
 dfs = dfsOn id
 
-dfsOn :: (Num n, Ord b) => (a -> b) -> (a -> [a]) -> a -> [(a, n)]
-dfsOn rep next start = go Set.empty (Seq.singleton (start, 0)) where
+dfsOn :: (Num n, Ord b) => (a -> b) -> (a -> [a]) -> [a] -> [(a, n)]
+dfsOn rep next start = go Set.empty (Seq.fromList $ (,0) <$> start) where
   go _ Seq.Empty = []
   go seen (ps Seq.:|> (n, d))
     | r `Set.member` seen = go seen ps
     | otherwise           = (n, d):go (Set.insert r seen) (ps <> Seq.fromList [(n', d + 1) | n' <- next n])
     where r = rep n
 
-bfs :: (Num n, Ord a) => (a -> [a]) -> a -> [(a, n)]
+bfs :: (Num n, Ord a) => (a -> [a]) -> [a] -> [(a, n)]
 bfs = bfsOn id
 
-bfsOn :: (Num n, Ord b) => (a -> b) -> (a -> [a]) -> a -> [(a, n)]
-bfsOn rep next start = go Set.empty (Seq.singleton (start, 0)) where
+bfsOn :: (Num n, Ord b) => (a -> b) -> (a -> [a]) -> [a] -> [(a, n)]
+bfsOn rep next start = go Set.empty (Seq.fromList $ (,0) <$> start) where
   go _ Seq.Empty = []
   go seen ((n, d) Seq.:<| ps)
     | r `Set.member` seen = go seen ps
     | otherwise           = (n, d):go (Set.insert r seen) (ps <> Seq.fromList [(n', d + 1) | n' <- next n])
     where r = rep n
 
-dijkstra :: (Num n, Ord n, Ord a) => (a -> [(a, n)]) -> a -> [(a, n)]
+dijkstra :: (Num n, Ord n, Ord a) => (a -> [(a, n)]) -> [a] -> [(a, n)]
 dijkstra = dijkstraOn id
 
-dijkstraOn :: (Num n, Ord n, Ord b) => (a -> b) -> (a -> [(a, n)]) -> a -> [(a, n)]
-dijkstraOn rep next start = go Set.empty (PQ.singleton 0 start) where
+dijkstraOn :: (Num n, Ord n, Ord b) => (a -> b) -> (a -> [(a, n)]) -> [a] -> [(a, n)]
+dijkstraOn rep next start = go Set.empty (PQ.fromList $ (0,) <$> start) where
   go seen q
     | Just ((d, n), q') <- PQ.minViewWithKey q =
       let r = rep n in
