@@ -247,6 +247,10 @@ fixedPointOn rep f x = go x (rep x) where
 iterate1 :: (a -> a) -> a -> [a]
 iterate1 f x = iterate f (f x)
 
+iterateMaybe :: (a -> Maybe a) -> a -> [a]
+iterateMaybe f = go where
+  go a = a:maybe [] go (f a)
+
 nTimes :: (Eq n, Num n, Enum n) => (a -> a) -> n -> a -> a
 nTimes _ 0 = id
 nTimes f 1 = f
