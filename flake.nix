@@ -12,6 +12,7 @@
           comonad
           composition
           containers
+          data-interval
           fingertree
           foldl
           kan-extensions
