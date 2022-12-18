@@ -275,9 +275,10 @@ löl l s f = go where
 traverseSet :: (Applicative f, Ord b) => (a -> f b) -> Set a -> f (Set b)
 traverseSet f = fmap Set.fromList . traverse f . Set.toList
 
--- 2D coordinates and grids
+-- Coordinates and grids
 
 type Coords = (Integer, Integer)
+type Coords3 = (Integer, Integer, Integer)
 
 instance Num i => Num (i, i) where
   (x1, y1) + (x2, y2) = (x1 + x2, y1 + y2)
@@ -286,6 +287,21 @@ instance Num i => Num (i, i) where
   fromInteger n = (fromInteger n, fromInteger n)
   abs (x, y) = (abs x, abs y)
   signum = undefined
+
+instance Num i => Num (i, i, i) where
+  (x1, y1, z1) + (x2, y2, z2) = (x1 + x2, y1 + y2, z1 + z2)
+  (x1, y1, z1) * (x2, y2, z2) = (x1 * x2, y1 * y2, z1 * z2)
+  negate (x, y, z) = (-x, -y, -z)
+  fromInteger n = (fromInteger n, fromInteger n, fromInteger n)
+  abs (x, y, z) = (abs x, abs y, abs z)
+  signum = undefined
+
+instance Semigroup Integer where
+  (<>) = (+)
+  stimes = stimesMonoid
+
+instance Monoid Integer where
+  mempty = 0
 
 rectangle :: Coords -> (Integer, Integer) -> [Coords]
 rectangle (x, y) (w, h) = [(i, j) | i <- [x..x + w - 1], j <- [y..y + h - 1]]
@@ -312,6 +328,9 @@ up = (0, -1)
 
 cardinal :: Num i => [(i, i)]
 cardinal = [up, right, down, left]
+
+cardinal3 :: Num i => [(i, i, i)]
+cardinal3 = [(0, 0, -1), (0, 0, 1), (0, -1, 0), (0, 1, 0), (-1, 0, 0), (1, 0, 0)]
 
 interCardinal :: Num i => [(i, i)]
 interCardinal = [(-1, -1), (1, 1), (-1, 1), (1, -1)]
