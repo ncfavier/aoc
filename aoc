@@ -131,15 +131,20 @@ getDay() {
 run() {
     time=0 runOnly=0 compileOnly=0 forceInput=
 
-    while getopts :tcri: o; do case $o in
-        t) time=1;;
-        c) compileOnly=1;;
-        r) runOnly=1;;
-        i) forceInput=$OPTARG;;
-        :) die "Flag -$OPTARG requires an argument";;
-        *) die "Invalid flag -$OPTARG";;
-    esac done
-    shift "$(( OPTIND - 1 ))"
+    args=()
+    while (( $# )); do
+        case $1 in
+            -t) time=1;;
+            -c) compileOnly=1;;
+            -r) runOnly=1;;
+            -i) shift; forceInput=$1;;
+            -*) die "Invalid flag $1";;
+            *) args+=("$1");;
+        esac
+        shift
+    done
+    set -- "${args[@]}"
+
     getDays "$@"
 
     runAll() for day in "${days[@]}"; do
