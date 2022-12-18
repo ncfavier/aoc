@@ -7,13 +7,13 @@ import qualified Data.Set as S
 import Data.Map (Map)
 import qualified Data.Map as M
 
-import AOC
+import AOC hiding (diagonal)
 
 neighbours :: Coords -> [Coords]
-neighbours p = [d p | d <- [left, right, up, down]]
+neighbours p = [d + p | d <- [left, right, up, down]]
 
 diagonal :: Coords -> [Coords]
-diagonal p = [d p | d <- [left . up, left . down, right . up, right . down]]
+diagonal p = [d + p | d <- [left + up, left + down, right + up, right + down]]
 
 shortestPath :: UArray Coords Char -> Integer
 shortestPath grid = head [d | ((ps, ks), d) <- dijkstra bigStep [(start, S.empty)]

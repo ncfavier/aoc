@@ -6,7 +6,7 @@ import qualified Data.Map as M
 import AOC
 
 neighbours :: Coords -> [Coords]
-neighbours p = [d p | d <- [left, right, up, down]]
+neighbours p = [d + p | d <- [left, right, up, down]]
 
 main :: IO ()
 main = do
@@ -15,10 +15,10 @@ main = do
         distanceToEdge (x, y) = minimum [x, width - x, y, height - y]
         grid = M.fromList $ flattenWithCoords input
         tile p = M.findWithDefault ' ' p grid
-        portal p | isUpper (tile (up p))    = Just [tile (up (up p)), tile (up p)]
-                 | isUpper (tile (down p))  = Just [tile (down p), tile (down (down p))]
-                 | isUpper (tile (left p))  = Just [tile (left (left p)), tile (left p)]
-                 | isUpper (tile (right p)) = Just [tile (right p), tile (right (right p))]
+        portal p | isUpper (tile (up + p))    = Just [tile (up + up + p), tile (up + p)]
+                 | isUpper (tile (down + p))  = Just [tile (down + p), tile (down + down + p)]
+                 | isUpper (tile (left + p))  = Just [tile (left + left + p), tile (left + p)]
+                 | isUpper (tile (right + p)) = Just [tile (right + p), tile (right + right + p)]
                  | otherwise                = Nothing
         portals = M.fromListWith (++) [(n, [p]) | (p, '.') <- M.toList grid, Just n <- [portal p]]
         links = M.fromList $ do

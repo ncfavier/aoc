@@ -13,7 +13,7 @@ import qualified Data.Vector as V
 import Data.Map (Map)
 import qualified Data.Map as M
 
-import AOC hiding (set)
+import AOC hiding (set, mem)
 
 data Memory = Memory { readOnly :: Vector Integer
                      , overlay  :: Map Integer Integer

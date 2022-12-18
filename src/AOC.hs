@@ -275,6 +275,12 @@ löl l s f = go where
 traverseSet :: (Applicative f, Ord b) => (a -> f b) -> Set a -> f (Set b)
 traverseSet f = fmap Set.fromList . traverse f . Set.toList
 
+insertMaybeSet :: Ord a => a -> Set a -> Maybe (Set a)
+insertMaybeSet = Set.alterF (\p -> True <$ guard (not p))
+
+insertMaybeMap :: Ord k => k -> v -> Map k v -> Maybe (Map k v)
+insertMaybeMap k v = Map.alterF (\p -> Just v <$ guard (isNothing p)) k
+
 -- Coordinates and grids
 
 type Coords = (Integer, Integer)
@@ -435,12 +441,19 @@ dijkstra :: (Num n, Ord n, Ord a) => (a -> [(a, n)]) -> [a] -> [(a, n)]
 dijkstra = dijkstraOn id
 
 dijkstraOn :: (Num n, Ord n, Ord b) => (a -> b) -> (a -> [(a, n)]) -> [a] -> [(a, n)]
-dijkstraOn rep next start = go Set.empty (PQ.fromList $ (0,) <$> start) where
+dijkstraOn rep next start = astarOn rep next' start
+  where next' n = [(n', c, 0) | (n', c) <- next n]
+
+astar :: (Num n, Ord n, Ord a) => (a -> [(a, n, n)]) -> [a] -> [(a, n)]
+astar = astarOn id
+
+astarOn :: (Num n, Ord n, Ord b) => (a -> b) -> (a -> [(a, n, n)]) -> [a] -> [(a, n)]
+astarOn rep next start = go Set.empty (PQ.fromList $ map (\s -> (0, (0, s))) start) where
   go seen q
-    | Just ((d, n), q') <- PQ.minViewWithKey q =
-      let r = rep n in
-      if r `Set.member` seen then
-        go seen q'
-      else
-        (n, d):go (Set.insert r seen) (PQ.union q' (PQ.fromList [(d + c, n') | (n', c) <- next n]))
+    | Just ((_, (d, n)), q') <- PQ.minViewWithKey q =
+      let r = rep n
+          insert q (n', c, h) = PQ.insert (d' + h) (d', n') q where d' = d + c
+      in case insertMaybeSet r seen of
+        Nothing -> go seen q'
+        Just seen' -> (n, d):go seen' (foldl' insert q' (next n))
     | otherwise = []
