@@ -265,11 +265,13 @@ mem :: (Ord k, Foldable t) => t k -> (k -> a) -> k -> a
 mem keys f = \x -> Map.findWithDefault (f x) x m
   where m = Map.fromList [(x, f x) | x <- toList keys]
 
--- löb over lens (well, a setter)
--- `löl mapped :: f a -> (f b -> a -> b) -> f b` is equivalent to löb (up to co-Yoneda)
-löl :: ASetter s t a b -> s -> (t -> a -> b) -> t
+löb :: Functor f => f (f a -> a) -> f a
+löb m = go where go = fmap ($ go) m
+
+-- löb over lens (well, an indexed setter)
+löl :: AnIndexedSetter i s t a b -> s -> (t -> i -> a -> b) -> t
 löl l s f = go where
-  go = s & l %~ f go
+  go = s & l %@~ f go
 
 -- not a valid Traversal, but useful
 traverseSet :: (Applicative f, Ord b) => (a -> f b) -> Set a -> f (Set b)
