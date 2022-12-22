@@ -443,7 +443,7 @@ dijkstra :: (Num n, Ord n, Ord a) => (a -> [(a, n)]) -> [a] -> [(a, n)]
 dijkstra = dijkstraOn id
 
 dijkstraOn :: (Num n, Ord n, Ord b) => (a -> b) -> (a -> [(a, n)]) -> [a] -> [(a, n)]
-dijkstraOn rep next start = astarOn rep next' start
+dijkstraOn rep next = astarOn rep next'
   where next' n = [(n', c, 0) | (n', c) <- next n]
 
 astar :: (Num n, Ord n, Ord a) => (a -> [(a, n, n)]) -> [a] -> [(a, n)]

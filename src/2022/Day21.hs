@@ -22,7 +22,7 @@ eval (Op a '/' b) = eval a `div` eval b
 -- | Solve `e = 0` for the first variable encountered.
 solve :: Expr a -> Expr a
 solve = fromMaybe (error "no variables") . go (Int 0) where
-  go y (Int _) = Nothing
+  go _ (Int _) = Nothing
   go y (Var _) = Just y
   go y (Op a '+' b) = go (Op y '-' b) a <|> go (Op y '-' a) b
   go y (Op a '-' b) = go (Op y '+' b) a <|> go (Op a '-' y) b
