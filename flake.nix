@@ -1,4 +1,5 @@
 {
+  inputs.nixpkgs.url = "nixpkgs/nixos-unstable";
   inputs.utils.url = "github:numtide/flake-utils";
 
   outputs = { self, utils, nixpkgs }: utils.lib.simpleFlake {

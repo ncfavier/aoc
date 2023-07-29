@@ -61,10 +61,10 @@ import Data.Map.Strict qualified as MapS
 import Data.Maybe
 import Data.MemoTrie hiding (enumerate)
 import Data.Monoid
-import Data.Ord hiding (Down(..))
+import Data.Ord hiding (Down(..), clamp)
 import Data.PriorityQueue.FingerTree qualified as PQ
 import Data.Ratio
-import Data.Semigroup hiding (option)
+import Data.Semigroup
 import Data.Sequence qualified as Seq
 import Data.Set (Set)
 import Data.Set qualified as Set
@@ -318,7 +318,7 @@ clamp :: Coords -> Coords -> Coords -> Coords
 clamp (xmin, ymin) (xmax, ymax) (x, y) = (min xmax (max xmin x), min ymax (max ymin y))
 
 mul :: Integer -> Coords -> Coords
-mul n p = fromInteger n * p
+n `mul` p = fromInteger n * p
 
 ccw, cw :: Coords -> Coords
 ccw (x, y) = (y, -x)
