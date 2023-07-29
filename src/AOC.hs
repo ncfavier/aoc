@@ -317,6 +317,9 @@ rectangle (x, y) (w, h) = [(i, j) | i <- [x..x + w - 1], j <- [y..y + h - 1]]
 clamp :: Coords -> Coords -> Coords -> Coords
 clamp (xmin, ymin) (xmax, ymax) (x, y) = (min xmax (max xmin x), min ymax (max ymin y))
 
+clampMod :: Integral a => (a, a) -> a -> a
+clampMod (a, b) n = a + (n - a) `mod` (b - a)
+
 mul :: Integer -> Coords -> Coords
 n `mul` p = fromInteger n * p
 
