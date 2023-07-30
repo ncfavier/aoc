@@ -13,6 +13,7 @@
           comonad
           composition
           containers
+          data-clist
           data-interval
           fingertree
           foldl
