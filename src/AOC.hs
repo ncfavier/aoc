@@ -318,7 +318,7 @@ clamp :: Coords -> Coords -> Coords -> Coords
 clamp (xmin, ymin) (xmax, ymax) (x, y) = (min xmax (max xmin x), min ymax (max ymin y))
 
 clampMod :: Integral a => (a, a) -> a -> a
-clampMod (a, b) n = a + (n - a) `mod` (b - a)
+clampMod (a, b) n = a + (n - a) `mod` (b - a + 1)
 
 mul :: Integer -> Coords -> Coords
 n `mul` p = fromInteger n * p
