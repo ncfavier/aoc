@@ -32,6 +32,7 @@
           unordered-containers
           vector
         ]))
+        haskell-language-server
         curl
         htmlq
         pandoc
