@@ -172,7 +172,7 @@ run() {
                 time "$bin"
             else
                 "$bin"
-            fi | tee >(tail -n 1 | tr -d '\n' | xsel -ib)
+            fi #| tee >(tail -n 1 | tr -d '\n' | xsel -ib)
         fi
     done
 
