@@ -208,7 +208,6 @@ import Data.Set qualified as S
 
 format = takeRest
 
-main :: IO ()
 main = do
   input <- parseInput format
   print input
