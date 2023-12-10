@@ -369,6 +369,12 @@ makeGrid' s = (grid, width, height) where
   width = genericLength (head rows)
   height = genericLength rows
 
+innerEdge :: (Ord n, Enum n, Num n) => n -> n -> Set (n, n)
+innerEdge width height = Set.fromList $ concat $ [[(0, y), (width-1, y)] | y <- [0..height-1]] ++ [[(x, 0), (x, height-1)] | x <- [0..width-1]]
+
+outerEdge :: (Ord n, Enum n, Num n) => n -> n -> Set (n, n)
+outerEdge width height = Set.fromList $ concat $ [[(-1, y), (width, y)] | y <- [-1..height]] ++ [[(x, -1), (x, height)] | x <- [-1..width]]
+
 mapToSet :: (a -> Bool) -> Map k a -> Set k
 mapToSet p = Map.keysSet . Map.filter p
 
