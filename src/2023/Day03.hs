@@ -2,7 +2,6 @@ module Day03 where
 
 import AOC
 
-import Data.Map qualified as M
 import Data.Set qualified as S
 
 main :: IO ()
@@ -16,3 +15,5 @@ main = do
                 , r <- groupBy ((==) `on` isDigit . snd) (zip [0..] l)
                 , isDigit (snd (head r))]
   print $ sum [n | (n, r) <- numbers, notNull (r `S.intersection` symbols')]
+  let gears = mapToSet (== '*') grid
+  print $ sum [a * b | g <- toList gears, [a, b] <- pure [n | (n, ts) <- numbers, g `S.member` (S.unions (ts:[S.map (+ d) ts | d <- principal]))]]
