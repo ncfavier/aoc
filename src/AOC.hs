@@ -1,6 +1,7 @@
 module AOC ( module AOC
            , module Control.Applicative
            , module Control.Arrow
+           , module Control.Comonad.Store
            , module Control.Lens
            , module Control.Monad
            , module Control.Monad.Combinators.Expr
@@ -38,6 +39,7 @@ module AOC ( module AOC
 
 import Control.Applicative
 import Control.Arrow hiding (left, right)
+import Control.Comonad.Store
 import Control.Lens hiding (noneOf, index)
 import Control.Monad
 import Control.Monad.Combinators.Expr
