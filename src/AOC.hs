@@ -255,8 +255,15 @@ iterateMaybe f = go where
 
 nTimes :: (Eq n, Num n, Enum n) => (a -> a) -> n -> a -> a
 nTimes _ 0 = id
-nTimes f 1 = f
 nTimes f n = f . nTimes f (pred n)
+
+nTimesCycle :: (Ord a, Integral n) => (a -> a) -> n -> a -> a
+nTimesCycle f n = go Map.empty 0 where
+  go seen k a
+    | k == n = a
+    | Just m <- Map.lookup a seen
+    , Just (a', _) <- Map.lookupMin (Map.filter (== m + ((n - m) `mod` (k - m))) seen) = a'
+    | otherwise = go (Map.insert a k seen) (succ k) (f a)
 
 fixMem :: (Ord k, Foldable t) => t k -> ((k -> a) -> k -> a) -> k -> a
 fixMem keys f = go where
