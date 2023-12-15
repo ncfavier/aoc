@@ -8,22 +8,16 @@ format = (many (noneOf ",\n") `sepBy` ",") <* newline
 
 hash = foldl' (\n c -> ((n + ord c) * 17) `mod` 256) 0
 
-data Op = Put Int | Remove
+operation label "-" lenses = filter ((/= label) . fst) lenses
+operation label ('=':(read -> n)) lenses
+  | lens:_ <- holesOf @(->) (traversed.itraversed.index label) lenses = peek n lens
+  | otherwise = lenses ++ [(label, n)]
 
-parseOp s = case break (not . isAlpha) s of
-  (lbl, "-") -> (lbl, Remove)
-  (lbl, '=':(read -> n)) -> (lbl, Put n)
+step arr (break (not . isAlpha) -> (label, op)) = arr & ix (hash label) %~ operation label op
+
+power = getSum . view ((itraversed <.> itraversed <. traversed) . withIndex . to (\((i, j), l) -> Sum (succ i * succ j * l)))
 
 main = do
   input <- parseInput format
   print $ sum $ map hash input
-  let ops = map parseOp input
-      doOp' (lbl, Put n) [] = [(lbl, n)]
-      doOp' (lbl, Put n) (x@(lbl', _):xs)
-        | lbl == lbl' = (lbl, n):xs
-        | otherwise = x:doOp' (lbl, Put n) xs
-      doOp' (lbl, Remove) l = filter ((/= lbl) . fst) l
-      doOp arr (lbl, op) = arr & ix (hash lbl) %~ doOp' (lbl, op)
-      score' l = sum [i * n | (i, (_, n)) <- zip [1..] l]
-      score arr = sum [(b + 1) * score' l | (b, l) <- A.assocs arr]
-  print $ score $ foldl doOp (A.listArray (0, 255) (repeat [])) ops
+  print $ power $ foldl step (A.listArray (0, 255) (repeat [])) input

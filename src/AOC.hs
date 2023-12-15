@@ -40,7 +40,7 @@ module AOC ( module AOC
 import Control.Applicative
 import Control.Arrow hiding (left, right)
 import Control.Comonad.Store
-import Control.Lens hiding (noneOf, index)
+import Control.Lens hiding (noneOf)
 import Control.Monad
 import Control.Monad.Combinators.Expr
 import Control.Monad.Search
@@ -54,7 +54,7 @@ import Data.Foldable
 import Data.Function
 import Data.Functor
 import Data.Functor.Identity
-import Data.Ix
+import Data.Ix hiding (index)
 import Data.List hiding (uncons)
 import Data.List.Split (splitOn, chunksOf, divvy)
 import Data.Map (Map)
