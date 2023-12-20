@@ -7,6 +7,7 @@ module AOC ( module AOC
            , module Control.Monad.Combinators.Expr
            , module Control.Monad.Search
            , module Control.Monad.State
+           , module Control.Monad.Writer
            , module Data.Bits
            , module Data.Bool
            , module Data.Char
@@ -45,6 +46,7 @@ import Control.Monad
 import Control.Monad.Combinators.Expr
 import Control.Monad.Search
 import Control.Monad.State
+import Control.Monad.Writer hiding (First(..), Last(..))
 import Data.Bits
 import Data.Bool
 import Data.Char
