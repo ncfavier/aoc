@@ -21,15 +21,13 @@ format = NE.unzip <$> mfix \ a -> M.fromList <$> eachLine mdo
   dest <- mod `sepBy` ", "
   pure (source, (t, dest))
 
-type S = Map String Module
-
 main = do
   (mods, conns) <- parseInput format
   let
-    pushButton :: StateT S (Writer [(String, Bool, String)]) ()
+    pushButton :: StateT (Map String Module) (Writer [(String, Bool, String)]) ()
     pushButton = go (Seq.singleton ("button", low, "broadcaster")) where
-      update from p to Broadcast = pure [p]
-      update from p to (FlipFlop s)
+      update _ p _ Broadcast = pure [p]
+      update _ p to (FlipFlop s)
         | p == low = do
           ix to .= FlipFlop (not s)
           pure [not s]
@@ -46,20 +44,16 @@ main = do
             ps <- update from p to s
             go (q <> Seq.fromList [(to, p, next) | p <- ps, next <- conns M.! to])
           Nothing -> go q
-  let pulses = execWriter $ runStateT (replicateM 1000 pushButton) mods
-  print $ product $ counts [b | (_, b, _) <- pulses]
-
-  -- let pulses = execWriter $ runStateT (replicateM 100000 pushButton) mods
-  --     go n [] = []
-  --     go n (("button", _, _):ps) = go (n + 1) ps
-  --     go n (("zb", True, _):ps) = n:go n ps
-  --     go n (_:ps) = go n ps
-  -- print $ go 0 pulses
-
-  -- putStrLn "digraph {"
-  -- for_ (M.assocs mods) \ (m, t) -> do
-  --   putStrLn $ m <> " [shape=" <> (case t of Broadcast -> "circle"; Conjunction _ -> "diamond"; _ -> "box") <> "]"
-  -- for_ (M.assocs conns) \(m, cs) -> do
-  --   for_ cs \c -> do
-  --     putStrLn $ m <> " -> " <> c
-  -- putStrLn "}"
+  let
+    pulses n = execWriter $ runStateT (replicateM n pushButton) mods
+    pulsesInf = execWriter $ runStateT (forever pushButton) mods
+  print $ product $ counts [b | (_, b, _) <- pulses 1000]
+  let -- the dumb assumptions begin...
+    ultimate = head [m | (m, ["rx"]) <- M.assocs conns]
+    penultimate = let Conjunction is = mods M.! ultimate in M.keys is
+    period m = head (go 0 pulsesInf) where
+      go _ [] = []
+      go n (("button", _, _):ps) = go (n + 1) ps
+      go n ((m', True, _):ps) | m' == m = n:go n ps
+      go n (_:ps) = go n ps
+  print $ foldl1 lcm $ map period penultimate
