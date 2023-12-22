@@ -187,6 +187,16 @@ minimumOn = minimumBy . comparing
 maximumOn :: (Foldable t, Ord b) => (a -> b) -> t a -> a
 maximumOn = maximumBy . comparing
 
+minimums :: Ord a => [a] -> [a]
+minimums [] = []
+minimums xs = filter (== m) xs where
+  m = minimum xs
+
+maximums :: Ord a => [a] -> [a]
+maximums [] = []
+maximums xs = filter (== m) xs where
+  m = maximum xs
+
 sortDesc :: Ord a => [a] -> [a]
 sortDesc = sortBy (flip compare)
 
@@ -235,6 +245,9 @@ fromTo from to | from <= to = [from..to]
 
 alt :: (Foldable t, Alternative f) => t a -> f a
 alt = alaf Alt foldMap pure
+
+invGraph :: Ord a => Map a [a] -> Map a [a]
+invGraph m = Map.fromListWith (++) ([(v, [k]) | (k, vs) <- Map.assocs m, v <- vs] ++ [(k, []) | k <- Map.keys m])
 
 -- Functions and memoizing
 

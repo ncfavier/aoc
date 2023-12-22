@@ -9,9 +9,9 @@ format = (many (noneOf ",\n") `sepBy` ",") <* newline
 hash = foldl' (\n c -> ((n + ord c) * 17) `mod` 256) 0
 
 operation label "-" lenses = filter ((/= label) . fst) lenses
-operation label ('=':(read -> n)) lenses
-  | lens:_ <- holesOf @(->) (traversed.itraversed.index label) lenses = peek n lens
-  | otherwise = lenses ++ [(label, n)]
+operation label ('=':(read -> n)) lenses = fromMaybe
+  (lenses |> (label, n))
+  (failover (traversed.itraversed.index label) (const n) lenses)
 
 step arr (break (not . isAlpha) -> (label, op)) = arr & ix (hash label) %~ operation label op
 
