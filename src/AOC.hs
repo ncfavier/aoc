@@ -64,7 +64,7 @@ import Data.Map qualified as Map
 import Data.Map.Strict qualified as MapS
 import Data.Maybe
 import Data.MemoTrie hiding (enumerate)
-import Data.Monoid
+import Data.Monoid ()
 import Data.Ord hiding (Down(..), clamp)
 import Data.PriorityQueue.FingerTree qualified as PQ
 import Data.Ratio
@@ -308,6 +308,9 @@ insertMaybeMap :: Ord k => k -> v -> Map k v -> Maybe (Map k v)
 insertMaybeMap k v = Map.alterF (\p -> Just v <$ guard (isNothing p)) k
 
 -- Coordinates and grids
+
+dist :: Num a => a -> a -> a
+dist a b = abs (a - b)
 
 type Coords = (Integer, Integer)
 type Coords3 = (Integer, Integer, Integer)
