@@ -175,6 +175,10 @@ counts :: (Num n, Foldable t, Ord a) => t a -> Map a n
 counts = countsOf folded
 countsOf t = foldlOf' t (\m e -> Map.insertWith (+) e 1 m) Map.empty
 
+allEqual :: Eq a => [a] -> Bool
+allEqual []       = True
+allEqual (x : xs) = all (== x) xs
+
 groups :: Ord k => [(k, a)] -> Map k [a]
 groups kv = Map.fromListWith (++) [(k, [v]) | (k, v) <- kv]
 
