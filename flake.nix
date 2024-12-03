@@ -27,6 +27,7 @@
           monad-dijkstra
           mtl
           profunctors
+          regex-tdfa
           safe
           split
           unordered-containers

@@ -46,7 +46,7 @@ import Control.Monad
 import Control.Monad.Combinators.Expr
 import Control.Monad.Search
 import Control.Monad.State
-import Control.Monad.Writer hiding (First(..), Last(..))
+import Control.Monad.Writer
 import Data.Bits
 import Data.Bool
 import Data.Char
@@ -64,7 +64,7 @@ import Data.Map qualified as Map
 import Data.Map.Strict qualified as MapS
 import Data.Maybe
 import Data.MemoTrie hiding (enumerate)
-import Data.Monoid ()
+import Data.Monoid
 import Data.Ord hiding (Down(..), clamp)
 import Data.PriorityQueue.FingerTree qualified as PQ
 import Data.Ratio
