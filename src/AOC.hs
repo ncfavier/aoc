@@ -141,6 +141,9 @@ choice = foldr (<||>) empty
 
 -- Math
 
+divides :: Integral a => a -> a -> Bool
+a `divides` n = a `mod` n == 0
+
 mod1 :: Integral a => a -> a -> a
 a `mod1` n = (a - 1) `mod` n + 1
 
