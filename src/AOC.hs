@@ -126,6 +126,9 @@ hlexeme p = p <* hspace
 word :: Parser String
 word = some letterChar
 
+digit :: Parser Int
+digit = digitToInt <$> digitChar
+
 number :: Num a => Parser a
 number = signed (pure ()) decimal
 

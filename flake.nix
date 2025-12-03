@@ -15,8 +15,10 @@
           containers
           data-clist
           data-interval
+          extra
           fingertree
           foldl
+          integer-logarithms
           kan-extensions
           lattices
           lens
