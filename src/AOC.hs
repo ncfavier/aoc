@@ -56,6 +56,9 @@ import Data.Foldable
 import Data.Function
 import Data.Functor
 import Data.Functor.Identity
+import Data.IntegerInterval qualified as II
+import Data.Interval qualified as I
+import Data.IntervalSet qualified as IS
 import Data.Ix hiding (index)
 import Data.List hiding (uncons)
 import Data.List.Split (splitOn, chunksOf, divvy)
@@ -466,6 +469,20 @@ evolve neighbours rule alive = MapS.keysSet (MapS.filter rule cells) where
   neighbourhood p = [ (p', Cell self (if self then 0 else 1))
                     | p' <- neighbours p
                     , let self = p == p' ]
+
+-- Intervals
+
+rangeToInterval :: (Integer, Integer) -> I.Interval Integer
+rangeToInterval (a, b) = I.Finite a I.<=..<= I.Finite b
+
+rangeToIntervalSet :: (Integer, Integer) -> IS.IntervalSet Integer
+rangeToIntervalSet r = IS.singleton (rangeToInterval r)
+
+intervalCardinality :: I.Interval Integer -> Integer
+intervalCardinality = fromJust . II.memberCount . II.fromInterval
+
+intervalSetCardinality :: IS.IntervalSet Integer -> Integer
+intervalSetCardinality = sum . map intervalCardinality . IS.toList
 
 -- Graph exploration
 

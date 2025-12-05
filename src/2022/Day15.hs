@@ -2,18 +2,12 @@ module Day15 where
 
 import AOC
 
-import Data.IntegerInterval qualified as II
 import Data.Interval as I
 import Data.IntervalSet qualified as IS
 
 format = eachLine sensor where
   sensor = (,) <$ "Sensor at " <*> position <* ": closest beacon is at " <*> position
   position = (,) <$ "x=" <*> number <* ", y=" <*> number
-
-intervalCardinality (II.fromInterval -> i) = case (II.lowerBound i, II.upperBound i) of
-  (Finite l, Finite u) -> u - l + 1
-
-intervalSetCardinality = sum . map intervalCardinality . IS.toList
 
 size = 4_000_000
 
