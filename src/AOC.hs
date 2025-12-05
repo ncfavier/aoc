@@ -449,15 +449,21 @@ withNeighbours ds f g p = [f p' a | p' <- map (p +) ds, Just a <- [g Map.!? p']]
 
 -- Cellular automata
 
-data Cell = Cell !Bool !Int
+data Cell = Cell
+  !Bool -- Whether this cell is alive
+  !Int  -- Number of alive neighbours
 
 instance Semigroup Cell where
   Cell a1 n1 <> Cell a2 n2 = Cell (a1 || a2) (n1 + n2)
 
+neighbours :: Num a => [a] -> a -> [a]
+neighbours = traverse (+)
+
+-- Assumption: a `elem` neighbours a
 evolve :: Ord a => (a -> [a]) -> (Cell -> Bool) -> Set a -> Set a
 evolve neighbours rule alive = MapS.keysSet (MapS.filter rule cells) where
   cells = MapS.fromListWith (<>) (foldMap neighbourhood alive)
-  neighbourhood p = [ (p', Cell self (1 - fromEnum self))
+  neighbourhood p = [ (p', Cell self (if self then 0 else 1))
                     | p' <- neighbours p
                     , let self = p == p' ]
 
