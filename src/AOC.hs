@@ -370,6 +370,18 @@ cw  (x, y) = (-y, x)
 manhattan :: Coords -> Integer
 manhattan (x, y) = abs x + abs y
 
+euclideanNorm :: Floating a => Coords -> a
+euclideanNorm (a, b) = sqrt (fromIntegral (a * a + b * b))
+
+euclideanDist :: Floating a => Coords -> Coords -> a
+euclideanDist a b = euclideanNorm (a - b)
+
+euclideanNorm3 :: Floating a => Coords3 -> a
+euclideanNorm3 (a, b, c) = sqrt (fromIntegral (a * a + b * b + c * c))
+
+euclideanDist3 :: Floating a => Coords3 -> Coords3 -> a
+euclideanDist3 a b = euclideanNorm3 (a - b)
+
 origin, up, right, down, left :: Num i => (i, i)
 origin = (0, 0)
 right = (1, 0)
